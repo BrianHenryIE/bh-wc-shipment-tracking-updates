@@ -153,7 +153,6 @@ EOD;
 
 		$result = $sut->query_single_tracking_number( '9123123123231234567890' );
 
-
 		$b = $result;
 	}
 

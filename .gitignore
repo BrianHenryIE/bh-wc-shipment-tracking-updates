@@ -43,7 +43,7 @@ scratch
 src/strauss/
 wp-content/
 wordpress
-/vendor/
+vendor/*
 
 *.zip
 *.phar

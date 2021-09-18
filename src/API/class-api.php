@@ -91,14 +91,14 @@ class API implements API_Interface {
 		do {
 
 			$args = array(
-				'limit'      => $limit,
-				'status'     => $statuses,
-				'orderby'    => 'ID',
-				'order'      => 'DESC', // most recent.
-				'offset'     => $offset,
+				'limit'   => $limit,
+				'status'  => $statuses,
+				'orderby' => 'ID',
+				'order'   => 'DESC', // most recent.
+				'offset'  => $offset,
 				// TODO: date since, should be DateTime.THIS IS NOT WORKING!
 				// 'date_after' => $date_after,
-				'return' => 'ids',
+				'return'  => 'ids',
 			);
 
 			$this->logger->debug( "Fetching $limit orders from offset $offset", array( 'args' => $args ) );

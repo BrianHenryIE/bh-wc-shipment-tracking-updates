@@ -16,7 +16,7 @@ use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings_Interface;
  */
 class Plugins_Page_Unit_Test extends \Codeception\Test\Unit {
 
-	protected function _before() {
+	protected function setUp(): void {
 		\WP_Mock::setUp();
 	}
 

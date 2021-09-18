@@ -38,7 +38,7 @@ class USPS_Tracker implements Tracker_Interface {
 	 * @return Tracking_Details_Abstract
 	 */
 	public function query_single_tracking_number( string $tracking_number ): Tracking_Details_Abstract {
-		return $this->query_multiple_tracking_numbers( array( $tracking_number ) )[$tracking_number];
+		return $this->query_multiple_tracking_numbers( array( $tracking_number ) )[ $tracking_number ];
 	}
 
 	/**
