@@ -7,6 +7,7 @@ use BrianHenryIE\WC_Shipment_Tracking_Updates\Action_Scheduler\Scheduler;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Admin\Plugins_Page;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\API_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Emails;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Order_Statuses;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Shipping_Settings_Page;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce_Shipment_Tracking\Order_List_Table;
@@ -44,7 +45,7 @@ class BH_WC_Shipment_Tracking_Updates_Unit_Test extends \Codeception\Test\Unit {
 	/**
 	 * @covers ::set_locale
 	 */
-	public function test_set_locale_hooked() {
+	public function test_set_locale_hooked(): void {
 
 		\WP_Mock::expectActionAdded(
 			'plugins_loaded',
@@ -60,7 +61,7 @@ class BH_WC_Shipment_Tracking_Updates_Unit_Test extends \Codeception\Test\Unit {
 	/**
 	 * @covers ::define_cli_commands
 	 */
-	public function test_define_cli_commands() {
+	public function test_define_cli_commands(): void {
 
 		$this->markTestIncomplete();
 
@@ -73,15 +74,22 @@ class BH_WC_Shipment_Tracking_Updates_Unit_Test extends \Codeception\Test\Unit {
 	/**
 	 * @covers ::define_plugins_page_hooks
 	 */
-	public function test_define_plugins_page_hooks() {
+	public function test_define_plugins_page_hooks(): void {
+
+		$plugin_basename = 'bh-wc-shipment-tracking-updates/bh-wc-shipment-tracking-updates.php';
 
 		\WP_Mock::expectFilterAdded(
-			'plugin_action_links_bh-wc-shipment-tracking-updates/bh-wc-shipment-tracking-updates.php',
+			"plugin_action_links_{$plugin_basename}",
 			array( new AnyInstance( Plugins_Page::class ), 'action_links' )
 		);
 
 		$logger   = new ColorLogger();
-		$settings = $this->makeEmpty( Settings_Interface::class );
+		$settings = $this->makeEmpty(
+			Settings_Interface::class,
+			array(
+				'get_plugin_basename' => $plugin_basename,
+			)
+		);
 		$api      = $this->makeEmpty( API_Interface::class );
 		new BH_WC_Shipment_Tracking_Updates( $api, $settings, $logger );
 	}
@@ -90,7 +98,7 @@ class BH_WC_Shipment_Tracking_Updates_Unit_Test extends \Codeception\Test\Unit {
 	/**
 	 * @covers ::define_action_scheduler_hooks
 	 */
-	public function test_define_action_scheduler_hooks() {
+	public function test_define_action_scheduler_hooks(): void {
 
 		\WP_Mock::expectActionAdded(
 			'init',
@@ -117,7 +125,7 @@ class BH_WC_Shipment_Tracking_Updates_Unit_Test extends \Codeception\Test\Unit {
 	/**
 	 * @covers ::define_woocommerce_order_status_hooks
 	 */
-	public function test_define_woocommerce_order_status_hooks() {
+	public function test_define_woocommerce_order_status_hooks(): void {
 
 		\WP_Mock::expectActionAdded(
 			'woocommerce_init',
@@ -148,7 +156,7 @@ class BH_WC_Shipment_Tracking_Updates_Unit_Test extends \Codeception\Test\Unit {
 	/**
 	 * @covers ::define_woocommerce_shipment_tracking_hooks
 	 */
-	public function test_define_woocommerce_shipment_tracking_hooks() {
+	public function test_define_woocommerce_shipment_tracking_hooks(): void {
 
 		\WP_Mock::expectFilterAdded(
 			'woocommerce_shipment_tracking_get_shipment_tracking_column',
@@ -164,9 +172,27 @@ class BH_WC_Shipment_Tracking_Updates_Unit_Test extends \Codeception\Test\Unit {
 	}
 
 	/**
+	 * @covers ::define_woocommerce_email_hooks
+	 */
+	public function test_define_woocommerce_email_hooks(): void {
+
+		\WP_Mock::expectFilterAdded(
+			'woocommerce_email_classes',
+			array( new AnyInstance( Emails::class ), 'register_emails_with_woocommerce' ),
+			10,
+			1
+		);
+
+		$logger   = new ColorLogger();
+		$settings = $this->makeEmpty( Settings_Interface::class );
+		$api      = $this->makeEmpty( API_Interface::class );
+		new BH_WC_Shipment_Tracking_Updates( $api, $settings, $logger );
+	}
+
+	/**
 	 * @covers ::define_settings_page_hooks
 	 */
-	public function test_define_settings_page_hooks() {
+	public function test_define_settings_page_hooks(): void {
 
 		\WP_Mock::expectFilterAdded(
 			'woocommerce_get_sections_shipping',
@@ -180,11 +206,15 @@ class BH_WC_Shipment_Tracking_Updates_Unit_Test extends \Codeception\Test\Unit {
 			2
 		);
 
+		\WP_Mock::expectActionAdded(
+			'woocommerce_admin_field_bh_wc_shipment_tracking_updates_text_html',
+			array( new AnyInstance( Shipping_Settings_Page::class ), 'print_text_output' )
+		);
+
 		$logger   = new ColorLogger();
 		$settings = $this->makeEmpty( Settings_Interface::class );
 		$api      = $this->makeEmpty( API_Interface::class );
 		new BH_WC_Shipment_Tracking_Updates( $api, $settings, $logger );
 	}
-
 
 }

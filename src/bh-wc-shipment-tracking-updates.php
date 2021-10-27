@@ -15,7 +15,7 @@
  * Plugin Name:       Shipment Tracking Updates
  * Plugin URI:        http://github.com/BrianHenryIE/bh-wc-shipment-tracking-updates/
  * Description:       Displays the current status of the shipments' tracking inside WooCommerce. Discovers orders whose shipping label has been printed but whose package has not been mailed.
- * Version:           2.0.4
+ * Version:           2.1.0
  * Author:            BrianHenryIE
  * Author URI:        http://BrianHenry.ie
  * License:           GPL-2.0+
@@ -34,7 +34,6 @@ use BrianHenryIE\WC_Shipment_Tracking_Updates\Includes\BH_WC_Shipment_Tracking_U
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Includes\Deactivator;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\Logger;
 
-
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
 	throw new \Exception( 'WPINC not defined. WordPress functions will not be available.' );
@@ -45,7 +44,7 @@ require_once plugin_dir_path( __FILE__ ) . 'autoload.php';
 /**
  * Current plugin version.
  */
-define( 'BH_WC_SHIPMENT_TRACKING_UPDATES_VERSION', '2.0.4' );
+define( 'BH_WC_SHIPMENT_TRACKING_UPDATES_VERSION', '2.1.0' );
 
 register_activation_hook( __FILE__, array( Activator::class, 'activate' ) );
 register_deactivation_hook( __FILE__, array( Deactivator::class, 'deactivate' ) );
@@ -58,9 +57,9 @@ register_deactivation_hook( __FILE__, array( Deactivator::class, 'deactivate' ) 
  * then kicking off the plugin from this point in the file does
  * not affect the page life cycle.
  *
- * @since    1.0.0
+ * @since    2.0.0
  */
-function instantiate_bh_wc_shipment_tracking_updates() {
+function instantiate_bh_wc_shipment_tracking_updates(): API {
 
 	$settings  = new Settings();
 	$logger    = Logger::instance( $settings );
@@ -76,6 +75,10 @@ function instantiate_bh_wc_shipment_tracking_updates() {
 	return $api;
 }
 
-/** @var API_Interface */
+/**
+ * The instantiated plugin API class, containing the main plugin functions.
+ *
+ * @var API_Interface $GLOBALS['bh_wc_shipment_tracking_updates']
+ */
 $GLOBALS['bh_wc_shipment_tracking_updates'] = instantiate_bh_wc_shipment_tracking_updates();
 

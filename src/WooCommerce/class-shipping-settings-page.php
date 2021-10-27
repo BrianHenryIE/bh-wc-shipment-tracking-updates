@@ -7,8 +7,7 @@
  * @link       https://BrianHenryIE.com
  * @since      2.0.0
  *
- * @package    BrianHenryIE\WC_Shipment_Tracking_Updates
- *
+ * @package    brianhenryie/bh-wc-shipment-tracking-updates
  * @author     BrianHenryIE <BrianHenryIE@gmail.com>
  */
 
@@ -18,14 +17,19 @@ use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings;
 use Psr\Log\LogLevel;
 
 /**
+ * Register and output the settings page.
+ *
  * @see \WC_Settings_Page
+ * @see \WC_Settings_API
  */
 class Shipping_Settings_Page {
 
 	/**
+	 * Add the 'Shipment Tracking Updates' section to WooCommerce / Settings / Shipping.
+	 *
 	 * @hooked woocommerce_get_sections_shipping
 	 *
-	 * @param array<string, string> $sections
+	 * @param array<string, string> $sections The existing sections.
 	 * @return array<string, string>
 	 */
 	public function shipment_tracking_updates_section( array $sections ): array {
@@ -35,19 +39,17 @@ class Shipping_Settings_Page {
 	}
 
 	/**
+	 * Check the current section is what we want, then add the settings.
 	 *
 	 * @hooked woocommerce_get_settings_shipping
 	 * @see \WC_Settings_Page::get_settings_for_section()
 	 *
-	 * @param array<string, array> $settings
-	 * @param string               $current_section
-	 * @return array<string, array>
+	 * @param array<int|string, array> $settings Already defined settings.
+	 * @param string                   $current_section The section slug.
+	 * @return array<int|string, array>
 	 */
 	public function shipment_tracking_updates_settings( array $settings, string $current_section ) {
 
-		/**
-		 * Check the current section is what we want.
-		 */
 		if ( 'bh-wc-shipment-tracking-updates' !== $current_section ) {
 			return $settings;
 		}
@@ -56,7 +58,7 @@ class Shipping_Settings_Page {
 		$settings['bh-wc-shipment-tracking-updates'] = array(
 			'name' => __( 'Shipment Tracking Updates', 'bh-wc-shipment-tracking-updates' ),
 			'type' => 'title',
-			'desc' => __( 'Get a free USPS API key at <a target="_blank" href="https://registration.shippingapis.com/">registration.shippingapis.com</a>.', 'bh-wc-shipment-tracking-updates' ),
+			'desc' => __( 'Get a free USPS API key at ', 'bh-wc-shipment-tracking-updates' ) . '<a target="_blank" href="https://registration.shippingapis.com/">registration.shippingapis.com</a>.',
 			'id'   => 'bh-wc-shipment-tracking-updates',
 		);
 
@@ -103,6 +105,12 @@ class Shipping_Settings_Page {
 		// 'description' => __( "The tracking numbers can be manually searched in the local country's postal service's website.", 'bh-wc-shipment-tracking-updates' ),
 		// );
 
+		$settings[] = array(
+			'title' => __( 'Emails', 'bh-wc-shipment-tracking-updates' ),
+			'desc'  => __( 'Configure emails for dispatched orders on the ', 'bh-wc-shipment-tracking-updates' ) . '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=email' ) . '">' . __( 'WooCommerce / Settings / Emails tab', 'bh-wc-shipment-tracking-updates' ) . '</a>.',
+			'type'  => 'bh_wc_shipment_tracking_updates_text_html',
+		);
+
 		$log_levels        = array(
 			'none',
 			LogLevel::ERROR,
@@ -117,11 +125,11 @@ class Shipping_Settings_Page {
 		}
 
 		$settings[] = array(
-			'title'   => __( 'Log Level', 'text-domain' ),
-			'label'   => __( 'Enable Logging', 'text-domain' ),
+			'title'   => __( 'Log Level', 'bh-wc-shipment-tracking-updates' ),
+			'label'   => __( 'Enable Logging', 'bh-wc-shipment-tracking-updates' ),
 			'type'    => 'select',
 			'options' => $log_levels_option,
-			'desc'    => __( 'Increasingly detailed levels of logs. ', 'text-domain' ) . '<a href="' . admin_url( 'admin.php?page=bh-wc-shipment-tracking-updates-logs' ) . '">View Logs</a>',
+			'desc'    => __( 'Increasingly detailed levels of logs. ', 'bh-wc-shipment-tracking-updates' ) . '<a href="' . admin_url( 'admin.php?page=bh-wc-shipment-tracking-updates-logs' ) . '">View Logs</a>',
 			'default' => LogLevel::INFO,
 			'id'      => Settings::LOG_LEVEL_OPTION,
 		);
@@ -133,6 +141,40 @@ class Shipping_Settings_Page {
 		);
 
 		return $settings;
+	}
 
+	/**
+	 * Print plain text output (i.e. no input).
+	 *
+	 * Used to link to the Emails settings page.
+	 *
+	 * @see WC_Settings_API::generate_text_html()
+	 * @hooked woocommerce_admin_field_bh_wc_shipment_tracking_updates_text_html
+	 *
+	 * @param array<string, mixed> $data Field data.
+	 * @since  2.1.0
+	 */
+	public function print_text_output( array $data ): void {
+
+		ob_start();
+		?>
+		<tr valign="top">
+			<th scope="row" class="titledesc">
+				<?php echo wp_kses_post( $data['title'] ); ?> <?php // echo $this->get_tooltip_html( $data ); ?>
+			</th>
+			<td class="forminp">
+				<fieldset>
+					<legend class="screen-reader-text"><span><?php echo wp_kses_post( $data['title'] ); ?></span></legend>
+					<?php echo $data['desc']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+				</fieldset>
+			</td>
+		</tr>
+		<?php
+
+		$output = ob_get_clean();
+
+		$allowed_html = wp_kses_allowed_html( 'post' );
+
+		echo wp_kses( $output, $allowed_html );
 	}
 }

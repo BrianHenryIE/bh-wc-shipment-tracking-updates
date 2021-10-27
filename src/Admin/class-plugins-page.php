@@ -11,6 +11,7 @@
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Admin;
 
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings_Interface;
+use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -22,21 +23,25 @@ use Psr\Log\LoggerInterface;
  */
 class Plugins_Page {
 
-	/** @var LoggerInterface  */
-	protected $logger;
+	use LoggerAwareTrait;
 
-	/** @var Settings_Interface  */
+	/**
+	 * The plugin's settings.
+	 *
+	 * @see Settings_Interface::get_plugin_slug()
+	 * @var Settings_Interface
+	 */
 	protected $settings;
 
 	/**
+	 * Constructor.
 	 *
-	 *
-	 * @param Settings_Interface $settings
-	 * @param LoggerInterface    $logger
+	 * @param Settings_Interface $settings The plugin's settings.
+	 * @param LoggerInterface    $logger PRS logger.
 	 */
-	public function __construct( $settings, $logger ) {
+	public function __construct( Settings_Interface $settings, LoggerInterface $logger ) {
 
-		$this->logger   = $logger;
+		$this->setLogger( $logger );
 		$this->settings = $settings;
 	}
 
@@ -57,6 +62,6 @@ class Plugins_Page {
 		return $links_array;
 	}
 
-	// TODO: Add external link to USPS tracking.
+	// TODO: Add external link to USPS tracking... if USPS is configured.
 
 }
