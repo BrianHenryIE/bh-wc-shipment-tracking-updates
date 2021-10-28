@@ -2,11 +2,16 @@
 /**
  * Common format of the tracking details.
  *
+ * Represents one tracking number.
+ *
  * Eventually saved in order meta in an array keyed by tracking number.
+ *
+ * @package     brianhenryie/bh-wc-shipment-tracking-updates
  */
 
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers;
 
+use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Order_Statuses;
 use DateTime;
 
 /**
@@ -59,36 +64,23 @@ abstract class Tracking_Details_Abstract {
 	protected array $details;
 
 	/**
-	 * The WooCommerce order id.
-	 *
-	 * @var int
-	 */
-	protected ?int $order_id;
-
-	/**
-	 * To mark and filter when fetching new data.
-	 *
-	 * TODO: Should be outside this object so it is not saved to meta.
-	 *
-	 * @var ?bool
-	 */
-	protected ?bool $is_updated;
-
-	/**
 	 * Has the carrier scanned in the package?
+	 *
+	 * @used-by API::find_undispatched_orders()
 	 *
 	 * @return bool
 	 */
 	abstract public function is_dispatched(): bool;
 
 	/**
-	 * Given the tracking status, what is the corresponding WooCommerce status.
+	 * Given the carrier's nomenclature for the tracking status, what is the corresponding WooCommerce status.
 	 *
+	 * @see Order_Statuses
 	 * @see wc_get_order_statuses()
 	 *
-	 * @return string
+	 * @return ?string Null when the carrier API does not return any data for this tracking number.
 	 */
-	abstract public function get_order_status(): ?string;
+	abstract public function get_equivalent_order_status(): ?string;
 
 	/**
 	 * Null when there has been no update yet.
@@ -151,47 +143,6 @@ abstract class Tracking_Details_Abstract {
 	 */
 	public function get_details(): array {
 		return $this->details;
-	}
-
-	/**
-	 * Get the order id this tracking number is linked to.
-	 *
-	 * @return int
-	 */
-	public function get_order_id(): ?int {
-		return $this->order_id;
-	}
-
-	/**
-	 * Set the WooCommerce order id.
-	 *
-	 * @param int $order_id WooCommerce order id (WordPress post id).
-	 * @throws \Exception To prevent the order id inadvertently being changed.
-	 */
-	public function set_order_id( ?int $order_id ): void {
-		if ( isset( $this->order_id ) && $this->order_id !== $order_id ) {
-			throw new \Exception( 'Order id is already set to another value.' );
-		}
-		$this->order_id = $order_id;
-	}
-
-	/**
-	 * Has the updated flag been set?
-	 * TODO: This should not be saved in the meta (or it will always appear updated).
-	 *
-	 * @return bool|null
-	 */
-	public function get_is_updated(): ?bool {
-		return $this->is_updated;
-	}
-
-	/**
-	 * Set the is_updated flag when processing
-	 *
-	 * @param ?bool $is_updated Flag.
-	 */
-	public function set_is_updated( ?bool $is_updated ): void {
-		$this->is_updated = $is_updated;
 	}
 
 }

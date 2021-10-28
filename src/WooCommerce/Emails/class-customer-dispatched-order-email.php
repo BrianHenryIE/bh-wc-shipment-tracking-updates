@@ -39,7 +39,7 @@ class Customer_Dispatched_Order_Email extends WC_Email {
 		);
 
 		// Triggers for this email.
-		add_action( 'woocommerce_order_status_in-transit_notification', array( $this, 'trigger' ), 10, 2 );
+		add_action( 'bh_wc_shipment_tracking_updates_in-transit_email', array( $this, 'trigger' ), 10, 2 );
 
 		// Call parent constructor.
 		parent::__construct();

@@ -45,7 +45,7 @@ class Settings implements Settings_Interface, Logger_Settings_Interface, WooComm
 	 * @return string
 	 */
 	public function get_plugin_version(): string {
-		return '2.1.0';
+		return '2.1.1';
 	}
 
 	/**

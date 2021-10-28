@@ -31,7 +31,9 @@ class API_WPUnit_Test extends \Codeception\TestCase\WPTestCase {
 
 		$tracking_query_result = $this->makeEmpty(
 			Tracking_Details_Abstract::class,
-			array()
+			array(
+				'get_equivalent_order_status' => 'in-transit',
+			)
 		);
 
 		$usps_tracker = $this->makeEmpty(

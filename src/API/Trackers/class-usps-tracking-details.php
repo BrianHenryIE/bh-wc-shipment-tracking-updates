@@ -1,19 +1,39 @@
 <?php
 /**
+ * A Tracking_Details_Abstract object for a USPS API response.
+ *
+ * TODO: What timezone is used by USPS?
+ *
  * @see https://www.usps.com/business/web-tools-apis/track-and-confirm-api.htm
+ * @see Tracking_Details_Abstract
+ *
+ * @package     brianhenryie/bh-wc-shipment-tracking-updates
  */
 
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers;
 
+use BrianHenryIE\WC_Shipment_Tracking_Updates\USPS\TrackConfirm;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Order_Statuses;
 use DateTime;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 
+/**
+ * Generally parses the USPS API response into a Tracking_Details_Abstract object.
+ */
 class USPS_Tracking_Details extends Tracking_Details_Abstract {
 
 	use LoggerAwareTrait;
 
+	/**
+	 * Construct a Tracking_Details_Abstract with data from USPS API.
+	 *
+	 * @see TrackConfirm::getArrayResponse()
+	 *
+	 * @param string                                $tracking_number The tracking number this Tracking_Details_Abstract represents.
+	 * @param array<string,array<int|string,mixed>> $details The array returned from the USPS API.
+	 * @param LoggerInterface                       $logger A PSR logger.
+	 */
 	public function __construct( string $tracking_number, array $details, LoggerInterface $logger ) {
 		$logger->debug( 'Constructing USPS_Tracking_Details', array( $tracking_number, $details ) );
 
@@ -30,13 +50,13 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 
 		} elseif ( isset( $details['Error'] ) ) {
 
-			$a = 'what to do?';
-
+			$this->logger->error( 'Error parsing tracking: ' . $tracking_number, array( 'details_array' => $details ) );
 		}
-
 	}
 
 	/**
+	 * Determines if the package has already been picked up and scanned.
+	 *
 	 * @return bool
 	 */
 	public function is_dispatched(): bool {
@@ -44,22 +64,11 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 	}
 
 	/**
+	 * Parse the details for the time of the most recent update.
 	 *
-	 * @see wc_get_order_statuses()
-	 *
-	 * @return ?string null presumably means 'Shipping Label Created, USPS Awaiting Item'
-	 */
-	public function get_order_status(): ?string {
-
-		$order_status = $this->get_order_status_for_usps_status( $this->carrier_status );
-
-		return $order_status;
-	}
-
-	/**
 	 * @param array{EventDate:string, EventTime?:string} $track_summary
 	 */
-	protected function set_last_updated_time( array $track_summary ) {
+	protected function set_last_updated_time( array $track_summary ): void {
 		// last_updated "August 7, 2021, 12:12pm".
 		$last_updated = $this->details['TrackSummary']['EventDate'];
 		$format       = 'F j, Y';
@@ -69,40 +78,75 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 			$last_updated .= ', ' . $this->details['TrackSummary']['EventTime'];
 			$format       .= ', g:ia';
 		}
+
 		// TODO: What timezone is used by USPS?
-		$timezone = null; // as DateTimeZone object.
+		$timezone              = null; // as DateTimeZone object.
+		$last_updated_datetime = DateTime::createFromFormat( $format, $last_updated, $timezone );
 
-		$time = DateTime::createFromFormat( $format, $last_updated, $timezone );
-
-		if ( false === $time ) {
+		if ( false === $last_updated_datetime ) {
 			$this->logger->error( $this->tracking_number . ' ' . $last_updated, array( 'track_summary' => $track_summary ) );
+			return;
 		}
 
-		$this->last_updated_time = $time;
+		$this->last_updated_time = $last_updated_datetime;
 	}
 
 	/**
-	 * e.g. "September 7, 2021"
+	 * Parse the details for an expected delivery date.
 	 *
-	 * @return DateTime|null
+	 * Input format e.g. "September 7, 2021"
+	 *
+	 * @return ?DateTime
 	 */
 	public function get_expected_delivery_time(): ?DateTime {
+
 		if ( ! isset( $this->details['ExpectedDeliveryDate'] ) ) {
 			return null;
 		}
-		$timezone = null; // as DateTimeZone object.
-		$format   = 'F j, Y';
-		return DateTime::createFromFormat( $format, $this->details['ExpectedDeliveryDate'], $timezone );
+
+		$carrier_formatted_time     = $this->details['ExpectedDeliveryDate'];
+		$timezone                   = null; // as DateTimeZone object.
+		$format                     = 'F j, Y';
+		$expected_delivery_datetime = DateTime::createFromFormat( $format, $carrier_formatted_time, $timezone );
+
+		if ( false === $expected_delivery_datetime ) {
+			$this->logger->warning(
+				'Failed to parse ' . $carrier_formatted_time . ' to expected delivery time.',
+				array(
+					'carrier_formatted_time' => $carrier_formatted_time,
+					'datetime_format'        => $format,
+				)
+			);
+			return null;
+		}
+
+		return $expected_delivery_datetime;
 	}
 
+	/**
+	 * Translates the status returned from the USPS API (which could be null, still), into its
+	 * equivalent WooCommerce order status.
+	 *
+	 * @see Tracking_Details_Abstract::get_equivalent_order_status()
+	 * @see USPS_Tracking_Details::carrier_status
+	 * @see Order_Statuses
+	 * @see wc_get_order_statuses()
+	 *
+	 * @return ?string null presumably means 'Shipping Label Created, USPS Awaiting Item'
+	 */
+	public function get_equivalent_order_status(): ?string {
 
-	protected function get_order_status_for_usps_status( string $usps_status ): ?string {
+		$usps_status = $this->carrier_status;
 
-		if ( in_array( $usps_status, $this->get_picked_up_statuses(), true ) ) {
+		if ( is_null( $usps_status ) ) {
+			return null;
+		}
+
+		if ( in_array( $usps_status, $this->get_in_transit_statuses(), true ) ) {
 			return Order_Statuses::IN_TRANSIT_WC_STATUS;
 		}
 
-		if ( in_array( $usps_status, $this->get_returned_statuses(), true ) ) {
+		if ( in_array( $usps_status, $this->get_returning_statuses(), true ) ) {
 			return Order_Statuses::RETURNING_WC_STATUS;
 		}
 
@@ -110,38 +154,48 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 			return 'completed';
 		}
 
+		// Unexpected status.
+		// Please contact support so this status can be added to the plugin.
+		// The filters later in this class can be used to add it in the meantime.
 		if ( ! in_array( $usps_status, $this->get_not_picked_up_statuses(), true ) ) {
-			// Unexpected status.
-			// TODO: Log.
 			$this->logger->warning( 'An unexpected status was returned from USPS: ' . $usps_status, array( 'usps_status' => $usps_status ) );
 		}
 
 		return null;
 	}
 
-	// Available for Pickup
-
 	/**
+	 * The list of statuses which might be returned by USPS before the package has been scanned.
+	 *
 	 * @return string[]
 	 */
 	protected function get_not_picked_up_statuses(): array {
 
 		$not_picked_up_statuses = array(
-			'Shipping Label Created, USPS Awaiting Item', // NOT packed.
-			'Pre-Shipment Info Sent to USPS, USPS Awaiting Item', // This customs?
-			'Label Cancelled', // Not necessarily order cancelled.
+			'Shipping Label Created, USPS Awaiting Item', // Immediately upon creation. Does not indicate "packed".
+			'Pre-Shipment Info Sent to USPS, USPS Awaiting Item', // This is customs?
+			'Label Cancelled', // Not the same thing as order cancelled.
 		);
 
-		// TODO: Filter
-		return $not_picked_up_statuses;
+		/**
+		 * Filter the list of statuses which might be returned by USPS before the package has been scanned.
+		 *
+		 * @param string[] $not_picked_up_statuses The list of potential USPS statuses before the package has been scanned.
+		 */
+		return apply_filters( 'bh_wc_shipment_tracking_updates_not_picked_up_statuses', $not_picked_up_statuses );
 	}
 
 	/**
+	 * The list of order statuses USPS might return that indicate the package has been scanned by USPS and is in transit
+	 * to its destination.
+	 *
+	 * @see Order_Statuses::IN_TRANSIT_WC_STATUS
+	 *
 	 * @return string[]
 	 */
-	protected function get_picked_up_statuses(): array {
+	protected function get_in_transit_statuses(): array {
 
-		$picked_up_statuses = array(
+		$in_transit_statuses = array(
 			'Acceptance',
 			'Accepted at USPS Origin Facility',
 			'USPS in possession of item',
@@ -167,7 +221,6 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 			'Awaiting Delivery Scan',
 			'Departed USPS Regional Destination Facility',
 			'Departed USPS Destination Facility',
-			'Delivery Exception, Animal Interference', // TODO:
 			'Out for Delivery, Expected Delivery by 9:00pm',
 			'Out for Delivery',
 			'Delivery Attempted - No Access to Delivery Location',
@@ -178,18 +231,26 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 			'Arrived at USPS Regional Destination Facility',
 			'Departed',
 
-			'Arrived at Military Post Office', // TODO: Delivered?!
+			'Delivery Exception, Animal Interference', // TODO: Use this as an example for actions.
+			'Arrived at Military Post Office', // TODO: Should this be considered delivered?!
 		);
 
-		// TODO: Filter.
-		return $picked_up_statuses;
+		/**
+		 * Filter the list of "in-transit" statuses.
+		 *
+		 * @see Order_Statuses::IN_TRANSIT_WC_STATUS
+		 *
+		 * @param string[] $in_transit_statuses The list of USPS statuses that indicate the package has been picked up and is in transit to its destination.
+		 */
+		return apply_filters( 'bh_wc_shipment_tracking_updates_in_transit_statuses', $in_transit_statuses );
 	}
 
+	/**
+	 * The list of order statuses USPS might return that indicate the package has been delivered.
+	 *
+	 * @return string[]
+	 */
 	protected function get_delivered_statuses(): array {
-
-		// $deliveredAtributeCodes = array( '01', '02', '03', '04', '05', '06', '08', '09', '10', '11', '17', '19', '23' );
-
-		// $is_delivered = in_array($array['TrackInfo']['TrackSummary']['DeliveryAttributeCode'], $deliveredAtributeCodes);
 
 		$delivered_statuses = array(
 			'Delivered',
@@ -207,19 +268,37 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 			'Delivered, Neighbor as Requested',
 		);
 
-		return $delivered_statuses;
+		/**
+		 * Filter the list of "delivered" statuses.
+		 *
+		 * @param string[] $delivered_statuses The list of USPS statuses that indicate the package has been delivered.
+		 */
+		return apply_filters( 'bh_wc_shipment_tracking_updates_delivered_statuses', $delivered_statuses );
 	}
 
-	protected function get_returned_statuses(): array {
+	/**
+	 * The list of order statuses USPS might return that indicate the package is being returned.
+	 *
+	 * @see Order_Statuses::RETURNING_WC_STATUS
+	 *
+	 * @return string[]
+	 */
+	protected function get_returning_statuses(): array {
 
-		$returned_statuses = array(
+		$returning_statuses = array(
 			'Delivered, To Original Sender',
 			'Addressee Unknown',
-			'USPS: Sent to Mail Recovery Center',
+			'Sent to Mail Recovery Center',
 		);
 
-		// TODO: Filter.
-		return $returned_statuses;
+		/**
+		 * Filter the list of "returning" statuses.
+		 *
+		 * @see Order_Statuses::RETURNING_WC_STATUS
+		 *
+		 * @param string[] $returning_statuses The list of USPS statuses that indicate the package is being returned.
+		 */
+		return apply_filters( 'bh_wc_shipment_tracking_updates_returning_statuses', $returning_statuses );
 	}
 
 }

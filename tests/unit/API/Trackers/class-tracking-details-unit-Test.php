@@ -22,7 +22,7 @@ class Tracking_Details_Unit_Test extends \Codeception\Test\Unit {
 				return false;
 			}
 
-			public function get_order_status(): ?string {
+			public function get_equivalent_order_status(): ?string {
 				return null;
 			}
 
@@ -50,7 +50,7 @@ class Tracking_Details_Unit_Test extends \Codeception\Test\Unit {
 				return false;
 			}
 
-			public function get_order_status(): ?string {
+			public function get_equivalent_order_status(): ?string {
 				return null;
 			}
 

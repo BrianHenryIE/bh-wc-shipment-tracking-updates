@@ -101,7 +101,7 @@ class CLI extends WP_CLI_Command {
 		foreach ( $unmoved_tracking_details as $tracking_number => $tracking_detail ) {
 			\WP_CLI::log(
 				$tracking_detail->get_order_id() . ', '
-				. $tracking_detail->get_order_status() . ', '
+				. $tracking_detail->get_equivalent_order_status() . ', '
 				. $tracking_detail->get_tracking_number() . ', '
 				. $tracking_detail->get_last_updated_time()->format( DATE_ATOM )
 				. $tracking_detail->get_carrier_status() // . ', '
