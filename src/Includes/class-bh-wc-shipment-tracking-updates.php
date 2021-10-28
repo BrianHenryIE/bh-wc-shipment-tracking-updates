@@ -108,7 +108,7 @@ class BH_WC_Shipment_Tracking_Updates {
 
 		$plugin_i18n = new I18n();
 
-		add_action( 'plugins_loaded', array( $plugin_i18n, 'load_plugin_textdomain' ) );
+		add_action( 'init', array( $plugin_i18n, 'load_plugin_textdomain' ) );
 	}
 
 	/**
