@@ -48,7 +48,7 @@ class BH_WC_Shipment_Tracking_Updates_Unit_Test extends \Codeception\Test\Unit {
 	public function test_set_locale_hooked(): void {
 
 		\WP_Mock::expectActionAdded(
-			'plugins_loaded',
+			'init',
 			array( new AnyInstance( I18n::class ), 'load_plugin_textdomain' )
 		);
 
