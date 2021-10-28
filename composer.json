@@ -43,7 +43,6 @@
     ],
     "require": {
         "brianhenryie/wp-logger": "dev-master",
-        "easypost/easypost-php": "^3.6",
         "pablo-sg-pacheco/wp-namespace-autoloader": "dev-master",
         "php": ">=7.4",
         "psr/container": "^1.1",
