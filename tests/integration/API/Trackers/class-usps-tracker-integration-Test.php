@@ -15,7 +15,8 @@ class USPS_Tracker_Integration_Test extends \Codeception\TestCase\WPTestCase {
 
 		$usps_username = $_ENV['USPS_USERNAME'];
 
-		$tracker = new TrackConfirm( $usps_username );
+		// $tracker = new TrackConfirm( $usps_username );
+		$tracker = new WP_USPS_TrackConfirm_API( $usps_username );
 		$tracker->setRevision( 1 );
 		$tracker->setClientIp( \WC_Geolocation::get_external_ip_address() );
 		$tracker->setSourceId( 'BHtest' );
@@ -27,7 +28,7 @@ class USPS_Tracker_Integration_Test extends \Codeception\TestCase\WPTestCase {
 			)
 		);
 
-		USPSBase::$testMode = true;
+		WP_USPS_TrackConfirm_API::$testMode = true;
 
 		$sut = new USPS_Tracker( $container, $logger );
 
@@ -55,7 +56,9 @@ class USPS_Tracker_Integration_Test extends \Codeception\TestCase\WPTestCase {
 
 		$usps_username = $_ENV['USPS_USERNAME'];
 
-		$tracker = new TrackConfirm( $usps_username );
+		// $tracker = new TrackConfirm( $usps_username );
+		$tracker                            = new WP_USPS_TrackConfirm_API( $usps_username );
+		WP_USPS_TrackConfirm_API::$testMode = true;
 
 		$id = '9400136895232222511032';
 

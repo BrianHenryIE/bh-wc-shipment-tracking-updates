@@ -167,7 +167,7 @@
         ],
         "lint": [
             "vendor/bin/phpcbf || true",
-            "vendor/bin/phpcs",
+            "vendor/bin/phpcs || true",
             "vendor/bin/phpstan analyse --memory-limit 1G"
         ],
         "lint-changes": [

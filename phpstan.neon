@@ -17,3 +17,4 @@ parameters:
     ignoreErrors:
         - '#LoggerInterface\|null#'
         - '#expects callable\(\): mixed, array#'
+        - '#ContainerExceptionInterface is not subtype of Throwable#'
