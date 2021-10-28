@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.1.2 
+
+* Added USPS delivered statuses 'Available for Pickup', 'Collect for Pick Up'.
+* Logger library updated to fix bug when deleting all logs.
+
 ## 2.1.1 2021-Oct-28
 
 * Fix: Typed property must not be accessed before initialization

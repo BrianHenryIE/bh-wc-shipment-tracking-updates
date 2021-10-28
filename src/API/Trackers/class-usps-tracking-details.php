@@ -266,6 +266,8 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 			'Delivered to Recipient by Agent',
 			'Delivered, Individual Picked Up at Postal Facility',
 			'Delivered, Neighbor as Requested',
+			'Available for Pickup',
+			'Collect for Pick Up',
 		);
 
 		/**
