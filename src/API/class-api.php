@@ -347,20 +347,22 @@ class API implements API_Interface {
 
 			}
 
-			$this->logger->info( 'Updating order ' . $order_id . ' status to ' . $fresh_status, array( 'new_status' => $fresh_status ) );
-			$order->set_status( $fresh_status );
-			$order->save();
+			if ( $order->get_status() !== $fresh_status ) {
 
-			$updated_order_details[ $order_id ] = $order_meta_all_tracking;
+				$this->logger->info( 'Updating order ' . $order_id . ' status to ' . $fresh_status, array( 'new_status' => $fresh_status ) );
+				$order->set_status( $fresh_status );
+				$order->save();
 
-			/**
-			 * Fires when an order's status is updated.
-			 *
-			 * @param array<string,Tracking_Details_Abstract> $order_meta_all_tracking All tracking data for this order, keyed by tracking number.
-			 * @param WC_Order $order The associated WooCommerce order instance.
-			 */
-			do_action( 'bh_wc_shipment_tracking_updates_order_status_updated', $order_meta_all_tracking, $order );
+				$updated_order_details[ $order_id ] = $order_meta_all_tracking;
 
+				/**
+				 * Fires when an order's status is updated.
+				 *
+				 * @param array<string,Tracking_Details_Abstract> $order_meta_all_tracking All tracking data for this order, keyed by tracking number.
+				 * @param WC_Order $order The associated WooCommerce order instance.
+				 */
+				do_action( 'bh_wc_shipment_tracking_updates_order_status_updated', $order_meta_all_tracking, $order );
+			}
 		}
 
 		return $updated_order_details;
