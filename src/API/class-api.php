@@ -5,7 +5,7 @@
  * @link       https://BrianHenryIE.com
  * @since      1.0.0
  *
- * @package    brianhenryie\bh-wc-shipment-tracking-updates
+ * @package    brianhenryie/bh-wc-shipment-tracking-updates
  *
  * @author     BrianHenryIE <BrianHenryIE@gmail.com>
  */
@@ -25,7 +25,9 @@ use WC_Order;
 use WC_Shipment_Tracking_Actions;
 
 /**
+ * Made available as a global variable.
  *
+ * @see $GLOBALS['bh_wc_shipment_tracking_updates']
  */
 class API implements API_Interface {
 
@@ -33,17 +35,34 @@ class API implements API_Interface {
 
 	const BH_WC_SHIPMENT_TRACKING_UPDATES_ORDER_META_KEY = 'bh_wc_shipment_tracking_updates';
 
+	/**
+	 * Used to determine which order statuses are of interest.
+	 *
+	 * @see Settings_Interface::get_order_statuses_to_watch()
+	 * @var Settings_Interface
+	 */
 	protected Settings_Interface $settings;
 
+	/**
+	 * Used to get the carrier API object.
+	 *
+	 * @var ContainerInterface
+	 */
 	protected ContainerInterface $container;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param ContainerInterface $container Provider of objects in the plugin.
+	 * @param Settings_Interface $settings The plugin settings.
+	 * @param LoggerInterface    $logger PSR logger for the plugin.
+	 */
 	public function __construct( ContainerInterface $container, Settings_Interface $settings, LoggerInterface $logger ) {
 
 		$this->setLogger( $logger );
 		$this->settings  = $settings;
 		$this->container = $container;
 	}
-
 
 	/**
 	 * Finds the set of orders whose status indicates they are still in transit
@@ -105,7 +124,11 @@ class API implements API_Interface {
 
 			$this->logger->debug( "Fetching $limit orders from offset $offset", array( 'args' => $args ) );
 
-			/** @var int[] $orders_to_track */
+			/**
+			 * The query args ask to return only the order ids.
+			 *
+			 * @var int[] $orders_to_track
+			 */
 			$orders_to_track = wc_get_orders( $args );
 
 			$this->logger->debug( 'Returned ' . count( $orders_to_track ) . ' orders' );
@@ -388,7 +411,7 @@ class API implements API_Interface {
 		foreach ( $order_ids as $order_id ) {
 
 			/**
-			 * Multiple can be returned.
+			 * Multiple tracking items can be returned for each order_id.
 			 * array{
 			 *  array{
 			 *   string: tracking_provider,
@@ -420,11 +443,11 @@ class API implements API_Interface {
 	}
 
 	/**
-	 * NB: This discards orders with no tracking information.
+	 * NB: This does not return orders with no tracking information.
 	 *
 	 * @used-by CLI::find_undispatched_orders()
 	 *
-	 * @return array<string, Tracking_Details_Abstract> Array indexed by the tracking number.
+	 * @return array<string, array{order_id: int, tracking_number: string, tracking_details: Tracking_Details_Abstract}>
 	 */
 	public function find_undispatched_orders(): array {
 
@@ -455,17 +478,23 @@ class API implements API_Interface {
 			}
 
 			/**
+			 * Having updated the order's tracking numbers' details with the call to updated_orders() above, fetch the data.
+			 *
 			 * @var  array<string, Tracking_Details_Abstract> $tracking_numbers_details
 			 */
 			$tracking_numbers_details = $order->get_meta( self::BH_WC_SHIPMENT_TRACKING_UPDATES_ORDER_META_KEY, true );
 
 			foreach ( $tracking_numbers_details as $tracking_number => $detail ) {
 				if ( ! $detail->is_dispatched() ) {
-					$unmoved_tracking_details[ $tracking_number ] = $detail;
+					$unmoved_tracking_details[ $tracking_number ] = array(
+						'order_id'         => $order_id,
+						'tracking_number'  => $tracking_number,
+						'tracking_details' => $detail,
+					);
 				}
 			}
 		}
-		$this->logger->debug( count( $unmoved_tracking_details ) . ' unmoved orders.' );
+		$this->logger->debug( count( $unmoved_tracking_details ) . ' unmoved tracking numbers.' );
 
 		return $unmoved_tracking_details;
 	}

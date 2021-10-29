@@ -92,17 +92,15 @@ class CLI extends WP_CLI_Command {
 			return;
 		}
 
-		\WP_CLI::log( 'order id, order status, tracking number, last updated, carrier status ' );
+		\WP_CLI::log( 'order id, tracking number, equivalent status, last updated, carrier status ' );
 
-		/**
-		 * @var string $tracking_number
-		 * @var Tracking_Details_Abstract $tracking_detail
-		 */
-		foreach ( $unmoved_tracking_details as $tracking_number => $tracking_detail ) {
+		foreach ( $unmoved_tracking_details as $tracking_number => $tracking_array ) {
+			$tracking_detail = $tracking_array['tracking_detail'];
+			$order_id        = $tracking_array['order_id'];
 			\WP_CLI::log(
-				$tracking_detail->get_order_id() . ', '
-				. $tracking_detail->get_equivalent_order_status() . ', '
+				$order_id . ','
 				. $tracking_detail->get_tracking_number() . ', '
+				. $tracking_detail->get_equivalent_order_status() . ', '
 				. $tracking_detail->get_last_updated_time()->format( DATE_ATOM )
 				. $tracking_detail->get_carrier_status() // . ', '
 			);
