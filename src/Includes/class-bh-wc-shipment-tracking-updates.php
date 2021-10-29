@@ -179,7 +179,7 @@ class BH_WC_Shipment_Tracking_Updates {
 	 */
 	protected function define_woocommerce_order_status_hooks(): void {
 
-		$order_status = new Order_Statuses( $this->settings, $this->logger );
+		$order_status = new Order_Statuses( $this->logger );
 
 		add_action( 'woocommerce_init', array( $order_status, 'register_status' ) );
 

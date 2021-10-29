@@ -20,7 +20,9 @@ class Order_Statuses_Unit_Test extends \Codeception\Test\Unit {
 		\WP_Mock::setUp();
 	}
 
-	// Without this, WP_Mock userFunctions might stick around for the next test.
+	/**
+	 * Without this, WP_Mock userFunctions might stick around for the next test.
+	 */
 	protected function tearDown(): void {
 		parent::tearDown();
 		\WP_Mock::tearDown();
@@ -31,7 +33,7 @@ class Order_Statuses_Unit_Test extends \Codeception\Test\Unit {
 	 *
 	 * @covers ::register_status
 	 */
-	public function test_register_statuses() {
+	public function test_register_statuses(): void {
 
 		\WP_Mock::userFunction(
 			'register_post_status',
@@ -61,10 +63,9 @@ class Order_Statuses_Unit_Test extends \Codeception\Test\Unit {
 			)
 		);
 
-		$settings = $this->makeEmpty( Settings_Interface::class );
-		$logger   = new ColorLogger();
+		$logger = new ColorLogger();
 
-		$sut = new Order_Statuses( $settings, $logger );
+		$sut = new Order_Statuses( $logger );
 
 		$sut->register_status();
 	}
@@ -72,16 +73,15 @@ class Order_Statuses_Unit_Test extends \Codeception\Test\Unit {
 	/**
 	 * @covers ::add_to_paid_status_list
 	 */
-	public function test_add_to_paid_status_list() {
+	public function test_add_to_paid_status_list(): void {
 
 		// Should have three statuses.
 
-		$settings = $this->makeEmpty( Settings_Interface::class );
-		$logger   = new ColorLogger();
+		$logger = new ColorLogger();
 
-		$sut = new Order_Statuses( $settings, $logger );
+		$sut = new Order_Statuses( $logger );
 
-		$result = $sut->add_to_paid_status_list( array() );
+		$result = (array) $sut->add_to_paid_status_list( array() );
 
 		$this->assertCount( 3, $result );
 	}
@@ -91,14 +91,13 @@ class Order_Statuses_Unit_Test extends \Codeception\Test\Unit {
 	 *
 	 * @covers ::add_to_reports_status_list
 	 */
-	public function test_add_to_reports_status_list_false() {
+	public function test_add_to_reports_status_list_false(): void {
 
-		$settings = $this->makeEmpty( Settings_Interface::class );
-		$logger   = new ColorLogger();
+		$logger = new ColorLogger();
 
-		$sut = new Order_Statuses( $settings, $logger );
+		$sut = new Order_Statuses( $logger );
 
-		$result = $sut->add_to_reports_status_list( false );
+		$result = (bool) $sut->add_to_reports_status_list( false );
 
 		$this->assertFalse( $result );
 
@@ -109,14 +108,13 @@ class Order_Statuses_Unit_Test extends \Codeception\Test\Unit {
 	 *
 	 * @see Order_Statuses::add_to_reports_status_list()
 	 */
-	public function test_add_to_reports_status_list_one_status() {
+	public function test_add_to_reports_status_list_one_status(): void {
 
-		$settings = $this->makeEmpty( Settings_Interface::class );
-		$logger   = new ColorLogger();
+		$logger = new ColorLogger();
 
-		$sut = new Order_Statuses( $settings, $logger );
+		$sut = new Order_Statuses( $logger );
 
-		$result = $sut->add_to_reports_status_list( array( 'refunded' ) );
+		$result = (array) $sut->add_to_reports_status_list( array( 'refunded' ) );
 
 		// Verify it hasn't changed.
 		$this->assertCount( 1, $result );
@@ -131,14 +129,13 @@ class Order_Statuses_Unit_Test extends \Codeception\Test\Unit {
 	 *
 	 * @covers ::add_to_reports_status_list
 	 */
-	public function test_add_to_reports_status_list() {
+	public function test_add_to_reports_status_list(): void {
 
-		$settings = $this->makeEmpty( Settings_Interface::class );
-		$logger   = new ColorLogger();
+		$logger = new ColorLogger();
 
-		$sut = new Order_Statuses( $settings, $logger );
+		$sut = new Order_Statuses( $logger );
 
-		$result = $sut->add_to_reports_status_list( array( 'completed', 'on-hold', 'processing' ) );
+		$result = (array) $sut->add_to_reports_status_list( array( 'completed', 'on-hold', 'processing' ) );
 
 		$this->assertContains( Order_Statuses::PACKING_COMPLETE_WC_STATUS, $result );
 		$this->assertContains( Order_Statuses::IN_TRANSIT_WC_STATUS, $result );
@@ -151,14 +148,13 @@ class Order_Statuses_Unit_Test extends \Codeception\Test\Unit {
 	 *
 	 * @covers ::add_to_reports_status_list
 	 */
-	public function test_add_to_reports_status_list_once_only() {
+	public function test_add_to_reports_status_list_once_only(): void {
 
-		$settings = $this->makeEmpty( Settings_Interface::class );
-		$logger   = new ColorLogger();
+		$logger = new ColorLogger();
 
-		$sut = new Order_Statuses( $settings, $logger );
+		$sut = new Order_Statuses( $logger );
 
-		$result = $sut->add_to_reports_status_list(
+		$result = (array) $sut->add_to_reports_status_list(
 			array(
 				'completed',
 				'on-hold',

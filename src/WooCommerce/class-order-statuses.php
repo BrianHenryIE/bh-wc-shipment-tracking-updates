@@ -4,14 +4,21 @@
  * * packing
  * * in-transit
  * * returning
+ *
+ * @package    brianhenryie/bh-wc-shipment-tracking-updates
  */
 
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce;
 
-use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings_Interface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 
+/**
+ * Registers the post statuses with WordPress.
+ * Adds them to WooCommerce via filter.
+ * Adds them to WooCommerce's "paid statuses" list via filter.
+ * Includes them in WooCommerce reports via filter.
+ */
 class Order_Statuses {
 
 	use LoggerAwareTrait;
@@ -26,19 +33,13 @@ class Order_Statuses {
 	const IN_TRANSIT_WC_STATUS       = 'in-transit'; // The package has been scanned (updated since printed).
 	const RETURNING_WC_STATUS        = 'returning';
 
-
-	protected Settings_Interface $settings;
-
 	/**
+	 * Constructor
 	 *
-	 *
-	 * @param Settings_Interface $settings
-	 * @param LoggerInterface    $logger
+	 * @param LoggerInterface $logger The plugin's PSR logger.
 	 */
-	public function __construct( $settings, $logger ) {
-
+	public function __construct( $logger ) {
 		$this->setLogger( $logger );
-		$this->settings = $settings;
 	}
 
 	/**
@@ -59,7 +60,8 @@ class Order_Statuses {
 				'exclude_from_search'       => false,
 				'show_in_admin_all_list'    => true,
 				'show_in_admin_status_list' => true,
-				'label_count'               => _n_noop( 'Packed (%s)', 'Packed (%s)', 'bh-wc-shipment-tracking-updates' ),
+				/* translators: %s: Has the order been "packed" into its shipping container?. */
+				'label_count'               => _n_noop( 'Packed <span class="count">(%s)</span>', 'Packed <span class="count">(%s)</span>', 'bh-wc-shipment-tracking-updates' ),
 			)
 		);
 
@@ -71,7 +73,8 @@ class Order_Statuses {
 				'exclude_from_search'       => false,
 				'show_in_admin_all_list'    => true,
 				'show_in_admin_status_list' => true,
-				'label_count'               => _n_noop( 'In Transit (%s)', 'In Transit (%s)', 'bh-wc-shipment-tracking-updates' ),
+				/* translators: %s: Has the order been picked up by the shipping company and is now "in transit" to its destination. */
+				'label_count'               => _n_noop( 'In Transit <span class="count">(%s)</span>', 'In Transit <span class="count">(%s)</span>', 'bh-wc-shipment-tracking-updates' ),
 			)
 		);
 
@@ -83,7 +86,8 @@ class Order_Statuses {
 				'exclude_from_search'       => false,
 				'show_in_admin_all_list'    => true,
 				'show_in_admin_status_list' => true,
-				'label_count'               => _n_noop( 'Returning (%s)', 'Returning (%s)', 'bh-wc-shipment-tracking-updates' ),
+				/* translators: %s: Was the shipping company unable to deliver the package and is now "returning" it. */
+				'label_count'               => _n_noop( 'Returning <span class="count">(%s)</span>', 'Returning <span class="count">(%s)</span>', 'bh-wc-shipment-tracking-updates' ),
 			)
 		);
 	}
@@ -137,8 +141,8 @@ class Order_Statuses {
 	 * @see \WC_Admin_Report::get_order_report_data()
 	 * @see wp-admin/admin.php?page=wc-reports
 	 *
-	 * @param bool|string[] $order_statuses
-	 * @return false|string[]
+	 * @param bool|string[] $order_statuses The existing statuses in the report.
+	 * @return bool|string[] false|string[]
 	 */
 	public function add_to_reports_status_list( $order_statuses ) {
 
@@ -154,8 +158,6 @@ class Order_Statuses {
 		) ) {
 			return $order_statuses;
 		}
-
-		// $this->logger->debug( 'Adding order status to reports status list', array( 'hooked' => 'woocommerce_reports_order_statuses' ) );
 
 		if ( ! in_array( self::PACKING_COMPLETE_WC_STATUS, $order_statuses, true ) ) {
 			$order_statuses[] = self::PACKING_COMPLETE_WC_STATUS;
