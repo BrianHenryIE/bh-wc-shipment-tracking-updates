@@ -4,6 +4,7 @@
 
 * Added USPS delivered statuses 'Available for Pickup', 'Collect for Pick Up'.
 * Logger library updated to fix bug when deleting all logs.
+* Fix: Add tracking information to admin order list table
 
 ## 2.1.1 2021-Oct-28
 
