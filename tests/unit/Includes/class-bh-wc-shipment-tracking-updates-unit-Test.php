@@ -80,7 +80,9 @@ class BH_WC_Shipment_Tracking_Updates_Unit_Test extends \Codeception\Test\Unit {
 
 		\WP_Mock::expectFilterAdded(
 			"plugin_action_links_{$plugin_basename}",
-			array( new AnyInstance( Plugins_Page::class ), 'action_links' )
+			array( new AnyInstance( Plugins_Page::class ), 'action_links' ),
+			10,
+			4
 		);
 
 		$logger   = new ColorLogger();

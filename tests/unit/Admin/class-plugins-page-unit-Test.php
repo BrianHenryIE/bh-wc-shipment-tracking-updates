@@ -2,7 +2,7 @@
 /**
  *
  *
- * @package BrianHenryIE\WC_Shipment_Tracking_Updates
+ * @package brianhenryie/bh-wc-shipment-tracking-updates
  * @author  BrianHenryIE <BrianHenryIE@gmail.com>
  */
 
@@ -12,7 +12,7 @@ use BrianHenryIE\ColorLogger\ColorLogger;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings_Interface;
 
 /**
- *
+ * Tests a link is added and that it contains `admin.php...section=bh-wc-shipment-tracking-updates`.
  */
 class Plugins_Page_Unit_Test extends \Codeception\Test\Unit {
 
@@ -20,14 +20,16 @@ class Plugins_Page_Unit_Test extends \Codeception\Test\Unit {
 		\WP_Mock::setUp();
 	}
 
-	// Without this, WP_Mock userFunctions might stick around for the next test.
+	/**
+	 * Without this, WP_Mock userFunctions might stick around for the next test.
+	 */
 	protected function tearDown(): void {
 		parent::tearDown();
 		\WP_Mock::tearDown();
 	}
 
 
-	public function test_settings_link_added() {
+	public function test_settings_link_added(): void {
 
 		\WP_Mock::userFunction(
 			'admin_url',
@@ -44,16 +46,13 @@ class Plugins_Page_Unit_Test extends \Codeception\Test\Unit {
 
 		$sut = new Plugins_Page( $settings, $logger );
 
-		$result = $sut->action_links( array() );
+		$result = $sut->action_links( array(), '', array(), '' );
 
 		$this->assertIsArray( $result );
 
 		$link_html = $result[0];
 
 		$this->assertStringContainsString( 'Settings', $link_html );
-
-		// http://localhost:8080/bh-wc-shipment-tracking-updates/wp-admin/admin.php?page=wc-settings&tab=shipping&section=bh-wc-shipment-tracking-updates
-		// http://localhost:8080/bh-wc-shipment-tracking-updates/wp-admin/admin.php?page=wc-settings&tab=shipping&section=bh-wc-shpiment-tracking-updates
 
 		$this->assertStringContainsString( 'href="/admin.php?page=wc-settings&tab=shipping&section=bh-wc-shipment-tracking-updates', $link_html );
 	}

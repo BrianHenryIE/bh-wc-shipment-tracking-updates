@@ -155,7 +155,7 @@ class BH_WC_Shipment_Tracking_Updates {
 
 		$plugin_basename = $this->settings->get_plugin_basename();
 
-		add_filter( "plugin_action_links_{$plugin_basename}", array( $plugins_page, 'action_links' ) );
+		add_filter( "plugin_action_links_{$plugin_basename}", array( $plugins_page, 'action_links' ), 10, 4 );
 	}
 
 	/**

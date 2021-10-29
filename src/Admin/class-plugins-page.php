@@ -3,9 +3,9 @@
  * The plugin page output of the plugin.
  *
  * @since      2.0.0
+ * @author     BrianHenryIE <BrianHenryIE@gmail.com>
  *
- * @package    BrianHenryIE\WC_Shipment_Tracking_Updates
- * @subpackage BrianHenryIE\WC_Shipment_Tracking_Updates/admin
+ * @package    brianhenryie/bh-wc-shipment-tracking-updates
  */
 
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Admin;
@@ -17,9 +17,9 @@ use Psr\Log\LoggerInterface;
 /**
  * This class adds a `Settings` link on the plugins.php page.
  *
- * @package    BrianHenryIE\WC_Shipment_Tracking_Updates
- * @subpackage BrianHenryIE\WC_Shipment_Tracking_Updates/admin
- * @author     BrianHenryIE <BrianHenryIE@gmail.com>
+ * A logs link is separately added by the bh-wp-logger library.
+ *
+ * @see \BrianHenryIE\WP_Logger\Admin\Plugins_Page
  */
 class Plugins_Page {
 
@@ -50,18 +50,20 @@ class Plugins_Page {
 	 *
 	 * @hooked plugin_action_links_{basename}
 	 *
-	 * @param array<int|string, string> $links_array The existing plugin links (usually "Deactivate"). May or may not be indexed with a string.
+	 * @param array<int|string, string> $action_links The existing plugin links (usually "Deactivate").
+	 * @param string                    $_plugin_basename The plugin's directory/filename.php.
+	 * @param array<int|string, mixed>  $_plugin_data An array of plugin data. See `get_plugin_data()`.
+	 * @param string                    $_context     The plugin context. 'all'|'active'|'inactive'|'recently_activated'
+	 *                                                |'upgrade'|'mustuse'|'dropins'|'search'.
 	 *
 	 * @return array<int|string, string> The links to display below the plugin name on plugins.php.
 	 */
-	public function action_links( array $links_array ): array {
+	public function action_links( array $action_links, string $_plugin_basename, array $_plugin_data, string $_context ): array {
 
 		$settings_url = admin_url( '/admin.php?page=wc-settings&tab=shipping&section=' . $this->settings->get_plugin_slug() );
-		array_unshift( $links_array, '<a href="' . $settings_url . '">Settings</a>' );
+		array_unshift( $action_links, '<a href="' . $settings_url . '">Settings</a>' );
 
-		return $links_array;
+		return $action_links;
 	}
-
-	// TODO: Add external link to USPS tracking... if USPS is configured.
 
 }
