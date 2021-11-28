@@ -21,6 +21,7 @@ use WC_Order;
  * Add action on `woocommerce_order_status_in-transit_notification`.
  */
 class Customer_Dispatched_Order_Email extends WC_Email {
+	const EMAIL_SENT_META_KEY = 'bh_wc_shipment_tracking_updates_customer_dispatched_order_email_sent';
 
 	/**
 	 * Customer_Dispatched_Order_Email constructor.
@@ -39,6 +40,7 @@ class Customer_Dispatched_Order_Email extends WC_Email {
 		);
 
 		// Triggers for this email.
+		add_action( 'woocommerce_order_status_in-transit', array( $this, 'trigger' ), 10, 2 );
 		add_action( 'bh_wc_shipment_tracking_updates_in-transit_email', array( $this, 'trigger' ), 10, 2 );
 
 		// Call parent constructor.
@@ -53,6 +55,7 @@ class Customer_Dispatched_Order_Email extends WC_Email {
 	 * @param WC_Order|false $order Order object.
 	 */
 	public function trigger( $order_id, $order = false ): void {
+
 		$this->setup_locale();
 
 		if ( $order_id && ! ( $order instanceof WC_Order ) ) {
@@ -60,15 +63,25 @@ class Customer_Dispatched_Order_Email extends WC_Email {
 		}
 
 		if ( $order instanceof WC_Order ) {
+
+			$email_already_sent = $order->get_meta( self::EMAIL_SENT_META_KEY );
+			if ( wc_string_to_bool( $email_already_sent ) ) {
+				return;
+			}
+
 			$this->object                         = $order;
-			$date_created                         = $this->object->get_date_created(); // TODO: This could be false|null?
-			$this->recipient                      = $this->object->get_billing_email();
-			$this->placeholders['{order_date}']   = wc_format_datetime( $date_created );
-			$this->placeholders['{order_number}'] = $this->object->get_order_number();
+			$date_created                         = $order->get_date_created();
+			$this->recipient                      = $order->get_billing_email();
+			$this->placeholders['{order_date}']   = is_null( $date_created ) ? '' : wc_format_datetime( $date_created );
+			$this->placeholders['{order_number}'] = $order->get_order_number();
 		}
 
 		if ( $this->is_enabled() && $this->get_recipient() ) {
-			$this->send( $this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
+			$success = $this->send( $this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
+			if ( $success ) {
+				$order->add_meta_data( self::EMAIL_SENT_META_KEY, 'yes', true );
+				$order->save();
+			}
 		}
 
 		$this->restore_locale();
