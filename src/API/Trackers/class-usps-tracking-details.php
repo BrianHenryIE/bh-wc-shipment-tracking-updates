@@ -226,10 +226,13 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 			'Delivery Attempted - No Access to Delivery Location',
 			'Held in Customs',
 			'Arrived at Facility',
+			'Arrival at Post Office',
 			'Processed Through Regional Facility',
 			'Processed Through Facility',
 			'Arrived at USPS Regional Destination Facility',
+			'Arrived at USPS Destination Facility',
 			'Departed',
+			'Departed Facility',
 
 			'Delivery Exception, Animal Interference', // TODO: Use this as an example for actions.
 			'Arrived at Military Post Office', // TODO: Should this be considered delivered?!
