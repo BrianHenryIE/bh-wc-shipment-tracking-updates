@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.3
+
+* Fix: email templates were not loading correctly
+
 ## 2.1.2  2012-Nov-28
 
 * Added USPS delivered statuses 'Available for Pickup', 'Collect for Pick Up', Arrival at Post Office', 'Arrived at USPS Destination Facility', 'Arrived at USPS Destination Facility'.
