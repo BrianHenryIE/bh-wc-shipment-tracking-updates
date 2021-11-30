@@ -62,19 +62,22 @@ class Customer_Dispatched_Order_Email extends WC_Email {
 			$order = wc_get_order( $order_id );
 		}
 
-		if ( $order instanceof WC_Order ) {
-
-			$email_already_sent = $order->get_meta( self::EMAIL_SENT_META_KEY );
-			if ( wc_string_to_bool( $email_already_sent ) ) {
-				return;
-			}
-
-			$this->object                         = $order;
-			$date_created                         = $order->get_date_created();
-			$this->recipient                      = $order->get_billing_email();
-			$this->placeholders['{order_date}']   = is_null( $date_created ) ? '' : wc_format_datetime( $date_created );
-			$this->placeholders['{order_number}'] = $order->get_order_number();
+		if ( ! ( $order instanceof WC_Order ) ) {
+			$this->restore_locale();
+			return;
 		}
+
+		$email_already_sent = $order->get_meta( self::EMAIL_SENT_META_KEY );
+		if ( wc_string_to_bool( $email_already_sent ) ) {
+			$this->restore_locale();
+			return;
+		}
+
+		$this->object                         = $order;
+		$date_created                         = $order->get_date_created();
+		$this->recipient                      = $order->get_billing_email();
+		$this->placeholders['{order_date}']   = is_null( $date_created ) ? '' : wc_format_datetime( $date_created );
+		$this->placeholders['{order_number}'] = $order->get_order_number();
 
 		if ( $this->is_enabled() && $this->get_recipient() ) {
 			$success = $this->send( $this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
@@ -120,7 +123,9 @@ class Customer_Dispatched_Order_Email extends WC_Email {
 				'sent_to_admin'      => false,
 				'plain_text'         => false,
 				'email'              => $this,
-			)
+			),
+			'',
+			$this->template_base
 		);
 	}
 
@@ -139,7 +144,9 @@ class Customer_Dispatched_Order_Email extends WC_Email {
 				'sent_to_admin'      => false,
 				'plain_text'         => true,
 				'email'              => $this,
-			)
+			),
+			'',
+			$this->template_base
 		);
 	}
 
