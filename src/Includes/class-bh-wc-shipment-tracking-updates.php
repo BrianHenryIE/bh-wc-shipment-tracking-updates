@@ -19,6 +19,7 @@ use BrianHenryIE\WC_Shipment_Tracking_Updates\Admin\Admin;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Admin\Plugins_Page;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\API_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Admin_Order_List_Page;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Emails;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Order_Statuses;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Shipping_Settings_Page;
@@ -94,6 +95,7 @@ class BH_WC_Shipment_Tracking_Updates {
 		$this->define_woocommerce_shipment_tracking_hooks();
 		$this->define_woocommerce_email_hooks();
 		$this->define_settings_page_hooks();
+		$this->define_admin_order_list_page_hooks();
 	}
 
 	/**
@@ -189,7 +191,7 @@ class BH_WC_Shipment_Tracking_Updates {
 	}
 
 	/**
-	 * ADd tracking information to the existing Shipment Tracking column on the orders list page.
+	 * Add tracking information to the existing Shipment Tracking column on the orders list page.
 	 *
 	 * @since    2.0.0
 	 */
@@ -236,4 +238,15 @@ class BH_WC_Shipment_Tracking_Updates {
 		);
 	}
 
+	/**
+	 * Add an admin notice on the orders list page for packed orders, displaying stats on how long they have been waiting pickup.
+	 *
+	 * @since 2.2.0
+	 */
+	protected function define_admin_order_list_page_hooks(): void {
+
+		$admin_order_list_page = new Admin_Order_List_Page( $this->api );
+
+		add_action( 'admin_notices', array( $admin_order_list_page, 'print_packed_stats' ) );
+	}
 }

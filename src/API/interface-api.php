@@ -51,4 +51,11 @@ interface API_Interface {
 	 */
 	public function find_undispatched_orders(): array;
 
+	/**
+	 * Split `packed` orders into buckets of the number of full days passed since they were packed.
+	 *
+	 * @return array<string, array<int>> $order_ids_by_number_of_days_since_packed
+	 */
+	public function get_order_ids_by_number_of_days_since_packed(): array;
+
 }

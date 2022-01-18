@@ -7,6 +7,7 @@ use BrianHenryIE\WC_Shipment_Tracking_Updates\Action_Scheduler\Scheduler;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Admin\Plugins_Page;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\API_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Admin_Order_List_Page;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Emails;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Order_Statuses;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Shipping_Settings_Page;
@@ -211,6 +212,22 @@ class BH_WC_Shipment_Tracking_Updates_Unit_Test extends \Codeception\Test\Unit {
 		\WP_Mock::expectActionAdded(
 			'woocommerce_admin_field_bh_wc_shipment_tracking_updates_text_html',
 			array( new AnyInstance( Shipping_Settings_Page::class ), 'print_text_output' )
+		);
+
+		$logger   = new ColorLogger();
+		$settings = $this->makeEmpty( Settings_Interface::class );
+		$api      = $this->makeEmpty( API_Interface::class );
+		new BH_WC_Shipment_Tracking_Updates( $api, $settings, $logger );
+	}
+
+	/**
+	 * @covers ::define_admin_order_list_page_hooks
+	 */
+	public function test_define_admin_order_list_page_hooks(): void {
+
+		\WP_Mock::expectActionAdded(
+			'admin_notices',
+			array( new AnyInstance( Admin_Order_List_Page::class ), 'print_packed_stats' )
 		);
 
 		$logger   = new ColorLogger();

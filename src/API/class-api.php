@@ -18,11 +18,13 @@ use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS_Tracker;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Container;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Action_Scheduler\Scheduler;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Order_Statuses;
+use DateTime;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 use WC_Order;
 use WC_Shipment_Tracking_Actions;
+use WP_Comment;
 
 /**
  * Made available as a global variable.
@@ -499,4 +501,100 @@ class API implements API_Interface {
 		return $unmoved_tracking_details;
 	}
 
+	/**
+	 * Split `packed` orders into buckets of the number of full days passed since they were packed.
+	 *
+	 * Uses order notes (comments) to determine when order status changes occured.
+	 *
+	 * TODO: Cache this until an order's status changes to or from packed.
+	 *
+	 * @return array<string, array<int>> $order_ids_by_number_of_days_since_packed
+	 */
+	public function get_order_ids_by_number_of_days_since_packed(): array {
+
+		// TODO: Change this query to only return the post ids.
+		$orders_query_args = array(
+			'limit'  => -1,
+			'status' => array( Order_Statuses::PACKING_COMPLETE_WC_STATUS ),
+		// 'fields' => 'ids', // Didn't work with wc_get_orders(), maybe only works with WP_Query.
+		);
+
+		/**
+		 * ALL orders with packed status (i.e. not just those on the currently filtered page.
+		 *
+		 * @var WC_Order[] $orders
+		 */
+		$order_ids = array_map(
+			function( WC_Order $order ) {
+				return $order->get_id();
+			},
+			wc_get_orders( $orders_query_args )
+		);
+
+		/**
+		 * Find the DateTime that the order's status changed to "packed".
+		 *
+		 * @var array<int, DateTime> $orders_packed_time indexed by order_id.
+		 */
+		$orders_packed_time = array();
+
+		foreach ( $order_ids as $order_id ) {
+
+			// TODO: Fetch all comments for all orders in one go. (be careful with reship orders that were packed twice, i.e. sort by date desc).
+			$args = array(
+				'post_id' => $order_id,
+				// 'approve' => 'approve',
+				// 'type'    => '',
+			);
+
+			remove_filter( 'comments_clauses', array( 'WC_Comments', 'exclude_order_comments' ), 10 );
+
+			/**
+			 * The order notes.
+			 *
+			 * @var WP_Comment[] $comments
+			 */
+			$comments = get_comments( $args );
+
+			foreach ( $comments as $comment ) {
+
+				// Order status changed from Pending payment to Packed.
+				$pattern = '/Order status changed from .* to Packed./';
+
+				if ( 1 === preg_match( $pattern, $comment->comment_content ) ) {
+
+					// Comments' date is formatted as `YYYY-MM-DD HH:MM:SS`.
+					$comment_date_format = 'Y-m-d H:i:s';
+					$date_packed         = DateTime::createFromFormat( $comment_date_format, $comment->comment_date_gmt );
+
+					if ( false === $date_packed ) {
+						// TODO: Log error.
+						continue;
+					}
+
+					$orders_packed_time[ $order_id ] = $date_packed;
+
+					break;
+				}
+			}
+		}
+
+		$order_ids_by_number_of_days_since_packed = array();
+
+		$current_time = new DateTime();
+
+		foreach ( $orders_packed_time as $order_id => $date_packed ) {
+
+			$abs_diff = $current_time->diff( $date_packed )->format( '%a' );
+
+			if ( ! isset( $order_ids_by_number_of_days_since_packed[ $abs_diff ] ) ) {
+				$order_ids_by_number_of_days_since_packed[ $abs_diff ] = array();
+			}
+
+			$order_ids_by_number_of_days_since_packed[ $abs_diff ][] = $order_id;
+
+		}
+
+		return $order_ids_by_number_of_days_since_packed;
+	}
 }

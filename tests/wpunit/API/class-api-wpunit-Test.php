@@ -11,6 +11,7 @@ namespace BrianHenryIE\WC_Shipment_Tracking_Updates\API;
 use BrianHenryIE\ColorLogger\ColorLogger;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\Tracker_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\Tracking_Details_Abstract;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Order_Statuses;
 use Psr\Container\ContainerInterface;
 use WC_Order;
 
@@ -188,5 +189,45 @@ class API_WPUnit_Test extends \Codeception\TestCase\WPTestCase {
 
 		$this->assertCount( 2, $result );
 
+	}
+
+	/**
+	 * Test getting stats for packed orders' time waiting to be picked up.
+	 *
+	 * @covers ::get_order_ids_by_number_of_days_since_packed
+	 */
+	public function test_get_order_ids_by_number_of_days_since_packed(): void {
+
+		$logger    = new ColorLogger();
+		$settings  = new Settings();
+		$container = $this->makeEmpty( ContainerInterface::class );
+
+		$api = new API( $container, $settings, $logger );
+
+		$order    = new WC_Order();
+		$order_id = $order->save();
+
+		$order_statuses = new Order_Statuses( $logger );
+		$order_statuses->register_status();
+		add_filter( 'wc_order_statuses', array( $order_statuses, 'add_order_status_to_woocommerce' ) );
+
+		$order = wc_get_order( $order_id );
+		$order->set_object_read( true );
+		$order->set_status( Order_Statuses::PACKING_COMPLETE_WC_STATUS );
+		$order->save();
+
+		$result = $api->get_order_ids_by_number_of_days_since_packed();
+
+		$this->assertCount( 1, $result );
+
+		$this->assertArrayHasKey( '0', $result );
+
+		$order_ids_zero_days = $result['0'];
+
+		$this->assertIsArray( $order_ids_zero_days );
+
+		$this->assertContains( $order_id, $order_ids_zero_days );
+
+		remove_filter( 'wc_order_statuses', array( $order_statuses, 'add_order_status_to_woocommerce' ) );
 	}
 }
