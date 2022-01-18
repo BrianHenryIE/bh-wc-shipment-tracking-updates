@@ -6,7 +6,7 @@
  * @author  BrianHenryIE <BrianHenryIE@gmail.com>
  */
 
-namespace BrianHenryIE\WC_Shipment_Tracking_Updates\includes;
+namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Includes;
 
 /**
  * Class I18n_Test
@@ -21,7 +21,7 @@ class I18n_WPUnit_Test extends \Codeception\TestCase\WPTestCase {
 	 *
 	 * @covers ::load_plugin_textdomain
 	 */
-	public function test_load_plugin_textdomain_function() {
+	public function test_load_plugin_textdomain_function(): void {
 
 		$called        = false;
 		$actual_domain = null;

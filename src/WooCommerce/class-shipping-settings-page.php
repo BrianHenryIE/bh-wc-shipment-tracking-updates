@@ -173,6 +173,11 @@ class Shipping_Settings_Page {
 
 		$output = ob_get_clean();
 
+		if ( false === $output ) {
+			// TODO: Log error.
+			return;
+		}
+
 		$allowed_html = wp_kses_allowed_html( 'post' );
 
 		echo wp_kses( $output, $allowed_html );

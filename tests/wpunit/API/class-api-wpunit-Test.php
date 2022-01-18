@@ -71,7 +71,7 @@ class API_WPUnit_Test extends \Codeception\TestCase\WPTestCase {
 	 *
 	 * @covers ::find_orders_to_update
 	 */
-	public function test_get_orders_to_update() {
+	public function test_get_orders_to_update(): void {
 
 		$logger    = new ColorLogger();
 		$settings  = new Settings();
@@ -127,7 +127,7 @@ class API_WPUnit_Test extends \Codeception\TestCase\WPTestCase {
 	/**
 	 * @covers ::find_undispatched_orders
 	 */
-	public function test_find_undispatched_orders() {
+	public function test_find_undispatched_orders(): void {
 
 		$logger   = new ColorLogger();
 		$settings = new Settings();

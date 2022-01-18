@@ -11,7 +11,6 @@
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Includes;
 
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Order_Statuses;
-use WC_Order;
 
 /**
  * Fired during plugin deactivation.

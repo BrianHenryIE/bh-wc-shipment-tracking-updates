@@ -32,13 +32,13 @@ class WP_USPS_TrackConfirm_API extends TrackConfirm {
 	protected $headers = array( 'http_code' => 0 );
 
 	/**
-	 * Makes the HTTP request.
+	 * Make the HTTP request.
 	 *
-	 * Override's the USPS library's doRequest function in order to use WordPress's HTTP functions.
+	 * Overrides the USPS library's doRequest function in order to use WordPress's HTTP functions.
 	 *
 	 * @see USPSBase::doRequest()
 	 *
-	 * @param resource $_ch In the superclass, this is the optional initialized cURL handle. Unused here.
+	 * @param ?resource $_ch In the superclass, this is the optional initialized cURL handle. Unused here.
 	 *
 	 * @return string The response text (presumably the XML).
 	 */
