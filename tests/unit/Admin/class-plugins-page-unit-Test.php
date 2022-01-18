@@ -38,6 +38,15 @@ class Plugins_Page_Unit_Test extends \Codeception\Test\Unit {
 			)
 		);
 
+		\WP_Mock::userFunction(
+			'is_plugin_active',
+			array(
+				'args'   => array( 'woocommerce/woocommerce.php' ),
+				'times'  => 1,
+				'return' => true,
+			)
+		);
+
 		$settings = $this->makeEmpty(
 			Settings_Interface::class,
 			array( 'get_plugin_slug' => 'bh-wc-shipment-tracking-updates' )
@@ -55,5 +64,29 @@ class Plugins_Page_Unit_Test extends \Codeception\Test\Unit {
 		$this->assertStringContainsString( 'Settings', $link_html );
 
 		$this->assertStringContainsString( 'href="/admin.php?page=wc-settings&tab=shipping&section=bh-wc-shipment-tracking-updates', $link_html );
+	}
+
+
+	public function test_no_settings_link_added_when_woocommerce_inactive(): void {
+
+		\WP_Mock::userFunction(
+			'is_plugin_active',
+			array(
+				'args'   => array( 'woocommerce/woocommerce.php' ),
+				'times'  => 1,
+				'return' => false,
+			)
+		);
+
+		$settings = $this->makeEmpty( Settings_Interface::class );
+		$logger   = new ColorLogger();
+
+		$sut = new Plugins_Page( $settings, $logger );
+
+		$result = $sut->action_links( array(), '', array(), '' );
+
+		$this->assertIsArray( $result );
+
+		$this->assertEmpty( $result );
 	}
 }

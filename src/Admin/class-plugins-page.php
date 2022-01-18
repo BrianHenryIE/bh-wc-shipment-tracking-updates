@@ -60,6 +60,10 @@ class Plugins_Page {
 	 */
 	public function action_links( array $action_links, string $_plugin_basename, array $_plugin_data, string $_context ): array {
 
+		if ( ! is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
+			return $action_links;
+		}
+
 		$settings_url = admin_url( '/admin.php?page=wc-settings&tab=shipping&section=' . $this->settings->get_plugin_slug() );
 		array_unshift( $action_links, '<a href="' . $settings_url . '">Settings</a>' );
 
