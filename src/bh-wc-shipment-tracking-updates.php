@@ -46,6 +46,9 @@ require_once plugin_dir_path( __FILE__ ) . 'autoload.php';
  */
 define( 'BH_WC_SHIPMENT_TRACKING_UPDATES_VERSION', '2.1.3' );
 
+define( 'BH_WC_SHIPMENT_TRACKING_UPDATES_BASENAME', plugin_basename( __FILE__ ) );
+
+
 register_activation_hook( __FILE__, array( Activator::class, 'activate' ) );
 register_deactivation_hook( __FILE__, array( Deactivator::class, 'deactivate' ) );
 

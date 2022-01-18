@@ -127,7 +127,7 @@ class Settings implements Settings_Interface, Logger_Settings_Interface, WooComm
 	 * @return string
 	 */
 	public function get_plugin_basename(): string {
-		return 'bh-wc-shipment-tracking-updates/bh-wc-shipment-tracking-updates.php';
+		return defined( 'BH_WC_SHIPMENT_TRACKING_UPDATES_BASENAME' ) ? BH_WC_SHIPMENT_TRACKING_UPDATES_BASENAME : 'bh-wc-shipment-tracking-updates/bh-wc-shipment-tracking-updates.php';
 	}
 
 	/**
