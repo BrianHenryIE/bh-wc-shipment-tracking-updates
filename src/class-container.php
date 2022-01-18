@@ -8,8 +8,8 @@
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates;
 
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings_Interface;
-use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS_Tracker;
-use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\WP_USPS_TrackConfirm_API;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS\USPS_Tracker;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS\WP_USPS_TrackConfirm_API;
 use Exception;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;

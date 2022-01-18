@@ -1,6 +1,6 @@
 <?php
 
-namespace BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers;
+namespace BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS;
 
 use BrianHenryIE\ColorLogger\ColorLogger;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\USPS\TrackConfirm;

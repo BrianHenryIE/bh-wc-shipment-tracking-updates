@@ -10,8 +10,9 @@
  * @package     brianhenryie/bh-wc-shipment-tracking-updates
  */
 
-namespace BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers;
+namespace BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS;
 
+use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\Tracking_Details_Abstract;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\USPS\TrackConfirm;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Order_Statuses;
 use DateTime;
@@ -50,7 +51,8 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 
 		} elseif ( isset( $details['Error'] ) ) {
 
-			$this->logger->error( 'Error parsing tracking: ' . $tracking_number, array( 'details_array' => $details ) );
+			// Probably says "A status update is not yet available on your package..."
+			// $this->logger->error( 'Error parsing tracking: ' . $tracking_number, array( 'details_array' => $details ) );
 		}
 	}
 
@@ -66,15 +68,15 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 	/**
 	 * Parse the details for the time of the most recent update.
 	 *
-	 * @param array{EventDate:string, EventTime?:string} $track_summary
+	 * @param array{EventDate:string, EventTime?:string} $track_summary The TrackSummary key from the USPS API.
 	 */
 	protected function set_last_updated_time( array $track_summary ): void {
 		// last_updated "August 7, 2021, 12:12pm".
-		$last_updated = $this->details['TrackSummary']['EventDate'];
+		$last_updated = $track_summary['EventDate'];
 		$format       = 'F j, Y';
 
 		// There may or may not be a time.
-		if ( ! empty( $this->details['TrackSummary']['EventTime'] ) ) {
+		if ( ! empty( $track_summary['EventTime'] ) ) {
 			$last_updated .= ', ' . $this->details['TrackSummary']['EventTime'];
 			$format       .= ', g:ia';
 		}
@@ -161,6 +163,8 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 			$this->logger->warning( 'An unexpected status was returned from USPS: ' . $usps_status, array( 'usps_status' => $usps_status ) );
 		}
 
+		// TODO: Inbound Out of Customs
+
 		return null;
 	}
 
@@ -233,6 +237,7 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 			'Arrived at USPS Destination Facility',
 			'Departed',
 			'Departed Facility',
+			'Forwarded',
 
 			'Delivery Exception, Animal Interference', // TODO: Use this as an example for actions.
 			'Arrived at Military Post Office', // TODO: Should this be considered delivered?!

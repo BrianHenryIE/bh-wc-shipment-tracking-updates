@@ -1,11 +1,14 @@
 <?php
 
-namespace BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers;
+namespace BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS;
 
 use BrianHenryIE\ColorLogger\ColorLogger;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\USPS\XML2Array;
 use Exception;
 
+/**
+ * @coversDefaultClass \BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS\USPS_Tracking_Details
+ */
 class USPS_Tracking_Details_Unit_Test extends \Codeception\Test\Unit {
 
 	public function test_error_response() {

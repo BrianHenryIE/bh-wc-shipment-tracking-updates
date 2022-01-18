@@ -1,6 +1,6 @@
 <?php
 
-namespace BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers;
+namespace BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS;
 
 use BrianHenryIE\ColorLogger\ColorLogger;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\USPS\TrackConfirm;
@@ -11,7 +11,7 @@ use Psr\Container\ContainerInterface;
  * Class USPS_Tracker_Unit_Test
  *
  * @package BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers
- * @coversDefaultClass \BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS_Tracker
+ * @coversDefaultClass \BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS\USPS_Tracker
  */
 class USPS_Tracker_Unit_Test extends \Codeception\Test\Unit {
 
