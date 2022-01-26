@@ -9,12 +9,11 @@
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates;
 
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\API;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Includes\BH_WC_Shipment_Tracking_Updates;
 
 /**
- * Class Plugin_WP_Mock_Test
  *
- * @CodeCoverageIgnore
  */
 class Plugin_Unit_Test extends \Codeception\Test\Unit {
 
@@ -30,12 +29,27 @@ class Plugin_Unit_Test extends \Codeception\Test\Unit {
 	/**
 	 * Verifies the plugin initialization.
 	 */
-	public function test_plugin_include() {
+	public function test_plugin_include(): void {
 
 		// Prevents code-coverage counting, and removes the need to define the WordPress functions that are used in that class.
 		\Patchwork\redefine(
 			array( BH_WC_Shipment_Tracking_Updates::class, '__construct' ),
 			function( $api, $settings, $logger ) {}
+		);
+		\Patchwork\redefine(
+			array( Settings::class, 'get_plugin_slug' ),
+			function(): string {
+				return 'bh-wc-shipment-tracking-updates'; }
+		);
+		\Patchwork\redefine(
+			array( Settings::class, 'get_log_level' ),
+			function(): string {
+				return 'info'; }
+		);
+		\Patchwork\redefine(
+			array( Settings::class, 'get_plugin_basename' ),
+			function(): string {
+				return 'bh-wc-shipment-tracking-updates/bh-wc-shipment-tracking-updates.php'; }
 		);
 
 		$plugin_root_dir = dirname( __DIR__, 2 ) . '/src';
@@ -48,9 +62,13 @@ class Plugin_Unit_Test extends \Codeception\Test\Unit {
 			)
 		);
 
-		// \WP_Mock::userFunction(
-		// 'get_option'
-		// );
+		\WP_Mock::userFunction(
+			'plugin_basename',
+			array(
+				'args'   => array( \WP_Mock\Functions::type( 'string' ) ),
+				'return' => 'bh-wc-shipment-tracking-updates/bh-wc-shipment-tracking-updates.php',
+			)
+		);
 
 		\WP_Mock::userFunction(
 			'register_activation_hook'
@@ -60,13 +78,13 @@ class Plugin_Unit_Test extends \Codeception\Test\Unit {
 			'register_deactivation_hook'
 		);
 
-		// \WP_Mock::userFunction(
-		// 'get_option',
-		// array(
-		// 'args'   => array( 'bh-wc-shipment-tracking-updates-log-level', 'notice' ),
-		// 'return' => 'notice',
-		// )
-		// );
+		\WP_Mock::userFunction(
+			'get_option',
+			array(
+				'args'   => array( 'bh_wc_shipment_tracking_updates_log_level', 'info' ),
+				'return' => 'notice',
+			)
+		);
 
 		\WP_Mock::userFunction(
 			'get_option',
@@ -76,18 +94,10 @@ class Plugin_Unit_Test extends \Codeception\Test\Unit {
 			)
 		);
 
-		// \WP_Mock::userFunction(
-		// 'get_option',
-		// array(
-		// 'args'   => array( 'bh-wc-address-validation-usps-username' ),
-		// 'return' => null,
-		// )
-		// );
-
 		\WP_Mock::userFunction(
 			'is_admin',
 			array(
-				'return_arg' => false,
+				'return' => false,
 			)
 		);
 
@@ -105,8 +115,22 @@ class Plugin_Unit_Test extends \Codeception\Test\Unit {
 		\WP_Mock::userFunction(
 			'get_option',
 			array(
-				'args'   => array( 'bh_wc_shipment_tracking_updates_log_level', 'info' ),
-				'return' => 'info',
+				'args'   => array( 'active_plugins' ),
+				'return' => array( 'woocommerce/woocommerce.php' ),
+			)
+		);
+
+		\WP_Mock::userFunction(
+			'did_action',
+			array(
+				'return' => false,
+			)
+		);
+
+		\WP_Mock::userFunction(
+			'add_action',
+			array(
+				'return' => false,
 			)
 		);
 
