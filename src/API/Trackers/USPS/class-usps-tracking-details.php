@@ -232,12 +232,13 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 			'Arrived at Facility',
 			'Arrival at Post Office',
 			'Processed Through Regional Facility',
-			'Processed Through Facility',
+			'Processed through Facility',
 			'Arrived at USPS Regional Destination Facility',
 			'Arrived at USPS Destination Facility',
 			'Departed',
 			'Departed Facility',
 			'Forwarded',
+			'Rescheduled to Next Delivery Day',
 
 			'Delivery Exception, Animal Interference', // TODO: Use this as an example for actions.
 			'Arrived at Military Post Office', // TODO: Should this be considered delivered?!
@@ -276,6 +277,7 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 			'Delivered, Neighbor as Requested',
 			'Available for Pickup',
 			'Collect for Pick Up',
+			'Intercepted', // https://www.usps.com/manage/package-intercept.htm
 		);
 
 		/**
