@@ -109,11 +109,16 @@ class CLI extends WP_CLI_Command {
 
 	}
 
+	/**
+	 * `wp shipment_tracking_updates check_packed_orders`
+	 *
+	 * @ssince 2.2.0
+	 */
 	public function check_packed_orders() {
 
 		$result = $this->api->check_packed_orders();
 
-		WP_CLI::log( json_encode( $result ) );
+		WP_CLI::log( wp_json_encode( $result, JSON_PRETTY_PRINT ) );
 
 	}
 

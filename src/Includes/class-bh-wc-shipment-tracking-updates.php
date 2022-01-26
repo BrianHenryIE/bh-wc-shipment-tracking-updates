@@ -129,8 +129,8 @@ class BH_WC_Shipment_Tracking_Updates {
 		$cli = new CLI( $this->api, $this->settings );
 
 		try {
-			WP_CLI::add_command( 'shipment_tracking_updates', array( $cli, 'find_undispatched_orders' ) );
-			WP_CLI::add_command( 'shipment_tracking_updates', array( $cli, 'check_packed_orders' ) );
+			WP_CLI::add_command( 'shipment_tracking_updates find_undispatched_orders', array( $cli, 'find_undispatched_orders' ) );
+			WP_CLI::add_command( 'shipment_tracking_updates check_packed_orders', array( $cli, 'check_packed_orders' ) );
 		} catch ( Exception $e ) {
 			$this->logger->error( 'Failed to register WP CLI commands: ' . $e->getMessage(), array( 'exception' => $e ) );
 		}

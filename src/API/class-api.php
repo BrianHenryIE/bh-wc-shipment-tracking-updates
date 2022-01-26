@@ -608,6 +608,8 @@ class API implements API_Interface {
 
 		}
 
+		$this->logger->debug( 'Packed orders', array( 'order_ids_by_number_of_days_since_packed' => $order_ids_by_number_of_days_since_packed ) );
+
 		return $order_ids_by_number_of_days_since_packed;
 	}
 
