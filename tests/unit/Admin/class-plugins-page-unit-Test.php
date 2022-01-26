@@ -13,6 +13,8 @@ use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings_Interface;
 
 /**
  * Tests a link is added and that it contains `admin.php...section=bh-wc-shipment-tracking-updates`.
+ *
+ * @coversDefaultClass \BrianHenryIE\WC_Shipment_Tracking_Updates\Admin\Plugins_Page
  */
 class Plugins_Page_Unit_Test extends \Codeception\Test\Unit {
 
@@ -28,7 +30,9 @@ class Plugins_Page_Unit_Test extends \Codeception\Test\Unit {
 		\WP_Mock::tearDown();
 	}
 
-
+	/**
+	 * @covers ::action_links
+	 */
 	public function test_settings_link_added(): void {
 
 		\WP_Mock::userFunction(
@@ -66,7 +70,9 @@ class Plugins_Page_Unit_Test extends \Codeception\Test\Unit {
 		$this->assertStringContainsString( 'href="/admin.php?page=wc-settings&tab=shipping&section=bh-wc-shipment-tracking-updates', $link_html );
 	}
 
-
+	/**
+	 * @covers ::action_links
+	 */
 	public function test_no_settings_link_added_when_woocommerce_inactive(): void {
 
 		\WP_Mock::userFunction(
@@ -88,5 +94,18 @@ class Plugins_Page_Unit_Test extends \Codeception\Test\Unit {
 		$this->assertIsArray( $result );
 
 		$this->assertEmpty( $result );
+	}
+
+	/**
+	 * @covers ::__construct
+	 */
+	public function test_cover_construct(): void {
+
+		$settings = $this->makeEmpty( Settings_Interface::class );
+		$logger   = new ColorLogger();
+
+		$sut = new Plugins_Page( $settings, $logger );
+
+		$this->assertInstanceOf( Plugins_Page::class, $sut );
 	}
 }
