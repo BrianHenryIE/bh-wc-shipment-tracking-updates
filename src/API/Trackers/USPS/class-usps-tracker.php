@@ -126,6 +126,7 @@ class USPS_Tracker implements Tracker_Interface {
 
 			foreach ( $details as $tracking_number => $detail ) {
 
+				/** @var array<string, Tracking_Details_Abstract> $result $tracking_number will always be a string, and USPS_Tracking_Details extends Tracking_Details_Abstract. */
 				$result[ $tracking_number ] = new USPS_Tracking_Details( $tracking_number, $detail, $this->logger );
 			}
 		}

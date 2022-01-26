@@ -58,60 +58,6 @@ class Settings_Unit_Test extends \Codeception\Test\Unit {
 
 
 	/**
-	 * @covers ::get_usps_username
-	 */
-	public function test_get_usps_username(): void {
-
-		$sut = new Settings();
-
-		\WP_Mock::userFunction(
-			'get_option',
-			array(
-				'args'  => array(
-					'bh_wc_shipment_tracking_updates_usps_user_id',
-					null,
-				),
-				'times' => 1,
-			)
-		);
-
-		$sut->get_usps_username();
-	}
-
-	/**
-	 * @covers ::get_usps_source_id
-	 */
-	public function test_get_usps_source_id(): void {
-
-		$sut = new Settings();
-
-		\WP_Mock::userFunction(
-			'get_option',
-			array(
-				'args'  => array(
-					'bh_wc_shipment_tracking_updates_usps_source_id',
-					null,
-				),
-				'times' => 1,
-			)
-		);
-
-		$sut->get_usps_source_id();
-	}
-
-	/**
-	 * @covers ::get_number_of_days_to_mark_overseas_orders_complete
-	 */
-	public function test_get_number_of_days_to_mark_overseas_orders_complete(): void {
-
-		$sut = new Settings();
-
-		$result = $sut->get_number_of_days_to_mark_overseas_orders_complete();
-
-		$this->assertEquals( 30, $result );
-	}
-
-	/**
 	 * @covers ::get_order_statuses_to_watch
 	 */
 	public function test_get_order_statuses_to_watch(): void {
@@ -140,18 +86,6 @@ class Settings_Unit_Test extends \Codeception\Test\Unit {
 		$this->assertContains( 'packed', $result );
 		$this->assertContains( 'in-transit', $result );
 		$this->assertContains( 'returning', $result );
-	}
-
-	/**
-	 * Check are all required settings configured.
-	 *
-	 * @used-by Scheduler::register()
-	 * @used-by CLI::find_undispatched_orders()
-	 *
-	 * @return bool
-	 */
-	public function test_is_configured(): void {
-
 	}
 
 

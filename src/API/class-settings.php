@@ -11,6 +11,10 @@
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates\API;
 
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Action_Scheduler\Scheduler;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\Tracker_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\Tracker_Settings_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS\USPS_Settings;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS\USPS_Tracker;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Includes\BH_WC_Shipment_Tracking_Updates;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\USPS\TrackConfirm;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\API\Logger_Settings_Interface;
@@ -23,8 +27,6 @@ use Psr\Log\LogLevel;
  */
 class Settings implements Settings_Interface, Logger_Settings_Interface, WooCommerce_Logger_Interface {
 
-	const USPS_USER_ID_OPTION            = 'bh_wc_shipment_tracking_updates_usps_user_id';
-	const USPS_SOURCE_ID_OPTION          = 'bh_wc_shipment_tracking_updates_usps_source_id'; // Company name.
 	const LOG_LEVEL_OPTION               = 'bh_wc_shipment_tracking_updates_log_level';
 	const ORDER_STATUSES_TO_WATCH_OPTION = 'bh_wc_shipment_tracking_updates_order_statuses_to_watch';
 
@@ -45,7 +47,7 @@ class Settings implements Settings_Interface, Logger_Settings_Interface, WooComm
 	 * @return string
 	 */
 	public function get_plugin_version(): string {
-		return defined( 'BH_WC_SHIPMENT_TRACKING_UPDATES_VERSION' ) ? BH_WC_SHIPMENT_TRACKING_UPDATES_VERSION : '2.1.3';
+		return defined( 'BH_WC_SHIPMENT_TRACKING_UPDATES_VERSION' ) ? BH_WC_SHIPMENT_TRACKING_UPDATES_VERSION : '2.2.0';
 	}
 
 	/**
@@ -71,32 +73,6 @@ class Settings implements Settings_Interface, Logger_Settings_Interface, WooComm
 	}
 
 	/**
-	 * The USPS API user id.
-	 *
-	 * @see https://registration.shippingapis.com
-	 *
-	 * @used-by TrackConfirm
-	 *
-	 * @return ?string
-	 */
-	public function get_usps_username(): ?string {
-		return get_option( self::USPS_USER_ID_OPTION, null );
-	}
-
-	/**
-	 * USPS requires a company name when requesting extended information (the expected delivery date)
-	 * e.g. "company name".
-	 *
-	 * @see https://www.usps.com/business/web-tools-apis/track-and-confirm-api.htm
-	 * @see https://stackoverflow.com/questions/23902091/usps-tracking-api-expected-delivery-date
-	 *
-	 * @return string|null
-	 */
-	public function get_usps_source_id(): ?string {
-		return get_option( self::USPS_SOURCE_ID_OPTION, null );
-	}
-
-	/**
 	 * List of order statuses considered to be dispatched but not yet delivered.
 	 *
 	 * @used-by API::find_orders_to_update()
@@ -106,16 +82,6 @@ class Settings implements Settings_Interface, Logger_Settings_Interface, WooComm
 	public function get_order_statuses_to_watch(): array {
 		$default_statuses = array( 'shippingpurchased', 'printed', 'packing', 'packed', 'in-transit', 'returning' );
 		return get_option( self::ORDER_STATUSES_TO_WATCH_OPTION, $default_statuses );
-	}
-
-	/**
-	 * International orders (USPS) often do not get updated after they change from domestic to international. This
-	 * setting allows setting older order, assumed to be delivered, as completed,
-	 *
-	 * @return int
-	 */
-	public function get_number_of_days_to_mark_overseas_orders_complete(): int {
-		return 30;
 	}
 
 	/**
@@ -130,15 +96,21 @@ class Settings implements Settings_Interface, Logger_Settings_Interface, WooComm
 		return defined( 'BH_WC_SHIPMENT_TRACKING_UPDATES_BASENAME' ) ? BH_WC_SHIPMENT_TRACKING_UPDATES_BASENAME : 'bh-wc-shipment-tracking-updates/bh-wc-shipment-tracking-updates.php';
 	}
 
+
 	/**
-	 * Check are all required settings configured.
+	 * @see \WC_Shipment_Tracking_Actions::get_providers()
 	 *
-	 * @used-by Scheduler::register()
-	 * @used-by CLI::find_undispatched_orders()
+	 * @param string $provider The tracking provider identifier.
 	 *
-	 * @return bool
+	 * @return ?Tracker_Settings_Interface
 	 */
-	public function is_configured(): bool {
-		return ! empty( $this->get_usps_username() ) && ! empty( $this->get_usps_source_id() );
+	public function get_tracker_settings( string $provider ): ?Tracker_Settings_Interface {
+
+		switch ( $provider ) {
+			case 'USPS':
+				return new USPS_Settings();
+			default:
+				return null;
+		}
 	}
 }

@@ -12,6 +12,7 @@
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Includes;
 
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS\USPS_Settings;
 
 /**
  * Fired during plugin activation.
@@ -32,13 +33,13 @@ class Activator {
 	 *
 	 * @since    1.0.0
 	 */
-	public static function activate() {
+	public static function activate(): void {
 
 		self::find_usps_username();
 
 		// TODO: Check the last few weeks' orders... including "completed"?
 		// The scheduler will already start an update immediately.
-		if ( ! empty( get_option( Settings::USPS_USER_ID_OPTION ) ) ) {
+		if ( ! empty( get_option( USPS_Settings::USPS_USER_ID_OPTION ) ) ) {
 
 		}
 
@@ -47,10 +48,10 @@ class Activator {
 	/**
 	 * Check the settings of other plugins for the USPS username.
 	 */
-	protected static function find_usps_username() {
+	protected static function find_usps_username(): void {
 
 		// Look for USPS API key in other plugins.
-		if ( ! empty( get_option( Settings::USPS_USER_ID_OPTION ) ) ) {
+		if ( ! empty( get_option( USPS_Settings::USPS_USER_ID_OPTION ) ) ) {
 			return;
 		}
 
@@ -62,7 +63,7 @@ class Activator {
 		foreach ( $option_names as $option_name ) {
 			$usps_user_id = get_option( $option_name );
 			if ( ! empty( $usps_user_id ) ) {
-				update_option( Settings::USPS_USER_ID_OPTION, $usps_user_id );
+				update_option( USPS_Settings::USPS_USER_ID_OPTION, $usps_user_id );
 				break;
 			}
 		}

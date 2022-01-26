@@ -2,7 +2,7 @@
 
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Includes;
 
-use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS\USPS_Settings;
 
 /**
  * @coversDefaultClass \BrianHenryIE\WC_Shipment_Tracking_Updates\Includes\Activator
@@ -23,12 +23,12 @@ class Activator_Unit_Test extends \Codeception\Test\Unit {
 	 *
 	 * @covers ::find_usps_username
 	 */
-	public function test_find_usps_username_checks_options() {
+	public function test_find_usps_username_checks_options(): void {
 
 		\WP_Mock::userFunction(
 			'get_option',
 			array(
-				'args'   => array( Settings::USPS_USER_ID_OPTION ),
+				'args'   => array( USPS_Settings::USPS_USER_ID_OPTION ),
 				'return' => false,
 			)
 		);
@@ -60,12 +60,12 @@ class Activator_Unit_Test extends \Codeception\Test\Unit {
 	 *
 	 * @covers ::find_usps_username
 	 */
-	public function test_find_usps_username_updates_option() {
+	public function test_find_usps_username_updates_option(): void {
 
 		\WP_Mock::userFunction(
 			'get_option',
 			array(
-				'args'   => array( Settings::USPS_USER_ID_OPTION ),
+				'args'   => array( USPS_Settings::USPS_USER_ID_OPTION ),
 				'return' => false,
 			)
 		);
@@ -91,7 +91,7 @@ class Activator_Unit_Test extends \Codeception\Test\Unit {
 		\WP_Mock::userFunction(
 			'update_option',
 			array(
-				'args'  => array( Settings::USPS_USER_ID_OPTION, 'FOOBAR' ),
+				'args'  => array( USPS_Settings::USPS_USER_ID_OPTION, 'FOOBAR' ),
 				'times' => 1,
 			)
 		);

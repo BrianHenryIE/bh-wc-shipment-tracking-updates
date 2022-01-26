@@ -14,6 +14,7 @@
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce;
 
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS\USPS_Settings;
 use Psr\Log\LogLevel;
 
 /**
@@ -50,32 +51,32 @@ class Shipping_Settings_Page {
 	 */
 	public function shipment_tracking_updates_settings( array $settings, string $current_section ) {
 
-		if ( 'bh-wc-shipment-tracking-updates' !== $current_section ) {
+		if ( 'bh_wc_shipment_tracking_updates' !== $current_section ) {
 			return $settings;
 		}
 
 		// Add Title to the Settings.
-		$settings['bh-wc-shipment-tracking-updates'] = array(
+		$settings['bh_wc_shipment_tracking_updates'] = array(
 			'name' => __( 'Shipment Tracking Updates', 'bh-wc-shipment-tracking-updates' ),
 			'type' => 'title',
 			'desc' => __( 'Get a free USPS API key at ', 'bh-wc-shipment-tracking-updates' ) . '<a target="_blank" href="https://registration.shippingapis.com/">registration.shippingapis.com</a>.',
 			'id'   => 'bh-wc-shipment-tracking-updates',
 		);
 
-		$settings[ Settings::USPS_USER_ID_OPTION ] = array(
+		$settings[ USPS_Settings::USPS_USER_ID_OPTION ] = array(
 			'title'   => __( 'USPS API User Id', 'bh-wc-shipment-tracking-updates' ),
 			'type'    => 'text',
 			'desc'    => __( 'Enter your API Key. You can find this in "User Profile" drop-down (top right corner) > API Keys.', 'bh-wc-shipment-tracking-updates' ),
 			'default' => '',
-			'id'      => Settings::USPS_USER_ID_OPTION,
+			'id'      => USPS_Settings::USPS_USER_ID_OPTION,
 		);
 
-		$settings[ Settings::USPS_SOURCE_ID_OPTION ] = array(
+		$settings[ USPS_Settings::USPS_SOURCE_ID_OPTION ] = array(
 			'title'   => __( 'USPS Source Id', 'bh-wc-shipment-tracking-updates' ),
 			'type'    => 'text',
 			'desc'    => __( 'USPS requires the company name (not necessarily email address).', 'bh-wc-shipment-tracking-updates' ),
 			'default' => get_option( 'admin_email' ),
-			'id'      => Settings::USPS_SOURCE_ID_OPTION,
+			'id'      => USPS_Settings::USPS_SOURCE_ID_OPTION,
 		);
 
 		$paid_statuses      = array();
@@ -137,7 +138,6 @@ class Shipping_Settings_Page {
 		// This is needed so the "Save changes" button goes to the bottom.
 		$settings[] = array(
 			'type' => 'sectionend',
-			'id'   => 'bh-wc-auto-print-shipping-labels-receipts',
 		);
 
 		return $settings;
@@ -165,7 +165,7 @@ class Shipping_Settings_Page {
 			<td class="forminp">
 				<fieldset>
 					<legend class="screen-reader-text"><span><?php echo wp_kses_post( $data['title'] ); ?></span></legend>
-					<?php echo $data['desc']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+					<?php echo $data['desc']; ?>
 				</fieldset>
 			</td>
 		</tr>

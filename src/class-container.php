@@ -8,6 +8,9 @@
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates;
 
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\Tracker_Settings_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS\USPS_Settings;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS\USPS_Settings_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS\USPS_Tracker;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS\WP_USPS_TrackConfirm_API;
 use Exception;
@@ -16,6 +19,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
+use WC_Geolocation;
 
 /**
  * Is a container a factory?
@@ -69,12 +73,19 @@ class Container implements ContainerInterface {
 				return new USPS_Tracker( $this, $this->logger );
 
 			case self::USPS_TRACK_CONFIRM_API:
-				if ( is_null( $this->settings->get_usps_username() ) || is_null( $this->settings->get_usps_source_id() ) ) {
+				/** @var ?USPS_Settings $usps_settings */
+				$usps_settings = $this->settings->get_tracker_settings( 'USPS' );
+
+				if ( is_null( $usps_settings ) || ! $usps_settings->is_configured() ) {
 					throw new class() extends Exception implements ContainerExceptionInterface{};
 				}
-				$track_confirm_api = new WP_USPS_TrackConfirm_API( $this->settings->get_usps_username() );
-				$track_confirm_api->setSourceId( $this->settings->get_usps_source_id() );
-				$track_confirm_api->setClientIp( \WC_Geolocation::get_external_ip_address() );
+				/** @var string $username Tracker_Settings_Interface::is_configured() has shown this is not null. */
+				$username          = $usps_settings->get_usps_username();
+				$track_confirm_api = new WP_USPS_TrackConfirm_API( $username );
+				/** @var string $source_id Tracker_Settings_Interface::is_configured() has shown this is not null. */
+				$source_id = $usps_settings->get_usps_source_id();
+				$track_confirm_api->setSourceId( $source_id );
+				$track_confirm_api->setClientIp( WC_Geolocation::get_external_ip_address() );
 				$track_confirm_api->setLogger( $this->logger );
 
 				return $track_confirm_api;
