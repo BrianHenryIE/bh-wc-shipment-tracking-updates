@@ -615,22 +615,41 @@ class API implements API_Interface {
 	 * Periodically check packed orders.
 	 * If they have no tracking number (or none supported by this plugin), mark them complete after ~48 hours.
 	 *
+	 * @since 2.3.0
+	 *
 	 * @return  array{count_packed_orders:int, count_old_packed_orders:int, orders_marked_completed_ids:array<int>, count_orders_without_tracking:int, count_orders_with_unsupported_tracking:int} Stats for CLI output.
 	 */
 	public function check_packed_orders(): array {
 
-		$packed_orders = $this->get_order_ids_by_number_of_days_since_packed();
+		$packed_orders_by_day = $this->get_order_ids_by_number_of_days_since_packed();
+
+		$count_packed_orders = count(
+			array_reduce(
+				$packed_orders_by_day,
+				function( $arr, $carry ) {
+					return array_merge( $arr, $carry );
+				},
+				array()
+			)
+		);
 
 		// Filter to orders which have been packed for over two days.
 		$old_packed_orders = array_filter(
-			$packed_orders,
+			$packed_orders_by_day,
 			function( $key ) {
 				return intval( $key ) > 2;
 			},
 			ARRAY_FILTER_USE_KEY
 		);
 
-		$order_ids = array_merge_recursive( $old_packed_orders );
+		$order_ids =
+			array_reduce(
+				$old_packed_orders,
+				function( $arr, $carry ) {
+					return array_merge( $arr, $carry );
+				},
+				array()
+			);
 
 		$tracking_numbers       = $this->get_tracking_numbers_for_orders( $order_ids );
 		$tracking_numbers_by_id = array();
@@ -684,7 +703,7 @@ class API implements API_Interface {
 		}
 
 		$result = array(
-			'count_packed_orders'                    => count( $packed_orders ),
+			'count_packed_orders'                    => $count_packed_orders,
 			'count_old_packed_orders'                => count( $old_packed_orders ),
 			'orders_marked_completed_ids'            => $orders_marked_completed,
 			'count_orders_without_tracking'          => $count_orders_without_tracking,
