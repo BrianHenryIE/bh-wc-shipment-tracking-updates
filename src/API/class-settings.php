@@ -47,7 +47,7 @@ class Settings implements Settings_Interface, Logger_Settings_Interface, WooComm
 	 * @return string
 	 */
 	public function get_plugin_version(): string {
-		return defined( 'BH_WC_SHIPMENT_TRACKING_UPDATES_VERSION' ) ? BH_WC_SHIPMENT_TRACKING_UPDATES_VERSION : '2.2.0';
+		return defined( 'BH_WC_SHIPMENT_TRACKING_UPDATES_VERSION' ) ? BH_WC_SHIPMENT_TRACKING_UPDATES_VERSION : '2.3.2';
 	}
 
 	/**
