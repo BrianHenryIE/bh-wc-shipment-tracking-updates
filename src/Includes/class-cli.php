@@ -18,6 +18,7 @@ namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Includes;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\API_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\Tracking_Details_Abstract;
+use WP_CLI;
 use WP_CLI_Command;
 
 
@@ -78,26 +79,26 @@ class CLI extends WP_CLI_Command {
 	 */
 	public function find_undispatched_orders() {
 
-		\WP_CLI::log( 'Find undispatched orders.' );
+		WP_CLI::log( 'Find undispatched orders.' );
 
 		if ( ! $this->settings->is_configured() ) {
-			\WP_CLI::log( 'Not configured.' );
+			WP_CLI::log( 'Not configured.' );
 			return;
 		}
 
 		$unmoved_tracking_details = $this->api->find_undispatched_orders();
 
 		if ( 0 === count( $unmoved_tracking_details ) ) {
-			\WP_CLI::log( 'No undispatched orders found.' );
+			WP_CLI::log( 'No undispatched orders found.' );
 			return;
 		}
 
-		\WP_CLI::log( 'order id, tracking number, equivalent status, last updated, carrier status ' );
+		WP_CLI::log( 'order id, tracking number, equivalent status, last updated, carrier status ' );
 
 		foreach ( $unmoved_tracking_details as $tracking_number => $tracking_array ) {
 			$tracking_detail = $tracking_array['tracking_detail'];
 			$order_id        = $tracking_array['order_id'];
-			\WP_CLI::log(
+			WP_CLI::log(
 				$order_id . ','
 				. $tracking_detail->get_tracking_number() . ', '
 				. $tracking_detail->get_equivalent_order_status() . ', '
@@ -105,6 +106,14 @@ class CLI extends WP_CLI_Command {
 				. $tracking_detail->get_carrier_status() // . ', '
 			);
 		}
+
+	}
+
+	public function check_packed_orders() {
+
+		$result = $this->api->check_packed_orders();
+
+		WP_CLI::log( json_encode( $result ) );
 
 	}
 

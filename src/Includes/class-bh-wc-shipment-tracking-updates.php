@@ -128,6 +128,7 @@ class BH_WC_Shipment_Tracking_Updates {
 
 		try {
 			WP_CLI::add_command( 'shipment_tracking_updates', array( $cli, 'find_undispatched_orders' ) );
+			WP_CLI::add_command( 'shipment_tracking_updates', array( $cli, 'check_packed_orders' ) );
 		} catch ( Exception $e ) {
 			$this->logger->error( 'Failed to register WP CLI commands: ' . $e->getMessage(), array( 'exception' => $e ) );
 		}
@@ -172,6 +173,7 @@ class BH_WC_Shipment_Tracking_Updates {
 		add_action( 'init', array( $scheduler, 'register' ) );
 		add_action( Scheduler::SINGLE_UPDATE_HOOK, array( $scheduler, 'execute_batch' ) );
 		add_action( Scheduler::SCHEDULED_UPDATE_HOOK, array( $scheduler, 'execute' ) );
+		add_action( Scheduler::SCHEDULED_CHECK_PACKED_ORDERS_HOOK, array( $scheduler, 'check_packed_orders' ) );
 	}
 
 	/**

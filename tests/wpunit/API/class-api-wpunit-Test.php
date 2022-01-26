@@ -230,4 +230,20 @@ class API_WPUnit_Test extends \Codeception\TestCase\WPTestCase {
 
 		remove_filter( 'wc_order_statuses', array( $order_statuses, 'add_order_status_to_woocommerce' ) );
 	}
+
+
+	public function test_check_packed_orders(): void {
+
+		$this->markTestIncomplete();
+
+		$logger    = new ColorLogger();
+		$settings  = new Settings();
+		$container = $this->makeEmpty( ContainerInterface::class );
+
+		$api = new API( $container, $settings, $logger );
+
+		$api->check_packed_orders();
+
+	}
+
 }

@@ -58,4 +58,9 @@ interface API_Interface {
 	 */
 	public function get_order_ids_by_number_of_days_since_packed(): array;
 
+	/**
+	 * @return  array{count_packed_orders:int, count_old_packed_orders:int, orders_marked_completed_ids:array<int>, count_orders_without_tracking:int, count_orders_with_unsupported_tracking:int} Stats for CLI output.
+	 */
+	public function check_packed_orders(): array;
+
 }

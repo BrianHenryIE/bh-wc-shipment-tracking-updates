@@ -118,6 +118,11 @@ class BH_WC_Shipment_Tracking_Updates_Unit_Test extends \Codeception\Test\Unit {
 			array( new AnyInstance( Scheduler::class ), 'execute_batch' )
 		);
 
+		\WP_Mock::expectActionAdded(
+			Scheduler::SCHEDULED_CHECK_PACKED_ORDERS_HOOK,
+			array( new AnyInstance( Scheduler::class ), 'check_packed_orders' )
+		);
+
 		$logger   = new ColorLogger();
 		$settings = $this->makeEmpty( Settings_Interface::class );
 		$api      = $this->makeEmpty( API_Interface::class );

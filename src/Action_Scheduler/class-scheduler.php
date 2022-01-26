@@ -15,8 +15,9 @@ class Scheduler {
 
 	const ACTION_SCHEDULER_GROUP = 'bh_wc_shipment_tracking_updates';
 
-	const SCHEDULED_UPDATE_HOOK = 'bh_wc_shipment_tracking_updates_scheduled_update';
-	const SINGLE_UPDATE_HOOK    = 'bh_wc_shipment_tracking_updates_single_update';
+	const SCHEDULED_UPDATE_HOOK              = 'bh_wc_shipment_tracking_updates_scheduled_update';
+	const SINGLE_UPDATE_HOOK                 = 'bh_wc_shipment_tracking_updates_single_update';
+	const SCHEDULED_CHECK_PACKED_ORDERS_HOOK = 'bh_wc_shipment_tracking_updates_check_packed_orders';
 
 	/**
 	 * @see Settings::is_configured()
@@ -41,9 +42,8 @@ class Scheduler {
 	 */
 	public function register(): void {
 
-		if ( ! $this->settings->is_configured() ) {
-			return;
-		}
+		// TODO: Maybe check for two configured trackers here -- the default "no tracking number" one, plus one real
+		// tracker to show the shop has configured this plugin for use.
 
 		if ( ! class_exists( ActionScheduler::class ) || ! ActionScheduler::is_initialized() ) {
 			return;
@@ -54,11 +54,16 @@ class Scheduler {
 			$this->logger->warning( 'WC_Shipment_Tracking_Actions class not present. Shipment Tracking plugin presumably not active' );
 			as_unschedule_all_actions( self::SCHEDULED_UPDATE_HOOK );
 			as_unschedule_all_actions( self::SINGLE_UPDATE_HOOK );
+			as_unschedule_all_actions( self::SCHEDULED_CHECK_PACKED_ORDERS_HOOK );
 			return;
 		}
 
 		if ( false === as_next_scheduled_action( self::SCHEDULED_UPDATE_HOOK ) ) {
 			as_schedule_recurring_action( time(), MINUTE_IN_SECONDS * 30, self::SCHEDULED_UPDATE_HOOK, array(), self::ACTION_SCHEDULER_GROUP );
+		}
+
+		if ( false === as_next_scheduled_action( self::SCHEDULED_CHECK_PACKED_ORDERS_HOOK ) ) {
+			as_schedule_recurring_action( time(), DAY_IN_SECONDS, self::SCHEDULED_CHECK_PACKED_ORDERS_HOOK, array(), self::ACTION_SCHEDULER_GROUP );
 		}
 	}
 
@@ -81,4 +86,13 @@ class Scheduler {
 		$this->api->update_orders( $order_ids );
 	}
 
+	/**
+	 * Periodically check packed orders for those without tracking numbers or with unsupported tracking numbers.
+	 *
+	 * @see Scheduler::SCHEDULED_CHECK_PACKED_ORDERS_HOOK
+	 * @hooked bh_wc_shipment_tracking_updates_check_packed_orders
+	 */
+	public function check_packed_orders(): void {
+		$this->api->check_packed_orders();
+	}
 }

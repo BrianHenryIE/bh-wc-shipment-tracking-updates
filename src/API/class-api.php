@@ -14,7 +14,7 @@ namespace BrianHenryIE\WC_Shipment_Tracking_Updates\API;
 
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\Tracker_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\Tracking_Details_Abstract;
-use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS_Tracker;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS\USPS_Tracker;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Container;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Action_Scheduler\Scheduler;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Order_Statuses;
@@ -374,7 +374,13 @@ class API implements API_Interface {
 
 			if ( $order->get_status() !== $fresh_status ) {
 
-				$this->logger->info( 'Updating order ' . $order_id . ' status to ' . $fresh_status, array( 'new_status' => $fresh_status ) );
+				$this->logger->info(
+					'Updating order ' . $order_id . ' status to ' . $fresh_status,
+					array(
+						'order_id'   => $order_id,
+						'new_status' => $fresh_status,
+					)
+				);
 				$order->set_status( $fresh_status );
 				$order->save();
 
@@ -397,7 +403,7 @@ class API implements API_Interface {
 	/**
 	 * Get the tracking number and shipping provider (DHL/USPS/...).
 	 *
-	 * @param array<int|string> $order_ids Array of WooCommerce order ids.
+	 * @param array<int> $order_ids Array of WooCommerce order ids.
 	 * @return array<int|string, array{
 	 *  tracking_number: string,
 	 *  tracking_provider: string,
@@ -407,6 +413,12 @@ class API implements API_Interface {
 	protected function get_tracking_numbers_for_orders( array $order_ids ): array {
 
 		$tracking_numbers = array();
+
+		// This could easily happen, e.g. if WooCommerce Shipment Tracking was disabled and a shop manager marked an order "packed".
+		if ( ! class_exists( WC_Shipment_Tracking_Actions::class ) ) {
+			$this->logger->warning( 'WooCommerce Shipment Tracking plugin not available' );
+			return array();
+		}
 
 		$shipment_tracking_actions = WC_Shipment_Tracking_Actions::get_instance();
 
@@ -520,15 +532,18 @@ class API implements API_Interface {
 		);
 
 		/**
-		 * ALL orders with packed status (i.e. not just those on the currently filtered page.
+		 * ALL orders with packed status (i.e. not just those on the currently filtered page.)
 		 *
 		 * @var WC_Order[] $orders
 		 */
+		$orders = wc_get_orders( $orders_query_args );
+
+		/** @var int[] $order_ids Those orders' order ids. */
 		$order_ids = array_map(
 			function( WC_Order $order ) {
 				return $order->get_id();
 			},
-			wc_get_orders( $orders_query_args )
+			$orders
 		);
 
 		/**
@@ -543,8 +558,6 @@ class API implements API_Interface {
 			// TODO: Fetch all comments for all orders in one go. (be careful with reship orders that were packed twice, i.e. sort by date desc).
 			$args = array(
 				'post_id' => $order_id,
-				// 'approve' => 'approve',
-				// 'type'    => '',
 			);
 
 			remove_filter( 'comments_clauses', array( 'WC_Comments', 'exclude_order_comments' ), 10 );
@@ -596,5 +609,88 @@ class API implements API_Interface {
 		}
 
 		return $order_ids_by_number_of_days_since_packed;
+	}
+
+	/**
+	 * Periodically check packed orders.
+	 * If they have no tracking number (or none supported by this plugin), mark them complete after ~48 hours.
+	 *
+	 * @return  array{count_packed_orders:int, count_old_packed_orders:int, orders_marked_completed_ids:array<int>, count_orders_without_tracking:int, count_orders_with_unsupported_tracking:int} Stats for CLI output.
+	 */
+	public function check_packed_orders(): array {
+
+		$packed_orders = $this->get_order_ids_by_number_of_days_since_packed();
+
+		// Filter to orders which have been packed for over two days.
+		$old_packed_orders = array_filter(
+			$packed_orders,
+			function( $key ) {
+				return intval( $key ) > 2;
+			},
+			ARRAY_FILTER_USE_KEY
+		);
+
+		$order_ids = array_merge_recursive( $old_packed_orders );
+
+		$tracking_numbers       = $this->get_tracking_numbers_for_orders( $order_ids );
+		$tracking_numbers_by_id = array();
+		foreach ( $tracking_numbers as $tracking_number ) {
+			$tracking_numbers_by_id[ $tracking_number['order_id'] ] = $tracking_number;
+		}
+
+		$orders_marked_completed                = array();
+		$count_orders_without_tracking          = 0;
+		$count_orders_with_unsupported_tracking = 0;
+
+		foreach ( $order_ids as $order_id ) {
+
+			$order = wc_get_order( $order_id );
+			if ( ! ( $order instanceof WC_Order ) ) {
+				continue;
+			}
+
+			// If no tracking number was found for this order.
+			if ( ! isset( $tracking_numbers_by_id[ $order_id ] ) ) {
+				$note = 'Order automatically marked complete because it has no tracking number.';
+				$order->set_status( 'completed', $note );
+				$order->save();
+				$orders_marked_completed[] = $order_id;
+				$count_orders_without_tracking++;
+				continue;
+			}
+
+			$tracking_numbers = $tracking_numbers_by_id[ $order_id ];
+
+			$can_be_tracked = array_reduce(
+				$tracking_numbers,
+				function( $tracking_number, $carry ) {
+					return $carry || ! is_null( $this->settings->get_tracker_settings( $tracking_number['tracking_provider'] ) );
+				},
+				false
+			);
+
+			if ( ! $can_be_tracked ) {
+				$note = 'Order automatically marked complete because its tracking numbers cannot be tracked with Shipment Tracking Updates plugin.';
+				$order->set_status( 'completed', $note );
+				$order->save();
+				$orders_marked_completed[] = $order_id;
+				$count_orders_with_unsupported_tracking++;
+				continue;
+			}
+
+			// Scenarios that could get here:
+			// A trackable tracking number exists but has not updated yet.
+
+		}
+
+		$result = array(
+			'count_packed_orders'                    => count( $packed_orders ),
+			'count_old_packed_orders'                => count( $old_packed_orders ),
+			'orders_marked_completed_ids'            => $orders_marked_completed,
+			'count_orders_without_tracking'          => $count_orders_without_tracking,
+			'count_orders_with_unsupported_tracking' => $count_orders_with_unsupported_tracking,
+		);
+
+		return $result;
 	}
 }
