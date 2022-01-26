@@ -16,6 +16,7 @@ namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Includes;
 
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Action_Scheduler\Scheduler;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Admin\Admin;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\Admin\Plugin_Installer;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Admin\Plugins_Page;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\API_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings_Interface;
@@ -91,6 +92,7 @@ class BH_WC_Shipment_Tracking_Updates {
 		$this->define_action_scheduler_hooks();
 		$this->define_admin_hooks();
 		$this->define_plugins_page_hooks();
+		$this->define_plugin_installer_page_hooks();
 		$this->define_woocommerce_order_status_hooks();
 		$this->define_woocommerce_shipment_tracking_hooks();
 		$this->define_woocommerce_email_hooks();
@@ -159,6 +161,18 @@ class BH_WC_Shipment_Tracking_Updates {
 		$plugin_basename = $this->settings->get_plugin_basename();
 
 		add_filter( "plugin_action_links_{$plugin_basename}", array( $plugins_page, 'action_links' ), 10, 4 );
+	}
+
+	/**
+	 * Adds a link to the settings page on the plugin update completed page.
+	 *
+	 * @ssince 2.2.0
+	 */
+	protected function define_plugin_installer_page_hooks(): void {
+
+		$plugin_installer = new Plugin_Installer( $this->settings, $this->logger );
+
+		add_filter( 'install_plugin_complete_actions', array( $plugin_installer, 'add_settings_link' ), 10, 3 );
 	}
 
 	/**

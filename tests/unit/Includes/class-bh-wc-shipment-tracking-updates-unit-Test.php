@@ -4,6 +4,7 @@ namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Includes;
 
 use BrianHenryIE\ColorLogger\ColorLogger;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Action_Scheduler\Scheduler;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\Admin\Plugin_Installer;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Admin\Plugins_Page;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\API_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings_Interface;
@@ -233,6 +234,25 @@ class BH_WC_Shipment_Tracking_Updates_Unit_Test extends \Codeception\Test\Unit {
 		\WP_Mock::expectActionAdded(
 			'admin_notices',
 			array( new AnyInstance( Admin_Order_List_Page::class ), 'print_packed_stats' )
+		);
+
+		$logger   = new ColorLogger();
+		$settings = $this->makeEmpty( Settings_Interface::class );
+		$api      = $this->makeEmpty( API_Interface::class );
+		new BH_WC_Shipment_Tracking_Updates( $api, $settings, $logger );
+	}
+
+
+	/**
+	 * @covers ::define_plugin_installer_page_hooks
+	 */
+	public function test_define_plugin_installer_page_hooks(): void {
+
+		\WP_Mock::expectFilterAdded(
+			'install_plugin_complete_actions',
+			array( new AnyInstance( Plugin_Installer::class ), 'add_settings_link' ),
+			10,
+			3
 		);
 
 		$logger   = new ColorLogger();
