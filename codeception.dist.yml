@@ -24,6 +24,7 @@ coverage:
     include:
         - src/*
     exclude:
+        - /*/interface-*.*
         - src/strauss/*
         - /*/index.php
         - /*/*.txt

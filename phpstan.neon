@@ -14,6 +14,8 @@ parameters:
         - src/strauss
         - wp-content/plugins
         - vendor/wp-cli
+    scanFiles:
+        - vendor/antecedent/patchwork/Patchwork.php
     ignoreErrors:
         - '#LoggerInterface\|null#'
         - '#expects callable\(\): mixed, array#'
