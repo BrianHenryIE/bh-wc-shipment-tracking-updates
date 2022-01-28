@@ -44,7 +44,7 @@ class Order_List_Table {
 	 *
 	 * @return string HTML to output.
 	 */
-	public function append_tracking_detail_to_column( string $html, $order_id, array $tracking_items ): string {
+	public function append_tracking_detail_to_column( string $html, int $order_id, array $tracking_items ): string {
 
 		if ( count( $tracking_items ) < 1 ) {
 			return $html;
@@ -77,11 +77,19 @@ class Order_List_Table {
 
 			$new_html .= sprintf( '<li><a href="%s" target="_blank">', esc_url( $formatted['formatted_tracking_link'] ) );
 
-			if ( isset( $order_meta_all_tracking_updates[ $tracking_item['tracking_number'] ] ) ) {
-				$tracking_detail = $order_meta_all_tracking_updates[ $tracking_item['tracking_number'] ];
+			// Remove spaces from the saved tracking number.
+			$tracking_number = str_replace( ' ', '', $tracking_item['tracking_number'] );
+
+			if ( isset( $order_meta_all_tracking_updates[ $tracking_number ] ) ) {
+				$tracking_detail = $order_meta_all_tracking_updates[ $tracking_number ];
 
 				if ( ! is_null( $tracking_detail->get_expected_delivery_time() ) ) {
-					$new_html .= '<p style="color:#2271b1;"><span class="description" style="color: #999;">Expected delivery:</span> ' . $tracking_detail->get_expected_delivery_time()->format( 'l, d-M' ) . '</p>';
+					$new_html .= '<p style="color:#2271b1;">';
+					$new_html .= '<span class="description" style="color: #999; margin-right:3px; display:inline-block;">Expected delivery:</span>';
+					$new_html .= '<span class="expected-delivery" style="display:inline-block">';
+					$new_html .= $tracking_detail->get_expected_delivery_time()->format( 'l, d-M' );
+					$new_html .= '</span>';
+					$new_html .= '</p>';
 
 				} else {
 
@@ -113,9 +121,25 @@ class Order_List_Table {
 				'style' => array(),
 			),
 			'span' => array(
-				'class' => array(),
 				'style' => array(),
+				'class' => array(),
 			),
+		);
+
+		/**
+		 * Allow using 'display: inline-block' in styles.
+		 *
+		 * @see https://wordpress.org/support/topic/problem-with-wp_kses/
+		 *
+		 * @param string[] $styles Styles permitted by wp_kses.
+		 * @return string[]
+		 */
+		add_filter(
+			'safe_style_css',
+			function( array $styles ) {
+				$styles[] = 'display';
+				return $styles;
+			}
 		);
 
 		return wp_kses( $new_html, $allowed_html );
