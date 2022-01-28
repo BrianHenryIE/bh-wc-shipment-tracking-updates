@@ -1,9 +1,20 @@
 <?php
+/**
+ * The saved USPS settings, as a plain object.
+ *
+ * @package brianhenryie/bh-wc-shipment-tracking-updates
+ */
 
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS;
 
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\Tracker_Settings_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Shipping_Settings_Page;
 
+/**
+ * Facade using get_option() over settings saved via WooCommerce Settings API.
+ *
+ * @see Shipping_Settings_Page
+ */
 class USPS_Settings implements USPS_Settings_Interface, Tracker_Settings_Interface {
 
 	const USPS_USER_ID_OPTION   = 'bh_wc_shipment_tracking_updates_usps_user_id';
@@ -20,7 +31,6 @@ class USPS_Settings implements USPS_Settings_Interface, Tracker_Settings_Interfa
 	public function is_configured(): bool {
 		return ! empty( $this->get_usps_username() ) && ! empty( $this->get_usps_source_id() );
 	}
-
 
 	/**
 	 * The USPS API user id.
@@ -48,15 +58,14 @@ class USPS_Settings implements USPS_Settings_Interface, Tracker_Settings_Interfa
 		return get_option( self::USPS_SOURCE_ID_OPTION, null );
 	}
 
-
 	/**
 	 * International orders (USPS) often do not get updated after they change from domestic to international. This
-	 * setting allows setting older order, assumed to be delivered, as completed,
+	 * setting allows setting older order, assumed to be delivered, as completed.
 	 *
 	 * @return int
 	 */
 	public function get_number_of_days_to_mark_overseas_orders_complete(): int {
-		return 30;
+		return 21;
 	}
 
 }

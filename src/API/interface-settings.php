@@ -47,6 +47,7 @@ interface Settings_Interface {
 	public function get_order_statuses_to_watch(): array;
 
 	/**
+	 * Get the saved settings for a particular carrier.
 	 *
 	 * @see \WC_Shipment_Tracking_Actions::get_providers()
 	 *

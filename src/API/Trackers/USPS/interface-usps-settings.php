@@ -1,4 +1,9 @@
 <?php
+/**
+ * Settings that are unique to USPS: USPS user id, source id (company name), time after which to consider orders delivered.
+ *
+ * @package brianhenryie/bh-wc-shipment-tracking-updates
+ */
 
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS;
 

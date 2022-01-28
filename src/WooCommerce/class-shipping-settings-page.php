@@ -51,12 +51,12 @@ class Shipping_Settings_Page {
 	 */
 	public function shipment_tracking_updates_settings( array $settings, string $current_section ) {
 
-		if ( 'bh_wc_shipment_tracking_updates' !== $current_section ) {
+		if ( 'bh-wc-shipment-tracking-updates' !== $current_section ) {
 			return $settings;
 		}
 
 		// Add Title to the Settings.
-		$settings['bh_wc_shipment_tracking_updates'] = array(
+		$settings['bh_wc_shipment_tracking_updates_title'] = array(
 			'name' => __( 'Shipment Tracking Updates', 'bh-wc-shipment-tracking-updates' ),
 			'type' => 'title',
 			'desc' => __( 'Get a free USPS API key at ', 'bh-wc-shipment-tracking-updates' ) . '<a target="_blank" href="https://registration.shippingapis.com/">registration.shippingapis.com</a>.',
@@ -98,15 +98,7 @@ class Shipping_Settings_Page {
 			'options' => $paid_statuses,
 		);
 
-		// $settings['mark_overseas_two_weeks_complete'] = array(
-		// 'title'       => __( 'Auto-completion', 'bh-wc-shipment-tracking-updates' ),
-		// 'type'        => 'checkbox',
-		// 'label'       => __( 'Mark overseas orders with no shipping updates for two weeks as complete', 'bh-wc-shipment-tracking-updates' ),
-		// 'default'     => 'yes',
-		// 'description' => __( "The tracking numbers can be manually searched in the local country's postal service's website.", 'bh-wc-shipment-tracking-updates' ),
-		// );
-
-		$settings[] = array(
+		$settings['bh_wc_shipment_tracking_updates_emails_link'] = array(
 			'title' => __( 'Emails', 'bh-wc-shipment-tracking-updates' ),
 			'desc'  => __( 'Configure emails for dispatched orders on the ', 'bh-wc-shipment-tracking-updates' ) . '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=email' ) . '">' . __( 'WooCommerce / Settings / Emails tab', 'bh-wc-shipment-tracking-updates' ) . '</a>.',
 			'type'  => 'bh_wc_shipment_tracking_updates_text_html',
@@ -125,7 +117,7 @@ class Shipping_Settings_Page {
 			$log_levels_option[ $log_level ] = ucfirst( $log_level );
 		}
 
-		$settings[] = array(
+		$settings['bh_wc_shipment_tracking_updates_log_level'] = array(
 			'title'   => __( 'Log Level', 'bh-wc-shipment-tracking-updates' ),
 			'label'   => __( 'Enable Logging', 'bh-wc-shipment-tracking-updates' ),
 			'type'    => 'select',
@@ -160,12 +152,12 @@ class Shipping_Settings_Page {
 		?>
 		<tr valign="top">
 			<th scope="row" class="titledesc">
-				<?php echo wp_kses_post( $data['title'] ); ?> <?php // echo $this->get_tooltip_html( $data ); ?>
+				<?php echo wp_kses_post( $data['title'] ); ?>
 			</th>
 			<td class="forminp">
 				<fieldset>
 					<legend class="screen-reader-text"><span><?php echo wp_kses_post( $data['title'] ); ?></span></legend>
-					<?php echo $data['desc']; ?>
+					<?php echo wp_kses_post( $data['desc'] ); ?>
 				</fieldset>
 			</td>
 		</tr>

@@ -98,6 +98,8 @@ class Settings implements Settings_Interface, Logger_Settings_Interface, WooComm
 
 
 	/**
+	 * Get the saved settings for a particular carrier.
+	 *
 	 * @see \WC_Shipment_Tracking_Actions::get_providers()
 	 *
 	 * @param string $provider The tracking provider identifier.
