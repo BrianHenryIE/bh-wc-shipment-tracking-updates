@@ -738,8 +738,8 @@ class API implements API_Interface {
 		if ( false === $tracking_data ) {
 			return array();
 		}
-		foreach ( $tracking_data as $tracking_datum ) {
-			$tracking_data->set_logger( $this->logger );
+		foreach ( $tracking_data as $tracking_details ) {
+			$tracking_details->set_logger( $this->logger );
 		}
 		return $tracking_data;
 	}
