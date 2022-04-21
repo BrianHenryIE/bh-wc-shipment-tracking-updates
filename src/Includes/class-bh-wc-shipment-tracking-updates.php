@@ -24,6 +24,7 @@ use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Admin_Order_List_Page;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Emails;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Order_Statuses;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Shipping_Settings_Page;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce_Shipment_Tracking\Admin_Order_View;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce_Shipment_Tracking\Order_List_Table;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -216,6 +217,10 @@ class BH_WC_Shipment_Tracking_Updates {
 		$table = new Order_List_Table();
 
 		add_filter( 'woocommerce_shipment_tracking_get_shipment_tracking_column', array( $table, 'append_tracking_detail_to_column' ), 10, 3 );
+
+		$admin_order_view = new Admin_Order_View( $this->api, $this->logger );
+
+		add_action( 'admin_footer', array( $admin_order_view, 'tracking_information_for_order' ), 1 );
 	}
 
 	/**
