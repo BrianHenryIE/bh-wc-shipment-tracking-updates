@@ -77,7 +77,12 @@ class Container implements ContainerInterface {
 				$usps_settings = $this->settings->get_tracker_settings( 'USPS' );
 
 				if ( is_null( $usps_settings ) || ! $usps_settings->is_configured() ) {
-					throw new class() extends Exception implements ContainerExceptionInterface{};
+					throw new class() extends Exception implements ContainerExceptionInterface{
+						/**
+						 * @var string $message
+						 */
+						protected $message = 'USPS settings not configured';
+					};
 				}
 				/** @var string $username Tracker_Settings_Interface::is_configured() has shown this is not null. */
 				$username          = $usps_settings->get_usps_username();
