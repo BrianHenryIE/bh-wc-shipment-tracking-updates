@@ -19,6 +19,7 @@ use BrianHenryIE\WC_Shipment_Tracking_Updates\Container;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Action_Scheduler\Scheduler;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Order_Statuses;
 use DateTime;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
@@ -114,13 +115,13 @@ class API implements API_Interface {
 		do {
 
 			$args = array(
+				'type'    => 'shop_order', // i.e. not refunds.
 				'limit'   => $limit,
 				'status'  => $statuses,
 				'orderby' => 'ID',
 				'order'   => 'DESC', // most recent.
 				'offset'  => $offset,
-				// TODO: date since, should be DateTime.THIS IS NOT WORKING!
-				// 'date_after' => $date_after,
+				// 'date_after' => $date_after, TODO: date since, should be DateTime.THIS IS NOT WORKING!
 				'return'  => 'ids',
 			);
 
@@ -141,8 +142,9 @@ class API implements API_Interface {
 
 			$orders_count = count( $orders_to_track );
 
-		} while ( $orders_count === $limit && $offset < 1501 );
+		} while ( $orders_count === $limit && $offset < 1500 );
 
+		// TODO: "desc" is set above, this might be unnecessary/undoing the work.
 		// reverse to check the oldest first.
 		return array_reverse( $all_orders_to_track );
 
@@ -162,8 +164,8 @@ class API implements API_Interface {
 	 *
 	 * @used-by Scheduler::execute_batch()
 	 *
-	 * @param array<int|string> $order_ids List of WooCommerce order ids to check for tracking updates.
-	 * @return array<int|string, array<string, Tracking_Details_Abstract>> array<order_id, array<tracking_number, details>>
+	 * @param array<int> $order_ids List of WooCommerce order ids to check for tracking updates.
+	 * @return array<int, array<string, Tracking_Details_Abstract>> array<order_id, array<tracking_number, details>>
 	 */
 	public function update_orders( array $order_ids ): array {
 
@@ -196,7 +198,12 @@ class API implements API_Interface {
 			$usps_tracking_numbers_orders
 		);
 
-		$details = $usps_tracker->query_multiple_tracking_numbers( $usps_tracking_numbers );
+		try {
+			$details = $usps_tracker->query_multiple_tracking_numbers( $usps_tracking_numbers );
+		} catch ( \Exception $e ) {
+			$this->logger->error( $e->getMessage(), array( 'exception' => $e ) );
+			return array();
+		}
 
 		$this->logger->debug( 'Tracking information returned for ' . count( $details ) . ' USPS tracking numbers', array( 'sample' => array_slice( $details, 0, 1, true ) ) );
 
@@ -204,7 +211,7 @@ class API implements API_Interface {
 
 		foreach ( $details as $tracking_number => $fresh_detail ) {
 
-			$order_id = $tracking_numbers[ $tracking_number ]['order_id'];
+			$order_id = (int) $tracking_numbers[ $tracking_number ]['order_id'];
 
 			$order = wc_get_order( $order_id );
 
@@ -240,7 +247,7 @@ class API implements API_Interface {
 					 *
 					 * @hooked bh_wc_shipment_tracking_updates_in-transit_email
 					 *
-					 * @param int|string $order_id Integer post id for WooCommerce order.
+					 * @param int $order_id Integer post id for WooCommerce order.
 					 * @param WC_Order $order WooCommerce order object.
 					 */
 					do_action( $send_email_action_name, $order_id, $order );
