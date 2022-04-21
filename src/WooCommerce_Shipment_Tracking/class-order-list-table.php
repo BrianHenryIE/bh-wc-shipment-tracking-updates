@@ -71,8 +71,18 @@ class Order_List_Table {
 
 		$new_html = '<ul>';
 
+		/**
+		 * The WooCommerce Shipment Tracking data for this tracking number.
+		 *
+		 * @var array{tracking_provider:string, custom_tracking_provider:string, custom_tracking_link:string, tracking_number:string, date_shipped:string, tracking_id:string} $tracking_item
+		 */
 		foreach ( $tracking_items as $tracking_item ) {
 
+			/**
+			 * Tracking item data formatted for display.
+			 *
+			 * @var array{formatted_tracking_provider:string, formatted_tracking_link:string} $formatted
+			 */
 			$formatted = $wc_shipment_tracking_actions->get_formatted_tracking_item( $order_id, $tracking_item );
 
 			$new_html .= sprintf( '<li><a href="%s" target="_blank">', esc_url( $formatted['formatted_tracking_link'] ) );
