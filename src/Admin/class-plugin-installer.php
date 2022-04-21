@@ -31,6 +31,7 @@ class Plugin_Installer {
 	 * Constructor.
 	 *
 	 * @param Settings_Interface $settings The plugin settings.
+	 * @param LoggerInterface    $logger The plugin's PSR logger.
 	 */
 	public function __construct( Settings_Interface $settings, LoggerInterface $logger ) {
 		$this->setLogger( $logger );
@@ -63,7 +64,7 @@ class Plugin_Installer {
 
 		$settings_url      = admin_url( '/admin.php?page=wc-settings&tab=shipping&section=' . $this->settings->get_plugin_slug() );
 		$install_actions[] = '<a href="' . $settings_url . '">Go to Shipment Tracking Updates settings</a>';
-		$logs_url          = admin_url( '/admin.php?page=' . $this->settings->get_plugin_slug() );
+		$logs_url          = admin_url( '/admin.php?page=' . $this->settings->get_plugin_slug() . '-logs' );
 		$install_actions[] = '<a href="' . $logs_url . '">Go to Shipment Tracking Updates logs</a>';
 
 		return $install_actions;
