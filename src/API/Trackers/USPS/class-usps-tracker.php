@@ -1,5 +1,7 @@
 <?php
 /**
+ * Tracker_Interface for querying USPS tracking numbers.
+ *
  * @see https://www.usps.com/business/web-tools-apis/track-and-confirm-api.htm
  *
  * @package brianhenryie/bh-wc-shipment-tracking-updates
@@ -11,6 +13,7 @@ use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\Tracker_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\Tracking_Details_Abstract;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Container;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\USPS\TrackConfirm;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
@@ -96,11 +99,21 @@ class USPS_Tracker implements Tracker_Interface {
 			// TODO: Temporary logging until the problem is understood.
 			if ( ! isset( $array_response['TrackResponse'] ) ) {
 
-				// <xml...><Error><Description>An unexpected system error has occurred. Please try again later or contact the System Administrator.
-
 				// Another case: $xml_response empty
+				if ( empty( $xml_response ) ) {
+					// USPS API is a bit pants. No need to log every time it sucks.
+					return array();
+				}
 
 				if ( isset( $array_response['Errror']['Description'] ) ) {
+
+					// <xml...><Error><Description>An unexpected system error has occurred. Please try again later or contact the System Administrator.
+					if ( stristr( $array_response['Errror']['Description'], 'An unexpected system error has occurred' ) ) {
+						// This happens very often so not worth logging.
+						// TODO: count how often it happens.
+						return array();
+					}
+
 					$error_message = $array_response['Errror']['Description'];
 				} else {
 					$error_message = 'Unexpectedly TrackResponse is not part of response';
@@ -124,9 +137,16 @@ class USPS_Tracker implements Tracker_Interface {
 				}
 			}
 
+			/**
+			 * @var string $tracking_number
+			 */
 			foreach ( $details as $tracking_number => $detail ) {
 
-				/** @var array<string, Tracking_Details_Abstract> $result $tracking_number will always be a string, and USPS_Tracking_Details extends Tracking_Details_Abstract. */
+				/**
+				 * Convert the array returned by USPS API into a Tracking_Details_Abstract object.
+				 *
+				 * @var array<string, Tracking_Details_Abstract> $result $tracking_number will always be a string, and USPS_Tracking_Details extends Tracking_Details_Abstract.
+				 */
 				$result[ $tracking_number ] = new USPS_Tracking_Details( $tracking_number, $detail, $this->logger );
 			}
 		}

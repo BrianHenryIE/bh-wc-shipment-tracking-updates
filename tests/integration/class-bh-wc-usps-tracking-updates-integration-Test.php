@@ -2,7 +2,7 @@
 /**
  * Class Plugin_Test. Tests the root plugin setup.
  *
- * @package BrianHenryIE\WC_Shipment_Tracking_Updates
+ * @package    brianhenryie/bh-wc-shipment-tracking-updates
  * @author     BrianHenryIE <BrianHenryIE@gmail.com>
  */
 

@@ -43,6 +43,8 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 		$this->carrier         = 'usps';
 		$this->details         = $details;
 
+		// $details['StatusCategory'] = 'Delivered';
+
 		if ( isset( $details['TrackSummary'] ) ) {
 			$track_summary = $details['TrackSummary'];
 			$this->set_last_updated_time( $track_summary );
@@ -51,8 +53,31 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 
 		} elseif ( isset( $details['Error'] ) ) {
 
-			// Probably says "A status update is not yet available on your package..."
-			// $this->logger->error( 'Error parsing tracking: ' . $tracking_number, array( 'details_array' => $details ) );
+			$error = $details['Error'];
+
+			if ( isset( $error['Description'] ) ) {
+
+				$error_description = $error['Description'];
+
+				$acceptable_errors = array(
+					'A status update is not yet available on your',
+				);
+
+				$is_acceptable_error = array_reduce(
+					$acceptable_errors,
+					function ( bool $carry, string $acceptable_error ) use ( $error_description ) {
+						return $carry || false !== stristr( $error_description, $acceptable_error );
+					},
+					false
+				);
+
+				if ( $is_acceptable_error ) {
+					return;
+				}
+			}
+
+			$this->logger->error( "Unexpected error with tracking number {$tracking_number}.", array( 'details_array' => $details ) );
+
 		}
 	}
 
@@ -96,7 +121,7 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 	/**
 	 * Parse the details for an expected delivery date.
 	 *
-	 * Input format e.g. "September 7, 2021"
+	 * Input format e.g. "September 7, 2021".
 	 *
 	 * @return ?DateTime
 	 */
@@ -160,10 +185,10 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 		// Please contact support so this status can be added to the plugin.
 		// The filters later in this class can be used to add it in the meantime.
 		if ( ! in_array( $usps_status, $this->get_not_picked_up_statuses(), true ) ) {
-			$this->logger->warning( 'An unexpected status was returned from USPS: ' . $usps_status, array( 'usps_status' => $usps_status ) );
+			$this->logger->notice( 'An unexpected status was returned from USPS: ' . $usps_status, array( 'usps_status' => $usps_status ) );
 		}
 
-		// TODO: Inbound Out of Customs
+		// TODO: Inbound Out of Customs.
 
 		return null;
 	}
@@ -200,6 +225,7 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 	protected function get_in_transit_statuses(): array {
 
 		$in_transit_statuses = array(
+			'USPS picked up item',
 			'Acceptance',
 			'Accepted at USPS Origin Facility',
 			'USPS in possession of item',
@@ -228,17 +254,20 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 			'Out for Delivery, Expected Delivery by 9:00pm',
 			'Out for Delivery',
 			'Delivery Attempted - No Access to Delivery Location',
-			'Held in Customs',
 			'Arrived at Facility',
 			'Arrival at Post Office',
 			'Processed Through Regional Facility',
-			'Processed through Facility',
+			'Processed Through Facility',
+
 			'Arrived at USPS Regional Destination Facility',
 			'Arrived at USPS Destination Facility',
 			'Departed',
 			'Departed Facility',
 			'Forwarded',
 			'Rescheduled to Next Delivery Day',
+
+			'Customs Clearance',
+			'Held in Customs',
 
 			'Delivery Exception, Animal Interference', // TODO: Use this as an example for actions.
 			'Arrived at Military Post Office', // TODO: Should this be considered delivered?!
@@ -277,7 +306,9 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 			'Delivered, Neighbor as Requested',
 			'Available for Pickup',
 			'Collect for Pick Up',
-			'Intercepted', // https://www.usps.com/manage/package-intercept.htm
+			'Intercepted', // @see https://www.usps.com/manage/package-intercept.htm
+
+			'Arrived', // Seems to mean delivered internationally?
 		);
 
 		/**
@@ -298,9 +329,12 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 	protected function get_returning_statuses(): array {
 
 		$returning_statuses = array(
-			'Delivered, To Original Sender',
+			'Delivered, To Original Sender', // This is "returned"... there must always be an earlier status that indicates "returning".
 			'Addressee Unknown',
 			'Sent to Mail Recovery Center',
+			'Insufficient Address', // Does this definitely mean returning?
+			'Moved, Left no Address',
+			'Return to Sender',
 		);
 
 		/**
