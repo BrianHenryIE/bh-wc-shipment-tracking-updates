@@ -25,7 +25,6 @@ use WP_CLI_Command;
 class CLI extends WP_CLI_Command {
 
 	/**
-	 * @see Settings::is_configured()
 	 *
 	 * @var Settings_Interface
 	 */
@@ -49,42 +48,36 @@ class CLI extends WP_CLI_Command {
 	}
 
 	/**
-	 * Query the tracking information for a single order number
+	 * Query the tracking information for a single order or list of orders.
 	 *
-	 * TODO: This could be a list of 1...n numbers?
-	 */
-	public function check_tracking_for_order_number( $args ) {
-
-		// $api->
-	}
-
-	/**
-	 * Query for n orders
+	 * `wp shipment_tracking_updates check_order_ids 1230 4506 7089`
 	 *
-	 * TODO: Starting from offset
+	 * Use in conjunction with regular cli functions:
+	 * `wp shipment_tracking_updates check_order_ids $(wp post list --post_type=shop_order --post_status=wc-processing --posts_per_page=10 --paged=1 --format=ids) --debug=bh-wc-shipment-tracking-updates`
+	 *
+	 * @param array<int|string, string> $args
 	 */
-	public function check_tracking_for_last_n_orders( $args ) {
+	public function check_tracking_for_order_numbers( array $args ): void {
 
-	}
+		$valid_order_ids = array();
 
-	/**
-	 * Should check past 250 "completed" orders and see whose tracking is still at "waiting for pickup".
-	 */
-	public function find_undelivered_orders() {
+		foreach ( $args as $arg ) {
+			$order_id = intval( $arg );
+			$order    = wc_get_order( $order_id );
+			if ( $order instanceof \WC_Order ) {
+				$valid_order_ids[] = $order_id;
+			}
+		}
 
+		$result = $this->api->update_orders( $valid_order_ids );
 	}
 
 	/**
 	 * `wp shipment_tracking_updates find_undispatched_orders`
 	 */
-	public function find_undispatched_orders() {
+	public function find_undispatched_orders(): void {
 
 		WP_CLI::log( 'Find undispatched orders.' );
-
-		if ( ! $this->settings->is_configured() ) {
-			WP_CLI::log( 'Not configured.' );
-			return;
-		}
 
 		$unmoved_tracking_details = $this->api->find_undispatched_orders();
 
@@ -96,14 +89,16 @@ class CLI extends WP_CLI_Command {
 		WP_CLI::log( 'order id, tracking number, equivalent status, last updated, carrier status ' );
 
 		foreach ( $unmoved_tracking_details as $tracking_number => $tracking_array ) {
-			$tracking_detail = $tracking_array['tracking_detail'];
-			$order_id        = $tracking_array['order_id'];
+			$tracking_details            = $tracking_array['tracking_details'];
+			$order_id                    = $tracking_array['order_id'];
+			$last_updated_time           = $tracking_details->get_last_updated_time();
+			$last_updated_time_formatted = is_null( $last_updated_time ) ? '' : $last_updated_time->format( DATE_ATOM );
 			WP_CLI::log(
 				$order_id . ','
-				. $tracking_detail->get_tracking_number() . ', '
-				. $tracking_detail->get_equivalent_order_status() . ', '
-				. $tracking_detail->get_last_updated_time()->format( DATE_ATOM )
-				. $tracking_detail->get_carrier_status() // . ', '
+				. $tracking_details->get_tracking_number() . ', '
+				. $tracking_details->get_equivalent_order_status() . ', '
+				. $last_updated_time_formatted
+				. $tracking_details->get_carrier_status() // . ', '
 			);
 		}
 
@@ -114,14 +109,15 @@ class CLI extends WP_CLI_Command {
 	 *
 	 * @ssince 2.2.0
 	 */
-	public function check_packed_orders() {
+	public function check_packed_orders(): void {
 
 		$result = $this->api->check_packed_orders();
 
-		WP_CLI::log( wp_json_encode( $result, JSON_PRETTY_PRINT ) );
+		$result_formatted = wp_json_encode( $result, JSON_PRETTY_PRINT );
+		$result_formatted = $result_formatted ? $result_formatted : '';
+
+		WP_CLI::log( $result_formatted );
 
 	}
-
-	// TODO: Find order for tracking number
 
 }
