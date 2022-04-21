@@ -528,27 +528,19 @@ class API implements API_Interface {
 	 */
 	public function get_order_ids_by_number_of_days_since_packed(): array {
 
-		// TODO: Change this query to only return the post ids.
 		$orders_query_args = array(
+			'type'   => 'shop_order',
 			'limit'  => -1,
 			'status' => array( Order_Statuses::PACKING_COMPLETE_WC_STATUS ),
-		// 'fields' => 'ids', // Didn't work with wc_get_orders(), maybe only works with WP_Query.
+			'return' => 'ids',
 		);
 
 		/**
-		 * ALL orders with packed status (i.e. not just those on the currently filtered page.)
+		 * Ids of all orders with packed status (i.e. not just those on the currently filtered page.)
 		 *
-		 * @var WC_Order[] $orders
+		 * @var int[] $order_ids
 		 */
-		$orders = wc_get_orders( $orders_query_args );
-
-		/** @var int[] $order_ids Those orders' order ids. */
-		$order_ids = array_map(
-			function( WC_Order $order ) {
-				return $order->get_id();
-			},
-			$orders
-		);
+		$order_ids = wc_get_orders( $orders_query_args );
 
 		/**
 		 * Find the DateTime that the order's status changed to "packed".
@@ -557,14 +549,14 @@ class API implements API_Interface {
 		 */
 		$orders_packed_time = array();
 
+		remove_filter( 'comments_clauses', array( 'WC_Comments', 'exclude_order_comments' ), 10 );
+
 		foreach ( $order_ids as $order_id ) {
 
 			// TODO: Fetch all comments for all orders in one go. (be careful with reship orders that were packed twice, i.e. sort by date desc).
 			$args = array(
 				'post_id' => $order_id,
 			);
-
-			remove_filter( 'comments_clauses', array( 'WC_Comments', 'exclude_order_comments' ), 10 );
 
 			/**
 			 * The order notes.
@@ -595,6 +587,8 @@ class API implements API_Interface {
 				}
 			}
 		}
+
+		add_filter( 'comments_clauses', array( 'WC_Comments', 'exclude_order_comments' ), 10, 1 );
 
 		$order_ids_by_number_of_days_since_packed = array();
 
