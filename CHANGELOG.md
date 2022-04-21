@@ -1,5 +1,33 @@
 # Changelog
 
+## 2.6.0
+
+* Add: Activator checks for USPS username from Address Validation plugin
+* Add: Richer data on admin order ui Shipment Tracking metabox
+* Add: wp cli command check_order_ids
+* Fix: Order status was sometimes not updating
+* Fix: Silence LicenseServer errors
+* Fix: Link to logs on plugin-installer installation complete page
+* Change: No longer changes order status after it has changed to "returning"
+* Change: Silence some known intermittent USPS errors
+
+## 2.5.2
+
+* Fix: deserialization bug where old logger was remembered.
+
+# 2.5.0 2022-March-14
+
+* Add: updated/delivered date to admin order view
+
+# 2.4.2 2022-Feb-25
+
+* Update: bh-wp-logger
+
+# 2.4.0
+
+* Add: Tracking information on admin order page
+* Fix: Add context to WC_Logger was comparing a string to an int and always returning early
+
 # 2.3.2
 
 * Add: check "packed" orders daily, and those without tracking numbers, mark complete after two days
