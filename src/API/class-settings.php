@@ -10,22 +10,20 @@
 
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates\API;
 
-use BrianHenryIE\WC_Shipment_Tracking_Updates\Action_Scheduler\Scheduler;
-use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\Tracker_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\Tracker_Settings_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS\USPS_Settings;
-use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS\USPS_Tracker;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Includes\BH_WC_Shipment_Tracking_Updates;
-use BrianHenryIE\WC_Shipment_Tracking_Updates\USPS\TrackConfirm;
-use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\API\Logger_Settings_Interface;
-use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\WooCommerce\WooCommerce_Logger_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\Logger_Settings_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\Logger_Settings_Trait;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\WooCommerce_Logger_Settings_Interface;
 use Psr\Log\LogLevel;
 
 /**
  * Only getters for settings.
  * Some hardcoded, some fetched from wp_options.
  */
-class Settings implements Settings_Interface, Logger_Settings_Interface, WooCommerce_Logger_Interface {
+class Settings implements Settings_Interface, WooCommerce_Logger_Settings_Interface {
+	use Logger_Settings_Trait;
 
 	const LOG_LEVEL_OPTION               = 'bh_wc_shipment_tracking_updates_log_level';
 	const ORDER_STATUSES_TO_WATCH_OPTION = 'bh_wc_shipment_tracking_updates_order_statuses_to_watch';
