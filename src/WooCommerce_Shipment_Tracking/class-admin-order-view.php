@@ -19,11 +19,11 @@ use Psr\Log\LoggerInterface;
 class Admin_Order_View {
 	use LoggerAwareTrait;
 
-    protected API_Interface $api;
+	protected API_Interface $api;
 
 	public function __construct( API_Interface $api, LoggerInterface $logger ) {
 		$this->setLogger( $logger );
-        $this->api = $api;
+		$this->api = $api;
 	}
 
 	/**
@@ -47,7 +47,7 @@ class Admin_Order_View {
 		if ( ! $is_shipment_tracking_script_enqueued ) {
 			return;
 		}
-        // We assume now we're on `edit.php?post_type=shop_order`.
+		// We assume now we're on `edit.php?post_type=shop_order`.
 
 		global $post;
 		$order_id = $post->ID;
