@@ -258,7 +258,11 @@ class API implements API_Interface {
 			} else {
 				$previous_detail = $order_meta_all_tracking[ $tracking_number ];
 
-				if ( $previous_detail->get_last_updated_time() !== $fresh_detail->get_last_updated_time() ) {
+				// TODO: get_equivalent_order_status() can be null.
+
+				// TODO: NB last_update_time isn't reliable.
+				if ( $previous_detail->get_last_updated_time() !== $fresh_detail->get_last_updated_time()
+				 || $order->get_status() !== $fresh_detail->get_equivalent_order_status() ) {
 					$updated_order_ids[] = $order_id;
 
 					// We have moved from one WooCommerce status to another, i.e. packed -> in-transit -> completed (delivered) / returning.
