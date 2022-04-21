@@ -13,7 +13,6 @@ use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Emails;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Order_Statuses;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Shipping_Settings_Page;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce_Shipment_Tracking\Order_List_Table;
-use WP_CLI\Fetchers\Plugin;
 use WP_Mock\Matcher\AnyInstance;
 
 /**

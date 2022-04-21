@@ -1,6 +1,6 @@
 <?php
 /**
- * @package           BrianHenryIE\WC_Shipment_Tracking_Updates
+ * @package           brianhenryie/bh-wc-shipment-tracking-updates
  */
 
 $GLOBALS['project_root_dir']   = $project_root_dir  = dirname( __FILE__, 2 );

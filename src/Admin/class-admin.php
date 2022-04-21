@@ -5,8 +5,7 @@
  * @link       http://BrianHenryIE.com
  * @since      2.0.0
  *
- * @package    BrianHenryIE\WC_Shipment_Tracking_Updates
- * @subpackage BrianHenryIE\WC_Shipment_Tracking_Updates/admin
+ * @package    brianhenryie/bh-wc-shipment-tracking-updates
  */
 
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Admin;
@@ -19,10 +18,6 @@ use Psr\Log\LoggerInterface;
  *
  * Defines the plugin name, version, and two examples hooks for how to
  * enqueue the admin-specific stylesheet and JavaScript.
- *
- * @package    BrianHenryIE\WC_Shipment_Tracking_Updates
- * @subpackage BrianHenryIE\WC_Shipment_Tracking_Updates/admin
- * @author     BrianHenryIE <BrianHenryIE@gmail.com>
  */
 class Admin {
 
@@ -49,19 +44,7 @@ class Admin {
 	 *
 	 * @since    1.0.0
 	 */
-	public function enqueue_styles() {
-
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
+	public function enqueue_styles(): void {
 
 		wp_enqueue_style( $this->settings->get_plugin_slug(), plugin_dir_url( __FILE__ ) . 'css/bh-wc-shipment-tracking-updates-admin.css', array(), $this->settings->get_plugin_version(), 'all' );
 
@@ -72,7 +55,7 @@ class Admin {
 	 *
 	 * @since    1.0.0
 	 */
-	public function enqueue_scripts() {
+	public function enqueue_scripts(): void {
 
 		$handle = $this->settings->get_plugin_slug();
 

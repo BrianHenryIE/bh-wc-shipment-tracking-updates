@@ -13,6 +13,7 @@ namespace BrianHenryIE\WC_Shipment_Tracking_Updates\API;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\Tracking_Details_Abstract;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Includes\CLI;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Action_Scheduler\Scheduler;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Admin_Order_List_Page;
 
 /**
  * Implemented by the API class.
@@ -54,11 +55,19 @@ interface API_Interface {
 	/**
 	 * Split `packed` orders into buckets of the number of full days passed since they were packed.
 	 *
+	 * @used-by Admin_Order_List_Page::print_packed_stats()
+	 *
 	 * @return array<string, array<int>> $order_ids_by_number_of_days_since_packed
 	 */
 	public function get_order_ids_by_number_of_days_since_packed(): array;
 
 	/**
+	 * The main API::update_orders() function only updates orders with changes to their tracking numbers' statuses. This function checks for orders without tracking numbers.
+	 * TODO: Check for "assumed delivered" orders -- overseas orders after a certain time, "Rescheduled to Next Delivery Day", "Awaiting Delivery Scan".
+	 *
+	 * @used-by Scheduler::check_packed_orders()
+	 * @used-by CLI::check_packed_orders()
+	 *
 	 * @return  array{count_packed_orders:int, count_old_packed_orders:int, orders_marked_completed_ids:array<int>, count_orders_without_tracking:int, count_orders_with_unsupported_tracking:int} Stats for CLI output.
 	 */
 	public function check_packed_orders(): array;

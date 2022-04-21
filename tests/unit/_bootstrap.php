@@ -2,7 +2,7 @@
 /**
  * PHPUnit bootstrap file for WP_Mock.
  *
- * @package           BrianHenryIE\WC_Shipment_Tracking_Updates
+ * @package           brianhenryie/bh-wc-shipment-tracking-updates
  */
 
 WP_Mock::setUsePatchwork( true );
