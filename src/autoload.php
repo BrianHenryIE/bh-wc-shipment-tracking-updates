@@ -37,3 +37,5 @@ require_once __DIR__ . '/strauss/autoload.php';
 $wpcs_autoloader = new WP_Namespace_Autoloader();
 $wpcs_autoloader->init();
 
+// After refactoring, deserializing from post meta was causing errors.
+class_alias( \BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS\USPS_Tracking_Details::class, 'BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS_Tracking_Details' );
