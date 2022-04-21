@@ -30,6 +30,7 @@ class Activator_Unit_Test extends \Codeception\Test\Unit {
 			array(
 				'args'   => array( USPS_Settings::USPS_USER_ID_OPTION ),
 				'return' => false,
+				'times'  => 1,
 			)
 		);
 
@@ -37,6 +38,15 @@ class Activator_Unit_Test extends \Codeception\Test\Unit {
 			'get_option',
 			array(
 				'args'   => array( 'bh-wc-address-validation-usps-username' ),
+				'return' => false,
+				'times'  => 1,
+			)
+		);
+
+		\WP_Mock::userFunction(
+			'get_option',
+			array(
+				'args'   => array( 'bh_wc_address_validation_usps_username' ),
 				'return' => false,
 				'times'  => 1,
 			)
@@ -67,6 +77,7 @@ class Activator_Unit_Test extends \Codeception\Test\Unit {
 			array(
 				'args'   => array( USPS_Settings::USPS_USER_ID_OPTION ),
 				'return' => false,
+				'times'  => 1,
 			)
 		);
 
@@ -93,6 +104,40 @@ class Activator_Unit_Test extends \Codeception\Test\Unit {
 			array(
 				'args'  => array( USPS_Settings::USPS_USER_ID_OPTION, 'FOOBAR' ),
 				'times' => 1,
+			)
+		);
+
+		Activator::activate();
+	}
+
+
+	/**
+	 * When it's already configured, even though another plugin has a USPS username, update_option will never be called.
+	 */
+	public function test_exits_early_when_already_configured(): void {
+
+		\WP_Mock::userFunction(
+			'get_option',
+			array(
+				'args'   => array( USPS_Settings::USPS_USER_ID_OPTION ),
+				'return' => 'ALREADY_CONFIGURED',
+				'times'  => 1,
+			)
+		);
+
+		\WP_Mock::userFunction(
+			'get_option',
+			array(
+				'args'   => array( 'bh-wc-address-validation-usps-username' ),
+				'return' => 'FOOBAR',
+				'times'  => 0,
+			)
+		);
+
+		\WP_Mock::userFunction(
+			'update_option',
+			array(
+				'times' => 0,
 			)
 		);
 

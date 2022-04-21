@@ -1,12 +1,13 @@
 <?php
 /**
- * Fired during plugin activation
+ * Fired during plugin activation.
+ *
+ * Checks for USPS username from other plugins to pre-fill the settings.
  *
  * @link       https://BrianHenryIE.com
  * @since      2.0.0
  *
- * @package    BrianHenryIE\WC_Shipment_Tracking_Updates
- * @subpackage BrianHenryIE\WC_Shipment_Tracking_Updates/includes
+ * @package           brianhenryie/bh-wc-shipment-tracking-updates
  */
 
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Includes;
@@ -15,32 +16,19 @@ use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS\USPS_Settings;
 
 /**
- * Fired during plugin activation.
- *
- * This class defines all code necessary to run during the plugin's activation.
- *
- * @since      1.0.0
- * @package    BrianHenryIE\WC_Shipment_Tracking_Updates
- * @subpackage BrianHenryIE\WC_Shipment_Tracking_Updates/includes
- * @author     BrianHenryIE <BrianHenryIE@gmail.com>
+ * Checks wp_options for USPS username saved by other plugins.
  */
 class Activator {
 
 	/**
-	 * Short Description. (use period)
-	 *
-	 * Long Description.
+	 * If we're not already configured, try to find a USPS username.
 	 *
 	 * @since    1.0.0
 	 */
 	public static function activate(): void {
 
-		self::find_usps_username();
-
-		// TODO: Check the last few weeks' orders... including "completed"?
-		// The scheduler will already start an update immediately.
-		if ( ! empty( get_option( USPS_Settings::USPS_USER_ID_OPTION ) ) ) {
-
+		if ( empty( get_option( USPS_Settings::USPS_USER_ID_OPTION ) ) ) {
+			self::find_usps_username();
 		}
 
 	}
@@ -50,13 +38,9 @@ class Activator {
 	 */
 	protected static function find_usps_username(): void {
 
-		// Look for USPS API key in other plugins.
-		if ( ! empty( get_option( USPS_Settings::USPS_USER_ID_OPTION ) ) ) {
-			return;
-		}
-
 		$option_names = array(
 			'bh-wc-address-validation-usps-username',
+			'bh_wc_address_validation_usps_username',
 			'usps_id', // @see https://wordpress.org/plugins/woocommerce-usps-address-verification/
 		);
 
