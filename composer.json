@@ -23,16 +23,20 @@
     },
     "repositories": [
         {
+            "type": "path",
+            "url": "../license-server"
+        },
+        {
+            "url": "https://github.com/BrianHenryIE/bh-wp-private-uploads",
+            "type": "git"
+        },
+        {
             "url": "https://github.com/BrianHenryIE/composer-phpstorm",
             "type": "git"
         },
         {
             "url": "https://github.com/WordPress/wordpress-develop",
             "type": "git"
-        },
-        {
-            "type": "path",
-            "url": "../bh-wp-logger"
         },
         {
             "url": "https://github.com/BrianHenryIE/bh-wp-logger",
@@ -49,10 +53,12 @@
     ],
     "require": {
         "brianhenryie/bh-wp-logger": "dev-master",
+        "ext-json": "*",
         "pablo-sg-pacheco/wp-namespace-autoloader": "dev-master",
         "php": ">=7.4",
         "psr/container": "^1.1",
-        "vinceg/usps-php-api": "^1.0"
+        "vinceg/usps-php-api": "^1.0",
+        "jamiemadden/licenseserver": "*"
     },
     "require-dev": {
         "10up/wp_mock": "0.4.2",
@@ -82,7 +88,7 @@
         "voku/portable-ascii": "dev-master",
         "woocommerce/woocommerce-sniffs": "^0.1.1",
         "wordpress/wordpress": "*",
-        "wp-cli/dist-archive-command": "dev-master",
+        "wp-cli/dist-archive-command": "dev-main",
         "wp-cli/wp-cli-bundle": "*",
         "wp-coding-standards/wpcs": "*  ",
         "wpackagist-plugin/woocommerce": "*",
@@ -108,19 +114,9 @@
             "namespace_replacement_patterns": {
                 "~BrianHenryIE\\\\(.*)~" : "BrianHenryIE\\WC_Shipment_Tracking_Updates\\\\$1"
             },
-            "override_autoload": {
-                "yahnis-elsts/plugin-update-checker": {
-                    "classmap": ["Puc"],
-                    "files": ["load-v4p11.php","vendor/PucReadmeParser.php"]
-                },
-                "erusev/parsedown": {
-                    "files": ["Parsedown.php"]
-                }
-            },
-            "exclude_from_prefix": {
-                "packages": ["yahnis-elsts/plugin-update-checker","erusev/parsedown"],
+            "exclude_from_copy": {
                 "file_patterns": [
-                    "/^psr.*$/"
+                    "~psr/log/Psr/Log/Test.*~"
                 ]
             }
         },
