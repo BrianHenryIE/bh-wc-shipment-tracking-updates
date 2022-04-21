@@ -23,6 +23,9 @@ class Admin_Order_List_Page_Unit_Test extends \Codeception\Test\Unit {
 
 	/**
 	 * Happy path.
+	 *
+	 * @covers ::print_packed_stats
+	 * @covers ::__construct
 	 */
 	public function test_print_list(): void {
 
@@ -41,8 +44,19 @@ class Admin_Order_List_Page_Unit_Test extends \Codeception\Test\Unit {
 		);
 
 		// Set up so it appears we're on the correct page.
-		$_GET['post_type']   = 'shop_order';
-		$_GET['post_status'] = 'wc-packed';
+		$GLOBALS['post_type']   = 'shop_order';
+		$GLOBALS['post_status'] = 'wc-packed';
+
+		$current_screen     = new \stdClass();
+		$current_screen->id = 'edit-shop_order';
+
+		\WP_Mock::userFunction(
+			'get_current_screen',
+			array(
+				'return' => $current_screen,
+				'times'  => 1,
+			)
+		);
 
 		\WP_Mock::userFunction(
 			'admin_url',
@@ -65,6 +79,7 @@ class Admin_Order_List_Page_Unit_Test extends \Codeception\Test\Unit {
 		ob_start();
 		$sut->print_packed_stats();
 
+		/** @var string $result */
 		$result = ob_get_clean();
 
 		$this->assertStringContainsString( '2 orders waiting 3 days since being packed.', $result );
@@ -79,8 +94,19 @@ class Admin_Order_List_Page_Unit_Test extends \Codeception\Test\Unit {
 
 		$api = $this->makeEmpty( API_Interface::class );
 
-		$_GET['post_type']   = 'not_shop_order';
-		$_GET['post_status'] = 'wc-packed';
+		$GLOBALS['post_type']   = 'shop_order';
+		$GLOBALS['post_status'] = 'wc-packed';
+
+		$current_screen     = new \stdClass();
+		$current_screen->id = 'NOT-edit-shop_order';
+
+		\WP_Mock::userFunction(
+			'get_current_screen',
+			array(
+				'return' => $current_screen,
+				'times'  => 1,
+			)
+		);
 
 		$sut = new Admin_Order_List_Page( $api );
 
@@ -98,8 +124,19 @@ class Admin_Order_List_Page_Unit_Test extends \Codeception\Test\Unit {
 
 		$api = $this->makeEmpty( API_Interface::class );
 
-		$_GET['post_type']   = 'shop_order';
-		$_GET['post_status'] = 'not-wc-packed';
+		$GLOBALS['post_type']   = 'shop_order';
+		$GLOBALS['post_status'] = 'wc-not-packed';
+
+		$current_screen     = new \stdClass();
+		$current_screen->id = 'edit-shop_order';
+
+		\WP_Mock::userFunction(
+			'get_current_screen',
+			array(
+				'return' => $current_screen,
+				'times'  => 1,
+			)
+		);
 
 		$sut = new Admin_Order_List_Page( $api );
 
@@ -124,8 +161,19 @@ class Admin_Order_List_Page_Unit_Test extends \Codeception\Test\Unit {
 		);
 
 		// Set up so it appears we're on the correct page.
-		$_GET['post_type']   = 'shop_order';
-		$_GET['post_status'] = 'wc-packed';
+		$GLOBALS['post_type']   = 'shop_order';
+		$GLOBALS['post_status'] = 'wc-packed';
+
+		$current_screen     = new \stdClass();
+		$current_screen->id = 'edit-shop_order';
+
+		\WP_Mock::userFunction(
+			'get_current_screen',
+			array(
+				'return' => $current_screen,
+				'times'  => 1,
+			)
+		);
 
 		$sut = new Admin_Order_List_Page( $api );
 
