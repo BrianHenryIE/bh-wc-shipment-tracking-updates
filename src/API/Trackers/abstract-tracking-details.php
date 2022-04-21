@@ -13,11 +13,13 @@ namespace BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers;
 
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Order_Statuses;
 use DateTime;
+use Psr\Log\LoggerAwareTrait;
 
 /**
  * Data object for tracking number updates.
  */
 abstract class Tracking_Details_Abstract {
+	use LoggerAwareTrait;
 
 	/**
 	 * The tracking number.
