@@ -11,10 +11,8 @@ namespace BrianHenryIE\WC_Shipment_Tracking_Updates;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\API;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Includes\BH_WC_Shipment_Tracking_Updates;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\Logger;
 
-/**
- *
- */
 class Plugin_Unit_Test extends \Codeception\Test\Unit {
 
 	protected function setup(): void {
@@ -36,20 +34,10 @@ class Plugin_Unit_Test extends \Codeception\Test\Unit {
 			array( BH_WC_Shipment_Tracking_Updates::class, '__construct' ),
 			function( $api, $settings, $logger ) {}
 		);
+
 		\Patchwork\redefine(
-			array( Settings::class, 'get_plugin_slug' ),
-			function(): string {
-				return 'bh-wc-shipment-tracking-updates'; }
-		);
-		\Patchwork\redefine(
-			array( Settings::class, 'get_log_level' ),
-			function(): string {
-				return 'info'; }
-		);
-		\Patchwork\redefine(
-			array( Settings::class, 'get_plugin_basename' ),
-			function(): string {
-				return 'bh-wc-shipment-tracking-updates/bh-wc-shipment-tracking-updates.php'; }
+			array( Logger::class, '__construct' ),
+			function( $settings ) {}
 		);
 
 		$plugin_root_dir = dirname( __DIR__, 2 ) . '/src';
@@ -59,6 +47,7 @@ class Plugin_Unit_Test extends \Codeception\Test\Unit {
 			array(
 				'args'   => array( \WP_Mock\Functions::type( 'string' ) ),
 				'return' => $plugin_root_dir . '/',
+				'times'  => 1,
 			)
 		);
 
@@ -67,71 +56,30 @@ class Plugin_Unit_Test extends \Codeception\Test\Unit {
 			array(
 				'args'   => array( \WP_Mock\Functions::type( 'string' ) ),
 				'return' => 'bh-wc-shipment-tracking-updates/bh-wc-shipment-tracking-updates.php',
+				'times'  => 1,
 			)
 		);
 
 		\WP_Mock::userFunction(
-			'register_activation_hook'
-		);
-
-		\WP_Mock::userFunction(
-			'register_deactivation_hook'
-		);
-
-		\WP_Mock::userFunction(
-			'get_option',
+			'register_activation_hook',
 			array(
-				'args'   => array( 'bh_wc_shipment_tracking_updates_log_level', 'info' ),
-				'return' => 'notice',
+				'times' => 1,
 			)
 		);
 
 		\WP_Mock::userFunction(
-			'get_option',
+			'register_deactivation_hook',
 			array(
-				'args'   => array( 'active_plugins' ),
-				'return' => array(),
+				'times' => 1,
 			)
 		);
 
-		\WP_Mock::userFunction(
-			'is_admin',
-			array(
-				'return' => false,
-			)
-		);
-
-		\WP_Mock::userFunction(
-			'get_current_user_id'
-		);
-
-		\WP_Mock::userFunction(
-			'wp_normalize_path',
-			array(
-				'return_arg' => true,
-			)
-		);
-
-		\WP_Mock::userFunction(
-			'get_option',
-			array(
-				'args'   => array( 'active_plugins' ),
-				'return' => array( 'woocommerce/woocommerce.php' ),
-			)
-		);
-
-		\WP_Mock::userFunction(
-			'did_action',
-			array(
-				'return' => false,
-			)
-		);
-
-		\WP_Mock::userFunction(
-			'add_action',
-			array(
-				'return' => false,
-			)
+		$slsswc = $this->makeEmpty( \BH_WC_Shipment_Tracking_Updates_SLSWC_Client::class );
+		\Patchwork\redefine(
+			array( \BH_WC_Shipment_Tracking_Updates_SLSWC_Client::class, 'get_instance' ),
+			function() use ( $slsswc ) {
+				return $slsswc;
+			}
 		);
 
 		ob_start();

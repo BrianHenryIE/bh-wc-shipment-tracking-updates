@@ -26,13 +26,17 @@
 
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates;
 
+use BH_WC_Shipment_Tracking_Updates_SLSWC_Client;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\API;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\API_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Includes\Activator;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Includes\BH_WC_Shipment_Tracking_Updates;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Includes\Deactivator;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\API\BH_WP_PSR_Logger;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\Logger;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\Logger_Settings_Interface;
+use Psr\Log\LogLevel;
 
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
@@ -74,6 +78,30 @@ function instantiate_bh_wc_shipment_tracking_updates(): API {
 	 * admin-specific hooks, and frontend-facing site hooks.
 	 */
 	new BH_WC_Shipment_Tracking_Updates( $api, $settings, $logger );
+
+	if ( class_exists( BH_WC_Shipment_Tracking_Updates_SLSWC_Client::class ) ) {
+		BH_WC_Shipment_Tracking_Updates_SLSWC_Client::get_instance( 'https://bhwp.ie/', __FILE__ );
+		/**
+		 * Silence Licence Server errors.
+		 *
+		 * @pararm array{level:string,message:string,context:array} $log_data
+		 *
+		 * @param Logger_Settings_Interface $settings
+		 * @param BH_WP_PSR_Logger $bh_wp_psr_logger
+		 */
+		add_filter(
+			$settings->get_plugin_slug() . '_bh_wp_logger_log',
+			function ( array $log_data, Logger_Settings_Interface $settings, BH_WP_PSR_Logger $bh_wp_psr_logger ) {
+				if ( isset( $log_data['context']['file'] ) && false !== strpos( $log_data['context']['file'], 'licenseserver' ) ) {
+					return null;
+				}
+
+				return $log_data;
+			},
+			10,
+			3
+		);
+	}
 
 	return $api;
 }
