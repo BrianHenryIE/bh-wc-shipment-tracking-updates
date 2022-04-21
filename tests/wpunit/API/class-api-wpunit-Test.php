@@ -232,6 +232,9 @@ class API_WPUnit_Test extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/**
+	 * @covers ::check_packed_orders
+	 */
 	public function test_check_packed_orders(): void {
 
 		$this->markTestIncomplete();
@@ -246,4 +249,56 @@ class API_WPUnit_Test extends \Codeception\TestCase\WPTestCase {
 
 	}
 
+	/**
+	 * Once an order's status has been set to "returning", subsequent updates might look like the package is "in-transit"
+	 * so let's leave it on "returning" and let a shop manager take it from here.
+	 *
+	 * @covers ::update_orders
+	 */
+	public function test_do_not_change_returning_status():void {
+
+		$logger   = new ColorLogger();
+		$settings = new Settings();
+
+		// Since the plugin is not loaded, the order statuses aren't registered.
+		$order_statuses = new Order_Statuses( $logger );
+		$order_statuses->register_status();
+		add_filter( 'wc_order_statuses', array( $order_statuses, 'add_order_status_to_woocommerce' ) );
+
+		$tracking_query_result = $this->makeEmpty(
+			Tracking_Details_Abstract::class,
+			array(
+				'get_equivalent_order_status' => Order_Statuses::IN_TRANSIT_WC_STATUS,
+			)
+		);
+
+		$usps_tracker = $this->makeEmpty(
+			Tracker_Interface::class,
+			array(
+				'query_multiple_tracking_numbers' => array( '123' => $tracking_query_result ),
+			)
+		);
+
+		$container = $this->makeEmpty(
+			ContainerInterface::class,
+			array(
+				'get' => $usps_tracker,
+			)
+		);
+
+		$api = new API( $container, $settings, $logger );
+
+		$order = new WC_Order();
+		$order->set_status( Order_Statuses::RETURNING_WC_STATUS );
+		$order_id = $order->save();
+
+		$tracking_number = '123';
+		wc_st_add_tracking_number( $order_id, $tracking_number, 'usps' );
+
+		$result = $api->update_orders( array( $order_id ) );
+
+		$order = wc_get_order( $order_id );
+		$this->assertEquals( Order_Statuses::RETURNING_WC_STATUS, $order->get_status() );
+
+	}
 }
