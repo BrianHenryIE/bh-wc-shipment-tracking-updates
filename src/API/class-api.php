@@ -714,4 +714,28 @@ class API implements API_Interface {
 
 		return $result;
 	}
+
+	/**
+	 * @param int $order_id
+	 *
+	 * @return array<string, Tracking_Details_Abstract>
+	 */
+	public function get_saved_tracking_data_for_order( int $order_id ): array {
+
+		$order = wc_get_order( $order_id );
+
+		if ( ! ( $order instanceof WC_Order ) ) {
+			return array();
+		}
+
+		/** @var array<string, Tracking_Details_Abstract>|false $tracking_data */
+		$tracking_data = $order->get_meta( self::BH_WC_SHIPMENT_TRACKING_UPDATES_ORDER_META_KEY, true );
+		if ( false === $tracking_data ) {
+			return array();
+		}
+		foreach ( $tracking_data as $tracking_datum ) {
+			$tracking_data->set_logger( $this->logger );
+		}
+		return $tracking_data;
+	}
 }

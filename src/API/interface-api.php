@@ -63,4 +63,10 @@ interface API_Interface {
 	 */
 	public function check_packed_orders(): array;
 
+	/**
+	 * @param int $order_id
+	 *
+	 * @return array<string, Tracking_Details_Abstract>
+	 */
+	public function get_saved_tracking_data_for_order( int $order_id ): array;
 }
