@@ -1,5 +1,6 @@
 <?php
 /**
+ * Adds a bulk action "Change status to packed".
  * Displays a list of number-of-days-since-packed : number-of-orders.
  *
  * TODO: Add bulk actions to change between new order statuses.
@@ -95,5 +96,97 @@ class Admin_Order_List_Page {
 		echo '</div>';
 
 	}
+
+
+
+	/**
+	 * Add "Change status to packed" to bulk actions drop-down, immediately after "Change status to processing".
+	 *
+	 * <option value="mark_packed">Change status to packed</option>
+	 *
+	 * @see https://rudrastyh.com/woocommerce/bulk-change-custom-order-status.html
+	 *
+	 * @hooked bulk_actions-edit-shop_order
+
+	 * @param array<string,string> $bulk_actions The existing bulk action on the shop_order list page.
+	 * @return array<string,string>
+	 */
+	public function register_bulk_action_print_shipping_labels_pdf( array $bulk_actions ): array {
+
+		$new_bulk_actions = array();
+		foreach ( $bulk_actions as $key => $value ) {
+			$new_bulk_actions[ $key ] = $value;
+			if ( 'mark_processing' === $key ) {
+				$new_bulk_actions['mark_packed'] = 'Change status to packed';
+			}
+		}
+
+		return $new_bulk_actions;
+	}
+
+	/**
+	 * @see https://rudrastyh.com/woocommerce/bulk-change-custom-order-status.html
+	 *
+	 * @hooked admin_action_mark_packed
+	 */
+	public function update_order_statuses(): void {
+
+		if ( false === check_admin_referer( 'bulk-posts' ) ) {
+			return;
+		}
+
+		// If an array with order IDs is not presented, exit the function.
+		// 'post' as in post id, not HTTP POST.
+		if ( ! isset( $_REQUEST['post'] ) && ! is_array( $_REQUEST['post'] ) ) {
+
+			// TODO: Admin notice to say "none selected".
+
+			return;
+		}
+
+		$order_ids = array_map( 'intval', $_REQUEST['post'] );
+
+		foreach ( $order_ids as $order_id ) {
+			$order = wc_get_order( $order_id );
+			if ( ! ( $order instanceof \WC_Order ) ) {
+				continue;
+			}
+			$order->update_status( Order_Statuses::PACKING_COMPLETE_WC_STATUS );
+			$order->save();
+		}
+	}
+
+	/**
+	 * TODO: The wrong message is being printed! "50 order statuses changed.".
+	 *
+	 * @hooked admin_notices
+	 */
+	public function print_bulk_mark_packed_status_notice(): void {
+
+		global $pagenow, $typenow;
+
+		if ( 'shop_order' !== $typenow || 'edit.php' !== $pagenow || ! isset( $_REQUEST['marked_packed'] ) ) {
+			return;
+		}
+
+		if ( false === check_admin_referer( 'bulk-posts' ) ) {
+			return;
+		}
+
+		$changed = intval( $_REQUEST['marked_packed'] );
+
+		$message = sprintf( _n( 'Order status set to Packed.', '%i order statuses set to Packed.', $changed ), number_format_i18n( $changed ) );
+
+		$allowed_html = array(
+			'div' => array(
+				'class' => array(),
+			),
+			'p'   => array(),
+		);
+
+		echo wp_kses( "<div class=\"updated\"><p>{$message}</p></div>", $allowed_html );
+
+	}
+
 
 }
