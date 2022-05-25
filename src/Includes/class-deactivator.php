@@ -65,7 +65,7 @@ class Deactivator {
 
 		foreach ( $orders as $order ) {
 			$existing_status = $order->get_status();
-			$order_note      = "Changed from {$existing_status} on plugin deactivation.";
+			$order_note      = "Changed from {$existing_status} on deactivation of Shipment Tracking Updates plugin.\n";
 			$order->set_status( 'completed', $order_note );
 			$order->add_meta_data( self::DEACTIVATED_ORDER_STATUS_CHANGED_META_KEY, array( gmdate( DATE_ATOM ), $existing_status ), true );
 			$order->save();
