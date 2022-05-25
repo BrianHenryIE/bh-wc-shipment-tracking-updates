@@ -159,16 +159,10 @@ class Order_Statuses {
 			return $order_statuses;
 		}
 
-		if ( ! in_array( self::PACKING_COMPLETE_WC_STATUS, $order_statuses, true ) ) {
-			$order_statuses[] = self::PACKING_COMPLETE_WC_STATUS;
-		}
-		if ( ! in_array( self::IN_TRANSIT_WC_STATUS, $order_statuses, true ) ) {
-			$order_statuses[] = self::IN_TRANSIT_WC_STATUS;
-		}
-		if ( ! in_array( self::RETURNING_WC_STATUS, $order_statuses, true ) ) {
-			$order_statuses[] = self::RETURNING_WC_STATUS;
-		}
+		$order_statuses[] = self::PACKING_COMPLETE_WC_STATUS;
+		$order_statuses[] = self::IN_TRANSIT_WC_STATUS;
+		$order_statuses[] = self::RETURNING_WC_STATUS;
 
-		return $order_statuses;
+		return array_unique( $order_statuses );
 	}
 }
