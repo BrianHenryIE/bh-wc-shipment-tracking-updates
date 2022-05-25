@@ -20,12 +20,15 @@ use BrianHenryIE\WC_Shipment_Tracking_Updates\Admin\Plugin_Installer;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Admin\Plugins_Page;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\API_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\Logger\DHL_Logs;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\Logger\Log_Level;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Admin_Order_List_Page;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Emails;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Order_Statuses;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Shipping_Settings_Page;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce_Shipment_Tracking\Admin_Order_View;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce_Shipment_Tracking\Order_List_Table;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\API\BH_WP_PSR_Logger;
 use Exception;
 use Psr\Log\LoggerInterface;
 use WP_CLI;
@@ -99,6 +102,8 @@ class BH_WC_Shipment_Tracking_Updates {
 		$this->define_woocommerce_email_hooks();
 		$this->define_settings_page_hooks();
 		$this->define_admin_order_list_page_hooks();
+
+		$this->define_logger_hooks();
 	}
 
 	/**
@@ -262,6 +267,7 @@ class BH_WC_Shipment_Tracking_Updates {
 
 	/**
 	 * Add an admin notice on the orders list page for packed orders, displaying stats on how long they have been waiting pickup.
+	 * Add a bulk action to mark orders as packed.
 	 *
 	 * @since 2.2.0
 	 */
@@ -270,5 +276,28 @@ class BH_WC_Shipment_Tracking_Updates {
 		$admin_order_list_page = new Admin_Order_List_Page( $this->api );
 
 		add_action( 'admin_notices', array( $admin_order_list_page, 'print_packed_stats' ) );
+
+		add_filter( 'bulk_actions-edit-shop_order', array( $admin_order_list_page, 'register_bulk_action_print_shipping_labels_pdf' ), 100 );
+		add_action( 'admin_action_mark_packed', array( $admin_order_list_page, 'update_order_statuses' ) );
+		add_action( 'admin_notices', array( $admin_order_list_page, 'print_bulk_mark_packed_status_notice' ) );
+	}
+
+	/**
+	 * Hooks to manipulate the logging behaviour.
+	 *
+	 * * Change some info logs to debug.
+	 * * Add JSON in log messages to the context array.
+	 *
+	 * @see BH_WP_PSR_Logger::log()
+	 */
+	protected function define_logger_hooks(): void {
+
+		$hook = $this->settings->get_plugin_slug() . '_bh_wp_logger_log';
+
+		$log_level = new Log_Level();
+		add_filter( $hook, array( $log_level, 'info_to_debug' ), 10, 3 );
+
+		$dhl_logs = new DHL_Logs();
+		add_filter( $hook, array( $dhl_logs, 'add_message_json_to_context' ), 10, 3 );
 	}
 }

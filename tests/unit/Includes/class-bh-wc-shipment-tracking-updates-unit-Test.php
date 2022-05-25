@@ -8,11 +8,14 @@ use BrianHenryIE\WC_Shipment_Tracking_Updates\Admin\Plugin_Installer;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Admin\Plugins_Page;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\API_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\Logger\DHL_Logs;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\Logger\Log_Level;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Admin_Order_List_Page;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Emails;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Order_Statuses;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Shipping_Settings_Page;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce_Shipment_Tracking\Order_List_Table;
+use Codeception\Stub\Expected;
 use WP_Mock\Matcher\AnyInstance;
 
 /**
@@ -256,6 +259,39 @@ class BH_WC_Shipment_Tracking_Updates_Unit_Test extends \Codeception\Test\Unit {
 
 		$logger   = new ColorLogger();
 		$settings = $this->makeEmpty( Settings_Interface::class );
+		$api      = $this->makeEmpty( API_Interface::class );
+		new BH_WC_Shipment_Tracking_Updates( $api, $settings, $logger );
+	}
+
+
+	/**
+	 * @covers ::define_logger_hooks
+	 */
+	public function test_define_logger_hooks(): void {
+
+		$hook = 'bh-wc-shipment-tracking-updates_bh_wp_logger_log';
+
+		\WP_Mock::expectFilterAdded(
+			$hook,
+			array( new AnyInstance( Log_Level::class ), 'info_to_debug' ),
+			10,
+			3
+		);
+
+		\WP_Mock::expectFilterAdded(
+			$hook,
+			array( new AnyInstance( DHL_Logs::class ), 'add_message_json_to_context' ),
+			10,
+			3
+		);
+
+		$logger   = new ColorLogger();
+		$settings = $this->makeEmpty(
+			Settings_Interface::class,
+			array(
+				'get_plugin_slug' => Expected::once( 'bh-wc-shipment-tracking-updates' ),
+			)
+		);
 		$api      = $this->makeEmpty( API_Interface::class );
 		new BH_WC_Shipment_Tracking_Updates( $api, $settings, $logger );
 	}
