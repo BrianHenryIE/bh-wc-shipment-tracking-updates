@@ -59,7 +59,7 @@ class Scheduler {
 		}
 
 		if ( false === as_next_scheduled_action( self::SCHEDULED_UPDATE_HOOK ) ) {
-			as_schedule_recurring_action( time(), MINUTE_IN_SECONDS * 30, self::SCHEDULED_UPDATE_HOOK, array(), self::ACTION_SCHEDULER_GROUP );
+			as_schedule_recurring_action( time(), MINUTE_IN_SECONDS * 60, self::SCHEDULED_UPDATE_HOOK, array(), self::ACTION_SCHEDULER_GROUP );
 		}
 
 		if ( false === as_next_scheduled_action( self::SCHEDULED_CHECK_PACKED_ORDERS_HOOK ) ) {
