@@ -16,6 +16,7 @@ use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\Tracking_Details_Abst
 use BrianHenryIE\WC_Shipment_Tracking_Updates\USPS\TrackConfirm;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Order_Statuses;
 use DateTime;
+use DateTimeInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 
@@ -25,6 +26,8 @@ use Psr\Log\LoggerInterface;
 class USPS_Tracking_Details extends Tracking_Details_Abstract {
 
 	use LoggerAwareTrait;
+
+	protected ?string $usps_status_category = null;
 
 	/**
 	 * Construct a Tracking_Details_Abstract with data from USPS API.
@@ -36,14 +39,34 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 	 * @param LoggerInterface                       $logger A PSR logger.
 	 */
 	public function __construct( string $tracking_number, array $details, LoggerInterface $logger ) {
-		$logger->debug( 'Constructing USPS_Tracking_Details', array( $tracking_number, $details ) );
+		// $logger->debug( 'Constructing USPS_Tracking_Details', array( $tracking_number, $details ) );
 
 		$this->setLogger( $logger );
-		$this->tracking_number = $tracking_number;
+
 		$this->carrier         = 'usps';
+		$this->tracking_number = $tracking_number;
 		$this->details         = $details;
 
-		// $details['StatusCategory'] = 'Delivered';
+		$status_categories = array(
+			'',
+			'Pre-Shipment',
+			'Accepted',
+			'In Transit',
+			'Alert',
+			'Out for Delivery',
+			'Delivered',
+			'Delivered to Agent',
+			'Delivery Attempt',
+			'Available for Pickup',
+		);
+
+		if ( isset( $details['StatusCategory'] ) && ! empty( $details['StatusCategory'] ) ) {
+			$this->usps_status_category = $details['StatusCategory'];
+
+			if ( ! in_array( $details['StatusCategory'], $status_categories, true ) ) {
+				$logger->notice( 'New USPS StatusCategory : "' . $details['StatusCategory'] . '" - ' . $tracking_number, array( 'details=>$details' ) );
+			}
+		}
 
 		if ( isset( $details['TrackSummary'] ) ) {
 			$track_summary = $details['TrackSummary'];
@@ -163,6 +186,23 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 	 */
 	public function get_equivalent_order_status(): ?string {
 
+		if ( in_array( $this->carrier_status, $this->get_returning_statuses(), true ) ) {
+			return Order_Statuses::RETURNING_WC_STATUS;
+		}
+
+		switch ( $this->usps_status_category ) {
+			case null:
+				break;
+			case 'In Transit':
+			case 'Out for Delivery':
+				return Order_Statuses::IN_TRANSIT_WC_STATUS;
+				break;
+			case 'Delivered':
+			case 'Delivered to Agent':
+				return 'completed';
+				break;
+		}
+
 		$usps_status = $this->carrier_status;
 
 		if ( is_null( $usps_status ) ) {
@@ -187,8 +227,6 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 		if ( ! in_array( $usps_status, $this->get_not_picked_up_statuses(), true ) ) {
 			$this->logger->notice( 'An unexpected status was returned from USPS: ' . $usps_status, array( 'usps_status' => $usps_status ) );
 		}
-
-		// TODO: Inbound Out of Customs.
 
 		return null;
 	}
@@ -258,6 +296,7 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 			'Arrival at Post Office',
 			'Processed Through Regional Facility',
 			'Processed Through Facility',
+			'Processed through Facility',
 
 			'Arrived at USPS Regional Destination Facility',
 			'Arrived at USPS Destination Facility',
@@ -271,6 +310,8 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 
 			'Delivery Exception, Animal Interference', // TODO: Use this as an example for actions.
 			'Arrived at Military Post Office', // TODO: Should this be considered delivered?!
+
+			'Notice Left (No Secure Location Available)',
 		);
 
 		/**
