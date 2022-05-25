@@ -41,10 +41,11 @@ class Admin_Order_View {
 	public function tracking_information_for_order(): void {
 
 		// Check is 'wc-shipment-tracking-js' script enqueued.
-		$shipment_tracking_script_handle      = 'wc-shipment-tracking-js';
-		$is_shipment_tracking_script_enqueued = wp_scripts()->query( $shipment_tracking_script_handle );
+		$shipment_tracking_script_handle = 'wc-shipment-tracking-js';
+		/** @var false|\_WP_Dependency $enqueued_shipment_tracking_script Dependencies API helper class for the script. */
+		$enqueued_shipment_tracking_script = wp_scripts()->query( $shipment_tracking_script_handle );
 
-		if ( ! $is_shipment_tracking_script_enqueued ) {
+		if ( false === $enqueued_shipment_tracking_script ) {
 			return;
 		}
 		// We assume now we're on `edit.php?post_type=shop_order`.
@@ -71,7 +72,7 @@ class Admin_Order_View {
 			/**
 			 * Saved tracking details for this order.
 			 *
-			 * @var array<string, Tracking_Details_Abstract>|false $order_meta_all_tracking
+			 * @var array<string, Tracking_Details_Abstract> $order_meta_all_tracking
 			 */
 			$order_meta_all_tracking = $this->api->get_saved_tracking_data_for_order( $order_id );
 

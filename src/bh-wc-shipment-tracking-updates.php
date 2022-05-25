@@ -37,7 +37,7 @@ use BrianHenryIE\WC_Shipment_Tracking_Updates\Includes\Deactivator;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\API\BH_WP_PSR_Logger;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\Logger;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\Logger_Settings_Interface;
-use Psr\Log\LogLevel;
+
 
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {

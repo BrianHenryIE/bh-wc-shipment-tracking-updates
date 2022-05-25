@@ -12,7 +12,7 @@
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers;
 
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Order_Statuses;
-use DateTime;
+use DateTimeInterface;
 use Psr\Log\LoggerAwareTrait;
 
 /**
@@ -52,14 +52,14 @@ abstract class Tracking_Details_Abstract {
 	protected ?string $carrier_summary = null;
 
 	/**
-	 * The last time the status was updated (if available).
+	 * The last time the status was updated (if it has been updated).
 	 *
-	 * @var ?DateTime
+	 * @var ?DateTimeInterface
 	 */
-	protected ?DateTime $last_updated_time = null;
+	protected ?DateTimeInterface $last_updated_time = null;
 
 	/**
-	 * Detailed history from the carrier API.
+	 * Detailed step-by-step history from the carrier API.
 	 *
 	 * @var array<mixed>
 	 */
@@ -87,9 +87,9 @@ abstract class Tracking_Details_Abstract {
 	/**
 	 * Null when there has been no update yet.
 	 *
-	 * @return DateTime
+	 * @return DateTimeInterface
 	 */
-	public function get_last_updated_time(): ?DateTime {
+	public function get_last_updated_time(): ?DateTimeInterface {
 		return $this->last_updated_time;
 	}
 

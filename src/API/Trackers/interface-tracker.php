@@ -23,7 +23,7 @@ interface Tracker_Interface {
 	 *
 	 * @param string[] $tracking_numbers The tracking numbers to query.
 	 *
-	 * @return Tracking_Details_Abstract[]
+	 * @return array<string, Tracking_Details_Abstract> Tracking number, details.
 	 */
 	public function query_multiple_tracking_numbers( array $tracking_numbers ): array;
 
