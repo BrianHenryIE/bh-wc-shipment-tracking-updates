@@ -81,14 +81,19 @@ class USPS_Tracker implements Tracker_Interface {
 			$track_confirm_api = $this->container->get( Container::USPS_TRACK_CONFIRM_API );
 
 			foreach ( $job as $tracking_number ) {
-				$track_confirm_api->addPackage( $tracking_number );
+				$track_confirm_api->addPackage( str_replace( ' ', '', $tracking_number ) );
 			}
 
 			// Needed for expected delivery date.
 			$track_confirm_api->setRevision( 1 );
 
-			// Perform the request and return result.
-			$xml_response   = $track_confirm_api->getTracking();
+			try {
+				// Perform the request and return result.
+				$xml_response = $track_confirm_api->getTracking();
+			} catch ( \TypeError $error ) {
+				$this->logger->error( __CLASS__ . ' ' . __FUNCTION__ . '  ' . $error->getMessage() );
+				return array();
+			}
 			$array_response = $track_confirm_api->convertResponseToArray();
 
 			// $this->logger->debug( $xml_response );
@@ -99,7 +104,7 @@ class USPS_Tracker implements Tracker_Interface {
 			// TODO: Temporary logging until the problem is understood.
 			if ( ! isset( $array_response['TrackResponse'] ) ) {
 
-				// Another case: $xml_response empty
+				// Another case: when `$xml_response` empty.
 				if ( empty( $xml_response ) ) {
 					// USPS API is a bit pants. No need to log every time it sucks.
 					return array();
@@ -108,9 +113,10 @@ class USPS_Tracker implements Tracker_Interface {
 				if ( isset( $array_response['Errror']['Description'] ) ) {
 
 					// <xml...><Error><Description>An unexpected system error has occurred. Please try again later or contact the System Administrator.
-					if ( stristr( $array_response['Errror']['Description'], 'An unexpected system error has occurred' ) ) {
-						// This happens very often so not worth logging.
+					if ( 0 !== strpos( $array_response['Errror']['Description'], 'An unexpected system error has occurred' ) ) {
+						$this->logger->info( 'Intermittent USPS request failure: "' . $array_response['Errror']['Description'] . '". This happens regularly and can be safely ignored.' );
 						// TODO: count how often it happens.
+						// TODO: When querying 100+ tracking numbers, don't make subsequent requests if the first fails.
 						return array();
 					}
 
