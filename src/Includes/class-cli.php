@@ -105,7 +105,7 @@ class CLI extends WP_CLI_Command {
 	}
 
 	/**
-	 * `wp shipment_tracking_updates check_packed_orders`
+	 * `wp shipment_tracking_updates check_packed_orders --debug=bh-wc-shipment-tracking-updates`
 	 *
 	 * @ssince 2.2.0
 	 */
