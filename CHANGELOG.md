@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.7.2
+
+* Add: DHL
+* Add: UPS
+* Add: "Change status to Packed" admin UI orders list page bulk action
+* Fix: Remove `$class_map_file` global
+* Improve: Wording when order status is changed on plugin deactivation
+* Change: Polls APIs hourly (previously every 30 minutes) because of DHL rate limits
+
 ## 2.6.0
 
 * Add: Activator checks for USPS username from Address Validation plugin

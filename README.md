@@ -36,7 +36,8 @@ Automatically changes order status when:
 * Use meta key to only send each email once for each tracking number.
 * Warn about custom order statuses accessed via REST API (e.g. fulfillment/dropshipping)
 * Gutenberg block for the top of every frontpage to show customers their last order and its status.
-* Other carriers ... DHL, UPS
+* ~~Other carriers ... DHL, UPS~~
 * ~~Do not change status from "returning" to "completed"~~
 * "delete settings on uninstall" option.
 * When a tracking number is added, it should be instantly checked.
+* Show delivery date on completed orders.
