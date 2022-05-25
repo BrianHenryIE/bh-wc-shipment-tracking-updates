@@ -81,8 +81,8 @@ class Admin_Order_View {
 
 			$tracking_detail = $order_meta_all_tracking[ $tracking_number ];
 
-			if ( ! is_null( $tracking_detail->get_expected_delivery_time() ) ) {
-				$new_html = 'Expected delivery: ' . $tracking_detail->get_expected_delivery_time()->format( 'l, d-M' );
+			if ( ! is_null( $tracking_detail->get_delivery_time() ) ) {
+				$new_html = 'Expected delivery: ' . $tracking_detail->get_delivery_time()->format( 'l, d-M' );
 			} elseif ( ! is_null( $tracking_detail->get_carrier_status() ) ) {
 				$new_html = $tracking_detail->get_carrier_status();
 			} else {

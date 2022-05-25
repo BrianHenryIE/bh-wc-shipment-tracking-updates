@@ -95,10 +95,11 @@ abstract class Tracking_Details_Abstract {
 
 	/**
 	 * Null when unavailable.
+	 * In the past when already delivered.
 	 *
-	 * @return DateTime|null
+	 * @return ?DateTimeInterface
 	 */
-	abstract public function get_expected_delivery_time(): ?DateTime;
+	abstract public function get_delivery_time(): ?DateTimeInterface;
 
 	/**
 	 * Get the tracking number this object represents.

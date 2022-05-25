@@ -52,13 +52,16 @@
         }
     ],
     "require": {
-        "brianhenryie/bh-wp-logger": "dev-master",
+        "ext-dom": "*",
         "ext-json": "*",
+        "brianhenryie/bh-wp-logger": "dev-master",
+        "dhl/sdk-api-unified-tracking": "^2.1",
+        "gabrielbull/ups-api": "^2.0",
         "pablo-sg-pacheco/wp-namespace-autoloader": "dev-master",
-        "php": ">=7.4",
+        "php": "^7.4",
+        "php-http/guzzle7-adapter": "*",
         "psr/container": "^1.1",
-        "vinceg/usps-php-api": "^1.0",
-        "jamiemadden/licenseserver": "*"
+        "vinceg/usps-php-api": "^1.0"
     },
     "require-dev": {
         "10up/wp_mock": "0.4.2",
@@ -179,5 +182,6 @@
         "create-plugin-archive": [
             "vendor/bin/wp dist-archive src --plugin-dirname=$(basename \"$PWD\")"
         ]
+
     }
 }

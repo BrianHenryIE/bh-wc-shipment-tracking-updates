@@ -93,11 +93,11 @@ class Order_List_Table {
 			if ( isset( $order_meta_all_tracking_updates[ $tracking_number ] ) ) {
 				$tracking_detail = $order_meta_all_tracking_updates[ $tracking_number ];
 
-				if ( ! is_null( $tracking_detail->get_expected_delivery_time() ) ) {
+				if ( ! is_null( $tracking_detail->get_delivery_time() ) ) {
 					$new_html .= '<p style="color:#2271b1;">';
 					$new_html .= '<span class="description" style="color: #999; margin-right:3px; display:inline-block;">Expected delivery:</span>';
 					$new_html .= '<span class="expected-delivery" style="display:inline-block">';
-					$new_html .= $tracking_detail->get_expected_delivery_time()->format( 'l, d-M' );
+					$new_html .= $tracking_detail->get_delivery_time()->format( 'l, d-M' );
 					$new_html .= '</span>';
 					$new_html .= '</p>';
 

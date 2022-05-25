@@ -8,11 +8,16 @@
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates;
 
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\DHL\DHL_Settings;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\DHL\DHL_Tracker;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\Tracker_Settings_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\UPS\UPS_Settings;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\UPS\UPS_Tracker;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS\USPS_Settings;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS\USPS_Settings_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS\USPS_Tracker;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS\WP_USPS_TrackConfirm_API;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\Dhl\Sdk\UnifiedTracking\Service\ServiceFactory;
 use Exception;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
@@ -35,8 +40,10 @@ class Container implements ContainerInterface {
 	 */
 	protected Settings_Interface $settings;
 
-	const USPS_SHIPMENT_TRACKER  = 'usps_shipment_tracker';
+	const USPS_SHIPMENT_TRACKER  = 'usps';
 	const USPS_TRACK_CONFIRM_API = 'usps_track_confirm_api';
+
+	const DHL_SHIPMENT_TRACKER = 'dhl';
 
 	/**
 	 * The types of items this container can return.
@@ -95,6 +102,35 @@ class Container implements ContainerInterface {
 
 				return $track_confirm_api;
 
+			case self::DHL_SHIPMENT_TRACKER:
+			case 'dhl-express':
+			case 'dhl-us':
+				$dhl_service_factory = new ServiceFactory();
+				$dhl_settings        = new DHL_Settings();
+				if ( ! $dhl_settings->is_configured() ) {
+					// TODO: What's the best response here?
+					throw new class() extends Exception implements ContainerExceptionInterface{
+						/**
+						 * @var string $message
+						 */
+						protected $message = 'DHL settings not configured';
+					};
+				}
+				return new DHL_Tracker( $dhl_service_factory, $dhl_settings, $this->logger );
+
+			case 'ups':
+			case 'upsdap':
+				$ups_settings = new UPS_Settings();
+				if ( ! $ups_settings->is_configured() ) {
+					// TODO: What's the best response here?
+					throw new class() extends Exception implements ContainerExceptionInterface{
+						/**
+						 * @var string $message
+						 */
+						protected $message = 'UPS settings not configured';
+					};
+				}
+				return new UPS_Tracker( $ups_settings, $this->logger );
 			default:
 				throw new class() extends Exception implements NotFoundExceptionInterface{};
 		}

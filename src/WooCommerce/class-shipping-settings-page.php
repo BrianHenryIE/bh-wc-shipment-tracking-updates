@@ -14,6 +14,8 @@
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce;
 
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\DHL\DHL_Settings;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\UPS\UPS_Settings;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS\USPS_Settings;
 use Psr\Log\LogLevel;
 
@@ -77,6 +79,32 @@ class Shipping_Settings_Page {
 			'desc'    => __( 'USPS requires the company name (not necessarily email address).', 'bh-wc-shipment-tracking-updates' ),
 			'default' => get_option( 'admin_email' ),
 			'id'      => USPS_Settings::USPS_SOURCE_ID_OPTION,
+		);
+
+		$settings[ DHL_Settings::DHL_CONSUMER_API_KEY_OPTION_NAME ] = array(
+			'title' => __( 'DHL Consumer API Key', 'bh-wc-shipment-tracking-updates' ),
+			'type'  => 'text',
+			'desc'  => __( 'https://developer.dhl.com/', 'bh-wc-shipment-tracking-updates' ),
+			'id'    => DHL_Settings::DHL_CONSUMER_API_KEY_OPTION_NAME,
+		);
+
+		$settings[ UPS_Settings::UPS_USER_ID_OPTION_NAME ] = array(
+			'title' => __( 'UPS User Id', 'bh-wc-shipment-tracking-updates' ),
+			'type'  => 'text',
+			'desc'  => __( 'https://www.ups.com/upsdeveloperkit?loc=en_US', 'bh-wc-shipment-tracking-updates' ),
+			'id'    => UPS_Settings::UPS_USER_ID_OPTION_NAME,
+		);
+
+		$settings[ UPS_Settings::UPS_PASSWORD_OPTION_NAME ] = array(
+			'title' => __( 'UPS User Password', 'bh-wc-shipment-tracking-updates' ),
+			'type'  => 'password',
+			'id'    => UPS_Settings::UPS_PASSWORD_OPTION_NAME,
+		);
+
+		$settings[ UPS_Settings::UPS_ACCESS_KEY_OPTION_NAME ] = array(
+			'title' => __( 'UPS Access Key', 'bh-wc-shipment-tracking-updates' ),
+			'type'  => 'text',
+			'id'    => UPS_Settings::UPS_ACCESS_KEY_OPTION_NAME,
 		);
 
 		$paid_statuses      = array();

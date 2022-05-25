@@ -22,7 +22,7 @@ class Admin_Order_View_WPUnit_Test extends \Codeception\TestCase\WPTestCase {
 	}
 
 	/**
-	 * Happy path test to proof-read the function is correct.
+	 * Happy path test to proofread the function is correct.
 	 *
 	 * Should enqueue a script.
 	 *
@@ -34,7 +34,7 @@ class Admin_Order_View_WPUnit_Test extends \Codeception\TestCase\WPTestCase {
 		$dummy_tracking = $this->makeEmpty(
 			Tracking_Details_Abstract::class,
 			array(
-				'get_expected_delivery_time' => new \DateTime(),
+				'get_delivery_time' => new \DateTime(),
 			)
 		);
 

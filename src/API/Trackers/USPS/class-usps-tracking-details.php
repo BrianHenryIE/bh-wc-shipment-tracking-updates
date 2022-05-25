@@ -123,9 +123,9 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 	 *
 	 * Input format e.g. "September 7, 2021".
 	 *
-	 * @return ?DateTime
+	 * @return ?DateTimeInterface
 	 */
-	public function get_expected_delivery_time(): ?DateTime {
+	public function get_delivery_time(): ?DateTimeInterface {
 
 		if ( ! isset( $this->details['ExpectedDeliveryDate'] ) ) {
 			return null;

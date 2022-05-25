@@ -15,12 +15,13 @@ namespace BrianHenryIE\WC_Shipment_Tracking_Updates\API;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\Tracker_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\Tracking_Details_Abstract;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS\USPS_Tracker;
-use BrianHenryIE\WC_Shipment_Tracking_Updates\Container;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Action_Scheduler\Scheduler;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Order_Statuses;
 use DateTime;
+use Exception;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 use WC_Order;
@@ -173,39 +174,53 @@ class API implements API_Interface {
 
 		$tracking_numbers = $this->get_tracking_numbers_for_orders( $order_ids );
 
-		$usps_tracking_numbers_orders = array_filter(
-			$tracking_numbers,
-			function( $element ) {
-				return 'usps' === $element['tracking_provider'];
+		$this->logger->debug( count( $tracking_numbers ) . ' tracking numbers found for orders' );
+
+		if ( empty( $tracking_numbers ) ) {
+			return array();
+		}
+
+		/** @var array<string, array> $tracking_numbers_by_provider */
+		$tracking_numbers_by_provider = array();
+		foreach ( $tracking_numbers as $tracking_number => $tracking_detail ) {
+			if ( ! isset( $tracking_numbers_by_provider[ $tracking_detail['tracking_provider'] ] ) ) {
+				$tracking_numbers_by_provider[ $tracking_detail['tracking_provider'] ] = array();
 			}
-		);
-
-		if ( empty( $usps_tracking_numbers_orders ) ) {
-			return array();
+			$tracking_numbers_by_provider[ $tracking_detail['tracking_provider'] ][ $tracking_number ] = $tracking_detail;
 		}
 
-		/**
-		 * An instance of a tracker API class for querying for tracking updates.
-		 *
-		 * @var Tracker_Interface $usps_tracker
-		 */
-		$usps_tracker = $this->container->get( Container::USPS_SHIPMENT_TRACKER );
+		$this->logger->debug( count( $tracking_numbers_by_provider ) . ' tracking providers found for orders' );
 
-		$usps_tracking_numbers = array_map(
-			function ( $element ) {
-				return $element['tracking_number'];
-			},
-			$usps_tracking_numbers_orders
-		);
+		$details = array();
 
-		try {
-			$details = $usps_tracker->query_multiple_tracking_numbers( $usps_tracking_numbers );
-		} catch ( \Exception $e ) {
-			$this->logger->error( $e->getMessage(), array( 'exception' => $e ) );
-			return array();
+		foreach ( $tracking_numbers_by_provider as $provider => $tracking_numbers_for_provider ) {
+
+			$this->logger->debug( count( $tracking_numbers_for_provider ) . ' tracking numbers found for ' . $provider );
+
+			/**
+			 * An instance of a tracker API class for querying for tracking updates.
+			 *
+			 * @var Tracker_Interface $tracker
+			 */
+			try {
+				$tracker = $this->container->get( $provider );
+			} catch ( NotFoundExceptionInterface $exception ) {
+				$this->logger->debug( 'No tracker available for ' . $provider );
+				continue;
+			} catch ( ContainerExceptionInterface $exception ) {
+				$this->logger->debug( $exception->getMessage() );
+				continue;
+			}
+
+			try {
+				$details = $details + $tracker->query_multiple_tracking_numbers( array_keys( $tracking_numbers_for_provider ) );
+			} catch ( Exception $e ) {
+				$this->logger->error( $e->getMessage(), array( 'exception' => $e ) );
+				continue;
+			}
 		}
 
-		$this->logger->debug( 'Tracking information returned for ' . count( $details ) . ' USPS tracking numbers', array( 'sample' => array_slice( $details, 0, 1, true ) ) );
+		$this->logger->debug( 'Tracking information returned for ' . count( $details ) . '  tracking numbers', array( 'sample' => array_slice( $details, 0, 1, true ) ) );
 
 		$updated_order_ids = array();
 
@@ -216,7 +231,14 @@ class API implements API_Interface {
 			$order = wc_get_order( $order_id );
 
 			if ( ! ( $order instanceof WC_Order ) ) {
-				$this->logger->error( 'Unexpectedly failed to instantiate order ' . $order_id, array( 'order_id' => $order_id ) );
+				$this->logger->error(
+					'Unexpectedly failed to instantiate order ' . $order_id . ' for tracking number ' . $tracking_number,
+					array(
+						'order_id'        => $order_id,
+						'tracking_number' => $tracking_number,
+						'tracking'        => $tracking_numbers[ $tracking_number ],
+					)
+				);
 				continue;
 			}
 
@@ -269,7 +291,7 @@ class API implements API_Interface {
 
 				// TODO: NB last_update_time isn't reliable.
 				if ( $previous_detail->get_last_updated_time() !== $fresh_detail->get_last_updated_time()
-				 || $order->get_status() !== $fresh_detail->get_equivalent_order_status() ) {
+				|| $order->get_status() !== $fresh_detail->get_equivalent_order_status() ) {
 					$updated_order_ids[] = $order_id;
 
 					// We have moved from one WooCommerce status to another, i.e. packed -> in-transit -> completed (delivered) / returning.
@@ -415,11 +437,11 @@ class API implements API_Interface {
 	 * Get the tracking number and shipping provider (DHL/USPS/...).
 	 *
 	 * @param array<int> $order_ids Array of WooCommerce order ids.
-	 * @return array<int|string, array{
+	 * @return array<string|string, array{
 	 *  tracking_number: string,
 	 *  tracking_provider: string,
 	 *  order_id: int|string
-	 * }>
+	 * }> Tracking number, details array.
 	 */
 	protected function get_tracking_numbers_for_orders( array $order_ids ): array {
 
@@ -452,7 +474,10 @@ class API implements API_Interface {
 
 			foreach ( $trackings_for_order as $tracking_for_order ) {
 
-				$tracking_provider = strtolower( $tracking_for_order['tracking_provider'] );
+				$tracking_provider = sanitize_title( $tracking_for_order['tracking_provider'] );
+				if ( empty( $tracking_provider ) ) {
+					$tracking_provider = sanitize_title( $tracking_for_order['custom_tracking_provider'] );
+				}
 
 				$tracking_number = (string) str_replace( ' ', '', $tracking_for_order['tracking_number'] );
 
@@ -733,13 +758,22 @@ class API implements API_Interface {
 			return array();
 		}
 
-		/** @var array<string, Tracking_Details_Abstract>|false $tracking_data */
 		$tracking_data = $order->get_meta( self::BH_WC_SHIPMENT_TRACKING_UPDATES_ORDER_META_KEY, true );
-		if ( false === $tracking_data ) {
+		if ( false === $tracking_data || ! is_array( $tracking_data ) ) {
 			return array();
 		}
 		foreach ( $tracking_data as $tracking_details ) {
-			$tracking_details->set_logger( $this->logger );
+			if ( $tracking_details instanceof Tracking_Details_Abstract ) {
+				$tracking_details->setLogger( $this->logger );
+			} else {
+				$this->logger->error(
+					'Expected Tracking_Details_Abstract',
+					array(
+						'order_id'      => $order_id,
+						'tracking_data' => $tracking_data,
+					)
+				);
+			}
 		}
 		return $tracking_data;
 	}
