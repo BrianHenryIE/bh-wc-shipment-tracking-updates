@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.7.3
+
+* Add USPS + UPS carrier statuses
+
 ## 2.7.2
 
 * Add: DHL
