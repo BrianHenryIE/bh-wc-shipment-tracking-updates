@@ -312,6 +312,8 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 			'Arrived at Military Post Office', // TODO: Should this be considered delivered?!
 
 			'Notice Left (No Secure Location Available)',
+
+			'No Access to Delivery Location', // Should this be a new "needs attention" status?
 		);
 
 		/**
@@ -376,6 +378,7 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 			'Insufficient Address', // Does this definitely mean returning?
 			'Moved, Left no Address',
 			'Return to Sender',
+			'Return to Sender Processed',
 		);
 
 		/**

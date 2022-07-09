@@ -81,10 +81,12 @@ class UPS_Tracking_Details extends Tracking_Details_Abstract {
 	public function get_equivalent_order_status(): ?string {
 
 		switch ( $this->carrier_status ) {
+			case 'Pickup Scan':
 			case 'Arrived at Facility':
 			case 'Departed from Facility':
 			case 'Processing at UPS Facility':
 			case 'A late UPS trailer arrival has caused a delay. We\'re adjusting plans to deliver your package as quickly as possible.':
+			case 'Out For Delivery Today':
 				return Order_Statuses::IN_TRANSIT_WC_STATUS;
 			case 'Delivered':
 				return 'completed';
