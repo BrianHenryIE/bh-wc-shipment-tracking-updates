@@ -128,7 +128,7 @@ class Shipping_Settings_Page {
 
 		$settings['bh_wc_shipment_tracking_updates_emails_link'] = array(
 			'title' => __( 'Emails', 'bh-wc-shipment-tracking-updates' ),
-			'desc'  => __( 'Configure emails for dispatched orders on the ', 'bh-wc-shipment-tracking-updates' ) . '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=email' ) . '">' . __( 'WooCommerce / Settings / Emails tab', 'bh-wc-shipment-tracking-updates' ) . '</a>.',
+			'desc'  => __( 'Configure emails for packed orders and dispatched orders on the ', 'bh-wc-shipment-tracking-updates' ) . '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=email' ) . '">' . __( 'WooCommerce / Settings / Emails tab', 'bh-wc-shipment-tracking-updates' ) . '</a>.',
 			'type'  => 'bh_wc_shipment_tracking_updates_text_html',
 		);
 
