@@ -51,14 +51,14 @@ class Plugins_Page {
 	 * @hooked plugin_action_links_{basename}
 	 *
 	 * @param array<int|string, string> $action_links The existing plugin links (usually "Deactivate").
-	 * @param string                    $_plugin_basename The plugin's directory/filename.php.
-	 * @param array<int|string, mixed>  $_plugin_data An array of plugin data. See `get_plugin_data()`.
-	 * @param string                    $_context     The plugin context. 'all'|'active'|'inactive'|'recently_activated'
-	 *                                                |'upgrade'|'mustuse'|'dropins'|'search'.
+	 * @param ?string                   $_plugin_basename The plugin's directory/filename.php.
+	 * @param ?array<int|string, mixed> $_plugin_data An array of plugin data. See `get_plugin_data()`.
+	 * @param ?string                   $_context     The plugin context. 'all'|'active'|'inactive'|'recently_activated'
+	 *                                               |'upgrade'|'mustuse'|'dropins'|'search'.
 	 *
 	 * @return array<int|string, string> The links to display below the plugin name on plugins.php.
 	 */
-	public function action_links( array $action_links, string $_plugin_basename, array $_plugin_data, string $_context ): array {
+	public function action_links( array $action_links, ?string $_plugin_basename, ?array $_plugin_data, ?string $_context ): array {
 
 		if ( ! is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
 			return $action_links;
