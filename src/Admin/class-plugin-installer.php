@@ -62,8 +62,13 @@ class Plugin_Installer {
 			return $install_actions;
 		}
 
+		$install_actions[] = '•';
+
 		$settings_url      = admin_url( '/admin.php?page=wc-settings&tab=shipping&section=' . $this->settings->get_plugin_slug() );
 		$install_actions[] = '<a href="' . $settings_url . '">Go to Shipment Tracking Updates settings</a>';
+
+		$install_actions[] = '•';
+
 		$logs_url          = admin_url( '/admin.php?page=' . $this->settings->get_plugin_slug() . '-logs' );
 		$install_actions[] = '<a href="' . $logs_url . '">Go to Shipment Tracking Updates logs</a>';
 
