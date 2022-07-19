@@ -57,6 +57,8 @@ class Admin_Order_List_Page {
 			return;
 		}
 
+		ksort( $order_ids_by_number_of_days_since_packed );
+
 		echo '<div class="notice">';
 
 		// TODO: Make it clear that these stats apply to all packed orders, not just the 20 currently being displayed.
@@ -102,7 +104,7 @@ class Admin_Order_List_Page {
 	/**
 	 * Add "Change status to packed" to bulk actions drop-down, immediately after "Change status to processing".
 	 *
-	 * <option value="mark_packed">Change status to packed</option>
+	 * `<option value="mark_packed">Change status to packed</option>`.
 	 *
 	 * @see https://rudrastyh.com/woocommerce/bulk-change-custom-order-status.html
 	 *
