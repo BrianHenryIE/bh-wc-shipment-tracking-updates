@@ -13,6 +13,7 @@
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce;
 
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Emails\Customer_Dispatched_Order_Email;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Emails\Customer_Packed_Order_Email;
 use WC_Email;
 
 /**
@@ -38,6 +39,7 @@ class Emails {
 
 		foreach ( $email_classes as $key => $value ) {
 			if ( 'WC_Email_Customer_Completed_Order' === $key ) {
+				$updated_email_classes['customer_packed_order']     = new Customer_Packed_Order_Email();
 				$updated_email_classes['customer_dispatched_order'] = new Customer_Dispatched_Order_Email();
 			}
 			$updated_email_classes[ $key ] = $value;
