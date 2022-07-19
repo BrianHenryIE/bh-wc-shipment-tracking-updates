@@ -39,8 +39,13 @@ class Emails {
 
 		foreach ( $email_classes as $key => $value ) {
 			if ( 'WC_Email_Customer_Completed_Order' === $key ) {
-				$updated_email_classes['customer_packed_order']     = new Customer_Packed_Order_Email();
-				$updated_email_classes['customer_dispatched_order'] = new Customer_Dispatched_Order_Email();
+				// Check the class exists or a fatal error is thrown when updating the plugin.
+				if ( class_exists( Customer_Packed_Order_Email::class ) ) {
+					$updated_email_classes['customer_packed_order'] = new Customer_Packed_Order_Email();
+				}
+				if ( class_exists( Customer_Dispatched_Order_Email::class ) ) {
+					$updated_email_classes['customer_dispatched_order'] = new Customer_Dispatched_Order_Email();
+				}
 			}
 			$updated_email_classes[ $key ] = $value;
 		}
