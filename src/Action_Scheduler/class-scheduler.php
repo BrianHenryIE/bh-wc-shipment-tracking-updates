@@ -3,8 +3,8 @@
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Action_Scheduler;
 
 use ActionScheduler;
-use BrianHenryIE\WC_Shipment_Tracking_Updates\API\API_Interface;
-use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\API_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\Settings_Interface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 use WC_Shipment_Tracking_Actions;

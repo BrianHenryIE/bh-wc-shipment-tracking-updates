@@ -6,12 +6,12 @@
  * @author  BrianHenryIE <BrianHenryIE@gmail.com>
  */
 
-namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Includes;
+namespace BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Includes;
 
 /**
  * Class Plugin_WP_Mock_Test
  *
- * @coversDefaultClass \BrianHenryIE\WC_Shipment_Tracking_Updates\Includes\I18n
+ * @coversDefaultClass \BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Includes\I18n
  */
 class I18n_Unit_Test extends \Codeception\Test\Unit {
 

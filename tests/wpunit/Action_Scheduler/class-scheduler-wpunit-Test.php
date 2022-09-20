@@ -3,8 +3,8 @@
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Action_Scheduler;
 
 use BrianHenryIE\ColorLogger\ColorLogger;
-use BrianHenryIE\WC_Shipment_Tracking_Updates\API\API_Interface;
-use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\API_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\Settings_Interface;
 use Codeception\Stub\Expected;
 
 

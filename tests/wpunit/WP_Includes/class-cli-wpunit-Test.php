@@ -1,13 +1,13 @@
 <?php
 
-namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Includes;
+namespace BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Includes;
 
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\API;
-use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\Settings_Interface;
 use Codeception\Stub\Expected;
 
 /**
- * @coversDefaultClass \BrianHenryIE\WC_Shipment_Tracking_Updates\Includes\CLI
+ * @coversDefaultClass \BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Includes\CLI
  */
 class CLI_WPUnit_Test extends \Codeception\TestCase\WPTestCase {
 

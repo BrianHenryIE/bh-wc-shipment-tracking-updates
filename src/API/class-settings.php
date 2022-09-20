@@ -12,7 +12,7 @@ namespace BrianHenryIE\WC_Shipment_Tracking_Updates\API;
 
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\Tracker_Settings_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS\USPS_Settings;
-use BrianHenryIE\WC_Shipment_Tracking_Updates\Includes\BH_WC_Shipment_Tracking_Updates;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\Settings_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\Logger_Settings_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\Logger_Settings_Trait;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\WooCommerce_Logger_Settings_Interface;

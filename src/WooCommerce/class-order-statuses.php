@@ -17,7 +17,7 @@ use Psr\Log\LoggerInterface;
  * Registers the post statuses with WordPress.
  * Adds them to WooCommerce via filter.
  * Adds them to WooCommerce's "paid statuses" list via filter.
- * Includes them in WooCommerce reports via filter.
+ * WP_Includes them in WooCommerce reports via filter.
  */
 class Order_Statuses {
 

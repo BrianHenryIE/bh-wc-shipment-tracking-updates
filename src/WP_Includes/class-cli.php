@@ -2,21 +2,21 @@
 /**
  * CLI interface to plugin's API.
  *
- * @see \BrianHenryIE\WC_Shipment_Tracking_Updates\API\API_Interface
+ * @see \BrianHenryIE\WC_Shipment_Tracking_Updates\API_Interface
  *
  * @link       https://BrianHenryIE.com
  * @since      2.0.0
  *
  * @package    BrianHenryIE\WC_Shipment_Tracking_Updates
- * @subpackage BrianHenryIE\WC_Shipment_Tracking_Updates\Includes
+ * @subpackage BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Includes
  *
  * @author     BrianHenryIE <BrianHenryIE@gmail.com>
  */
 
-namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Includes;
+namespace BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Includes;
 
-use BrianHenryIE\WC_Shipment_Tracking_Updates\API\API_Interface;
-use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\API_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\Settings_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\Tracking_Details_Abstract;
 use WP_CLI;
 use WP_CLI_Command;

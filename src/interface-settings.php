@@ -5,7 +5,7 @@
  * @package    brianhenryie/bh-wc-shipment-tracking-updates
  */
 
-namespace BrianHenryIE\WC_Shipment_Tracking_Updates\API;
+namespace BrianHenryIE\WC_Shipment_Tracking_Updates;
 
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Action_Scheduler\Scheduler;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\Tracker_Settings_Interface;

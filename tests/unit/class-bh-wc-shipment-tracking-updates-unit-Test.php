@@ -1,13 +1,11 @@
 <?php
 
-namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Includes;
+namespace BrianHenryIE\WC_Shipment_Tracking_Updates;
 
 use BrianHenryIE\ColorLogger\ColorLogger;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Action_Scheduler\Scheduler;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Admin\Plugin_Installer;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Admin\Plugins_Page;
-use BrianHenryIE\WC_Shipment_Tracking_Updates\API\API_Interface;
-use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Logger\DHL_Logs;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Logger\Log_Level;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Admin_Order_List_Page;
@@ -15,14 +13,15 @@ use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Emails;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Order_Statuses;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Shipping_Settings_Page;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce_Shipment_Tracking\Order_List_Table;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Includes\I18n;
 use Codeception\Stub\Expected;
 use WP_Mock\Matcher\AnyInstance;
 
 /**
  * Class BH_WC_Shipment_Tracking_Updates_Unit_Test
  *
- * @package BrianHenryIE\WC_Shipment_Tracking_Updates\Includes
- * @coversDefaultClass \BrianHenryIE\WC_Shipment_Tracking_Updates\Includes\BH_WC_Shipment_Tracking_Updates
+ * @package BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Includes
+ * @coversDefaultClass \BrianHenryIE\WC_Shipment_Tracking_Updates\BH_WC_Shipment_Tracking_Updates
  */
 class BH_WC_Shipment_Tracking_Updates_Unit_Test extends \Codeception\Test\Unit {
 

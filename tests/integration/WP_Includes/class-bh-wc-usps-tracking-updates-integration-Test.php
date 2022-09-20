@@ -6,7 +6,7 @@
  * @author  BrianHenryIE <BrianHenryIE@gmail.com>
  */
 
-namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Includes;
+namespace BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Includes;
 
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Admin\Admin;
 

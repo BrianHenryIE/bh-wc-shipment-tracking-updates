@@ -12,11 +12,11 @@ Automatically changes order status when:
 * USPS is returning the order
 
 
-![Settings](./assets/screenshot-1.png "Settings page")
+![Settings](./.wordpress-org/screenshot-1.png "Settings page")
 
-![Admin Order List UI](./assets/admin-order-list.png "Admin order list shows expected delivery data and delivered status")
+![Admin Order List UI](./.wordpress-org/admin-order-list.png "Admin order list shows expected delivery data and delivered status")
 
-![Admin Order UI Shipment Tracking](./assets/admin-order-view.png "Shipment Tracking metabox augmented with additional data")
+![Admin Order UI Shipment Tracking](./.wordpress-org/admin-order-view.png "Shipment Tracking metabox augmented with additional data")
 
 
 ### TODO:

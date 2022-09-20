@@ -2,7 +2,7 @@
 
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce;
 
-use BrianHenryIE\WC_Shipment_Tracking_Updates\API\API_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\API_Interface;
 
 /**
  * @coversDefaultClass \BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Admin_Order_List_Page

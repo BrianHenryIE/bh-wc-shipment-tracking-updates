@@ -11,6 +11,8 @@ class UPS_Scratch_Test extends \Codeception\TestCase\WPTestCase {
 	 */
 	public function test_api(): void {
 
+		$this->markTestIncomplete();
+
 		$logger = new ColorLogger();
 
 		$settings = new class() implements UPS_Settings_Interface {

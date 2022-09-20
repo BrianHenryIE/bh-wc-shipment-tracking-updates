@@ -8,7 +8,7 @@
 
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates;
 
-use BrianHenryIE\WC_Shipment_Tracking_Updates\API\API_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\API_Interface;
 
 /**
  * Verifies the plugin has been instantiated and added to PHP's $GLOBALS variable.

@@ -12,14 +12,14 @@
  * @subpackage BrianHenryIE\WC_Shipment_Tracking_Updates/includes
  */
 
-namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Includes;
+namespace BrianHenryIE\WC_Shipment_Tracking_Updates;
 
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Action_Scheduler\Scheduler;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Admin\Admin;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Admin\Plugin_Installer;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Admin\Plugins_Page;
-use BrianHenryIE\WC_Shipment_Tracking_Updates\API\API_Interface;
-use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\API_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\Settings_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Logger\DHL_Logs;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Logger\Log_Level;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Admin_Order_List_Page;
@@ -28,6 +28,8 @@ use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Order_Statuses;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Shipping_Settings_Page;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce_Shipment_Tracking\Admin_Order_View;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce_Shipment_Tracking\Order_List_Table;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Includes\CLI;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Includes\I18n;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\API\BH_WP_PSR_Logger;
 use Exception;
 use Psr\Log\LoggerInterface;

@@ -1,11 +1,11 @@
 <?php
 
-namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Includes;
+namespace BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Includes;
 
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS\USPS_Settings;
 
 /**
- * @coversDefaultClass \BrianHenryIE\WC_Shipment_Tracking_Updates\Includes\Activator
+ * @coversDefaultClass \BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Includes\Activator
  */
 class Activator_Unit_Test extends \Codeception\Test\Unit {
 

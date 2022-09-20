@@ -7,7 +7,7 @@
 
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates;
 
-use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\Settings_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\DHL\DHL_Settings;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\DHL\DHL_Tracker;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\Tracker_Settings_Interface;

@@ -8,10 +8,10 @@
  * @package    brianhenryie/bh-wc-shipment-tracking-updates
  */
 
-namespace BrianHenryIE\WC_Shipment_Tracking_Updates\API;
+namespace BrianHenryIE\WC_Shipment_Tracking_Updates;
 
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\Tracking_Details_Abstract;
-use BrianHenryIE\WC_Shipment_Tracking_Updates\Includes\CLI;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Includes\CLI;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Action_Scheduler\Scheduler;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Admin_Order_List_Page;
 

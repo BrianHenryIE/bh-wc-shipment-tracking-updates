@@ -6,13 +6,13 @@
  * @author  BrianHenryIE <BrianHenryIE@gmail.com>
  */
 
-namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Includes;
+namespace BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Includes;
 
 /**
  * Class I18n_Test
  *
  * @see I18n
- * @coversDefaultClass \BrianHenryIE\WC_Shipment_Tracking_Updates\Includes\I18n
+ * @coversDefaultClass \BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Includes\I18n
  */
 class I18n_WPUnit_Test extends \Codeception\TestCase\WPTestCase {
 

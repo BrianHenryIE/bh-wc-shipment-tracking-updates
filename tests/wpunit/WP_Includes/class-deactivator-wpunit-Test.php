@@ -8,10 +8,10 @@
  * @author  BrianHenryIE <BrianHenryIE@gmail.com>
  */
 
-namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Includes;
+namespace BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Includes;
 
 use BrianHenryIE\ColorLogger\ColorLogger;
-use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\Settings_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Order_Statuses;
 use WC_Order;
 
@@ -19,7 +19,7 @@ use WC_Order;
  * Class Deactivator_WPUnit_Test
  *
  * @see Deactivator
- * @coversDefaultClass \BrianHenryIE\WC_Shipment_Tracking_Updates\Includes\Deactivator
+ * @coversDefaultClass \BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Includes\Deactivator
  */
 class Deactivator_WPUnit_Test extends \Codeception\TestCase\WPTestCase {
 

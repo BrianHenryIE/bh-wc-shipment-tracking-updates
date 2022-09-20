@@ -10,7 +10,7 @@
 
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Admin;
 
-use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\Settings_Interface;
 use Psr\Log\LoggerInterface;
 
 /**

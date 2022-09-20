@@ -9,12 +9,12 @@
  * @since      2.0.0
  *
  * @package    BrianHenryIE\WC_Shipment_Tracking_Updates
- * @subpackage BrianHenryIE\WC_Shipment_Tracking_Updates\Includes
+ * @subpackage BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Includes
  *
  * @author     BrianHenryIE <BrianHenryIE@gmail.com>
  */
 
-namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Includes;
+namespace BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Includes;
 
 /**
  * Define the internationalization functionality.
@@ -41,7 +41,7 @@ class I18n {
 		load_plugin_textdomain(
 			'bh-wc-shipment-tracking-updates',
 			false,
-			plugin_basename( dirname( __FILE__, 2 ) ) . '/languages/'
+			plugin_basename( dirname( __FILE__, 3 ) ) . '/languages/'
 		);
 
 	}

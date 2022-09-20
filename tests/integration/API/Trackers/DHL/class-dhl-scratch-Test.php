@@ -15,6 +15,8 @@ class DHL_Scratch_Test extends \Codeception\TestCase\WPTestCase {
 
 	public function test_api(): void {
 
+		$this->markTestIncomplete();
+
 		// API: Shipment Tracking - Unified.
 		// api_key and consumer_key are synonymous.
 
@@ -37,6 +39,8 @@ class DHL_Scratch_Test extends \Codeception\TestCase\WPTestCase {
 	}
 
 	public function test_bad_credentials(): void {
+
+		$this->markTestIncomplete();
 
 		$settings = new class() implements DHL_Settings_Interface {
 

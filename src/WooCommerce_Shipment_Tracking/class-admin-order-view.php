@@ -8,7 +8,7 @@
 
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce_Shipment_Tracking;
 
-use BrianHenryIE\WC_Shipment_Tracking_Updates\API\API_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\API_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\Tracking_Details_Abstract;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;

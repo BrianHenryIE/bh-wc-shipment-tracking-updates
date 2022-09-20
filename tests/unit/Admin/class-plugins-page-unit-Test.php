@@ -9,7 +9,7 @@
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Admin;
 
 use BrianHenryIE\ColorLogger\ColorLogger;
-use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\Settings_Interface;
 
 /**
  * Tests a link is added and that it contains `admin.php...section=bh-wc-shipment-tracking-updates`.

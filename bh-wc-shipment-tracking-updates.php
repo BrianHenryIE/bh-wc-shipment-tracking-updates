@@ -29,11 +29,9 @@ namespace BrianHenryIE\WC_Shipment_Tracking_Updates;
 
 use BH_WC_Shipment_Tracking_Updates_SLSWC_Client;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\API;
-use BrianHenryIE\WC_Shipment_Tracking_Updates\API\API_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings;
-use BrianHenryIE\WC_Shipment_Tracking_Updates\Includes\Activator;
-use BrianHenryIE\WC_Shipment_Tracking_Updates\Includes\BH_WC_Shipment_Tracking_Updates;
-use BrianHenryIE\WC_Shipment_Tracking_Updates\Includes\Deactivator;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Includes\Activator;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Includes\Deactivator;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\API\BH_WP_PSR_Logger;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\Logger;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\Logger_Settings_Interface;

@@ -9,7 +9,6 @@
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates;
 
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\API;
-use BrianHenryIE\WC_Shipment_Tracking_Updates\Includes\BH_WC_Shipment_Tracking_Updates;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\Logger;
 
 class Plugin_Unit_Test extends \Codeception\Test\Unit {
@@ -39,7 +38,7 @@ class Plugin_Unit_Test extends \Codeception\Test\Unit {
 			function( $settings ) {}
 		);
 
-		$plugin_root_dir = dirname( __DIR__, 2 ) . '/src';
+		global $plugin_root_dir;
 
 		\WP_Mock::userFunction(
 			'plugin_dir_path',

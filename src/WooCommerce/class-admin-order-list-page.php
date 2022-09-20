@@ -10,7 +10,7 @@
 
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce;
 
-use BrianHenryIE\WC_Shipment_Tracking_Updates\API\API_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\API_Interface;
 
 /**
  * Prints an admin notice only on the admin order list page for the packed status.

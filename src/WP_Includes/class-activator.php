@@ -10,7 +10,7 @@
  * @package           brianhenryie/bh-wc-shipment-tracking-updates
  */
 
-namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Includes;
+namespace BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Includes;
 
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\USPS\USPS_Settings;

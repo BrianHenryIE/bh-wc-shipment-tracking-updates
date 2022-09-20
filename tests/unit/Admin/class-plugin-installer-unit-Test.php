@@ -10,7 +10,7 @@
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Admin;
 
 use BrianHenryIE\ColorLogger\ColorLogger;
-use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\Settings_Interface;
 
 /**
  * @coversDefaultClass \BrianHenryIE\WC_Shipment_Tracking_Updates\Admin\Plugin_Installer
@@ -65,7 +65,7 @@ class Plugin_Installer_Unit_Test extends \Codeception\Test\Unit {
 
 		$this->assertIsArray( $result );
 
-		$link_html = $result[0];
+		$link_html = $result[1];
 
 		$this->assertStringContainsString( 'Go to Shipment Tracking Updates settings', $link_html );
 
@@ -137,7 +137,7 @@ class Plugin_Installer_Unit_Test extends \Codeception\Test\Unit {
 
 		$this->assertIsArray( $result );
 
-		$link_html = $result[1];
+		$link_html = $result[3];
 
 		$this->assertStringContainsString( 'Go to Shipment Tracking Updates logs', $link_html );
 

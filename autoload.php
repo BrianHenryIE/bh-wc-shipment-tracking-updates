@@ -30,12 +30,12 @@ if ( file_exists( $class_map_file ) ) {
 			}
 		);
 	}
-	unset( $class_map_file );
 }
+unset( $class_map_file );
 
-require_once __DIR__ . '/strauss/autoload.php';
+require_once __DIR__ . '/vendor-prefixed/autoload.php';
 
-$wpcs_autoloader = new WP_Namespace_Autoloader();
+$wpcs_autoloader = new WP_Namespace_Autoloader( array( 'classes_dir' => array( 'src' ) ) );
 $wpcs_autoloader->init();
 
 // After refactoring, deserializing from post meta was causing errors.
