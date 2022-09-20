@@ -9,7 +9,6 @@
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates;
 
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API\API;
-use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Settings;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Includes\BH_WC_Shipment_Tracking_Updates;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\Logger;
 
@@ -74,13 +73,15 @@ class Plugin_Unit_Test extends \Codeception\Test\Unit {
 			)
 		);
 
-		$slsswc = $this->makeEmpty( \BH_WC_Shipment_Tracking_Updates_SLSWC_Client::class );
-		\Patchwork\redefine(
-			array( \BH_WC_Shipment_Tracking_Updates_SLSWC_Client::class, 'get_instance' ),
-			function() use ( $slsswc ) {
-				return $slsswc;
-			}
-		);
+		if ( class_exists( \BH_WC_Shipment_Tracking_Updates_SLSWC_Client::class ) ) {
+			$slsswc = $this->makeEmpty( \BH_WC_Shipment_Tracking_Updates_SLSWC_Client::class );
+			\Patchwork\redefine(
+				array( \BH_WC_Shipment_Tracking_Updates_SLSWC_Client::class, 'get_instance' ),
+				function () use ( $slsswc ) {
+					return $slsswc;
+				}
+			);
+		}
 
 		ob_start();
 

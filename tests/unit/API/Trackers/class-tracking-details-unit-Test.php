@@ -26,7 +26,7 @@ class Tracking_Details_Unit_Test extends \Codeception\Test\Unit {
 				return null;
 			}
 
-			public function get_expected_delivery_time(): ?DateTime {
+			public function get_delivery_time(): ?DateTime {
 				return null;
 			}
 		};
@@ -54,7 +54,7 @@ class Tracking_Details_Unit_Test extends \Codeception\Test\Unit {
 				return null;
 			}
 
-			public function get_expected_delivery_time(): ?DateTime {
+			public function get_delivery_time(): ?DateTime {
 				return null;
 			}
 		};
