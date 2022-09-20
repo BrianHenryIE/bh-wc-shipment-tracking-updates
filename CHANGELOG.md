@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.8.0
+
+* Add: Email when order is packed: "Your order is packed and ready to go"
+
 ## 2.7.3
 
 * Add USPS + UPS carrier statuses
