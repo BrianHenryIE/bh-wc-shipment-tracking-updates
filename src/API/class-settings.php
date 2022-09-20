@@ -45,7 +45,7 @@ class Settings implements Settings_Interface, WooCommerce_Logger_Settings_Interf
 	 * @return string
 	 */
 	public function get_plugin_version(): string {
-		return defined( 'BH_WC_SHIPMENT_TRACKING_UPDATES_VERSION' ) ? BH_WC_SHIPMENT_TRACKING_UPDATES_VERSION : '2.8.0';
+		return defined( 'BH_WC_SHIPMENT_TRACKING_UPDATES_VERSION' ) ? BH_WC_SHIPMENT_TRACKING_UPDATES_VERSION : '2.9.0';
 	}
 
 	/**
