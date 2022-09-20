@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.9.0
+
+* Add: allow customer to set their order status to completed in my-account
+* Language: auto-generate .pot file on releases
+* Update project structure
+
 ## 2.8.0
 
 * Add: Email when order is packed: "Your order is packed and ready to go"
