@@ -11,6 +11,7 @@
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Admin;
 
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Settings_Interface;
+use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -20,22 +21,22 @@ use Psr\Log\LoggerInterface;
  * enqueue the admin-specific stylesheet and JavaScript.
  */
 class Admin {
-
-	/** @var LoggerInterface  */
-	protected $logger;
-
-	/** @var Settings_Interface  */
-	protected $settings;
+	use LoggerAwareTrait;
 
 	/**
+	 * The plugin basename is used to find the plugin assets URL.
+	 */
+	protected Settings_Interface $settings;
+
+	/**
+	 * Constructor.
 	 *
-	 *
-	 * @param Settings_Interface $settings
-	 * @param LoggerInterface    $logger
+	 * @param Settings_Interface $settings The plugin settings.
+	 * @param LoggerInterface    $logger A PSR logger.
 	 */
 	public function __construct( $settings, $logger ) {
 
-		$this->logger   = $logger;
+		$this->setLogger( $logger );
 		$this->settings = $settings;
 	}
 
@@ -46,7 +47,9 @@ class Admin {
 	 */
 	public function enqueue_styles(): void {
 
-		wp_enqueue_style( $this->settings->get_plugin_slug(), plugin_dir_url( __FILE__ ) . 'css/bh-wc-shipment-tracking-updates-admin.css', array(), $this->settings->get_plugin_version(), 'all' );
+		$plugin_dir = plugin_dir_url( $this->settings->get_plugin_basename() );
+
+		wp_enqueue_style( $this->settings->get_plugin_slug(), $plugin_dir . 'assets/bh-wc-shipment-tracking-updates-admin.css', array(), $this->settings->get_plugin_version(), 'all' );
 
 	}
 
@@ -59,7 +62,9 @@ class Admin {
 
 		$handle = $this->settings->get_plugin_slug();
 
-		wp_enqueue_script( $handle, plugin_dir_url( __FILE__ ) . 'js/bh-wc-shipment-tracking-updates-admin.js', array( 'jquery' ), $this->settings->get_plugin_version(), false );
+		$plugin_dir = plugin_dir_url( $this->settings->get_plugin_basename() );
+
+		wp_enqueue_script( $handle, $plugin_dir . 'assets/bh-wc-shipment-tracking-updates-admin.js', array( 'jquery' ), $this->settings->get_plugin_version(), false );
 
 	}
 

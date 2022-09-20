@@ -1,0 +1,6 @@
+
+.my_account_orders .button.mark-complete::after {
+    content: "\f147";
+    display: inline-block;
+    font-family: "Dashicons";
+}

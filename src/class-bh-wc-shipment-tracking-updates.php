@@ -19,11 +19,13 @@ use BrianHenryIE\WC_Shipment_Tracking_Updates\Admin\Admin;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Admin\Plugin_Installer;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Admin\Plugins_Page;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\Frontend\Frontend;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Settings_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Logger\DHL_Logs;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Logger\Log_Level;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Admin_Order_List_Page;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Emails;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\My_Account;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Order_Statuses;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Shipping_Settings_Page;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce_Shipment_Tracking\Admin_Order_View;
@@ -104,6 +106,9 @@ class BH_WC_Shipment_Tracking_Updates {
 		$this->define_woocommerce_email_hooks();
 		$this->define_settings_page_hooks();
 		$this->define_admin_order_list_page_hooks();
+
+		$this->define_frontend_hooks();
+		$this->define_my_account_hooks();
 
 		$this->define_logger_hooks();
 	}
@@ -282,6 +287,32 @@ class BH_WC_Shipment_Tracking_Updates {
 		add_filter( 'bulk_actions-edit-shop_order', array( $admin_order_list_page, 'register_bulk_action_print_shipping_labels_pdf' ), 100 );
 		add_action( 'admin_action_mark_packed', array( $admin_order_list_page, 'update_order_statuses' ) );
 		add_action( 'admin_notices', array( $admin_order_list_page, 'print_bulk_mark_packed_status_notice' ) );
+	}
+
+	/**
+	 * Hooks for frontend behaviour:
+	 * * Enqueuing CSS and JS
+	 */
+	protected function define_frontend_hooks(): void {
+
+		$plugin_frontend = new Frontend( $this->settings );
+
+		add_action( 'wp_enqueue_scripts', array( $plugin_frontend, 'enqueue_styles' ) );
+		add_action( 'wp_enqueue_scripts', array( $plugin_frontend, 'enqueue_scripts' ) );
+
+	}
+
+	/**
+	 * Hooks for actions in the customer my-account area:
+	 * * Add a button to allow customers to mark their order complete
+	 */
+	protected function define_my_account_hooks(): void {
+
+		$my_account = new My_Account();
+
+		add_filter( 'woocommerce_my_account_my_orders_actions', array( $my_account, 'add_button' ), 10, 2 );
+		add_action( 'init', array( $my_account, 'handle_mark_complete_action' ) );
+
 	}
 
 	/**
