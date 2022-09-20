@@ -72,7 +72,9 @@ class DHL_Tracker implements Tracker_Interface {
 	 * Until a rate limit request for the account is made (on the DHL website), the API is limited to "a maximum
 	 * of 1 call per second", so pause briefly after each API call if one second has not passed.
 	 *
-	 * @param array $tracking_numbers
+	 * @see Tracker_Interface::query_multiple_tracking_numbers()
+	 *
+	 * @param string[] $tracking_numbers
 	 *
 	 * @return array|Tracking_Details_Abstract[]
 	 */
