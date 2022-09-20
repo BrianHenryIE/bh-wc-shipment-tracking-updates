@@ -58,13 +58,16 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 			'Delivered to Agent',
 			'Delivery Attempt',
 			'Available for Pickup',
+			'Moving Through Network',
+			'International Transit',
+			'Customs Transit',
 		);
 
 		if ( isset( $details['StatusCategory'] ) && ! empty( $details['StatusCategory'] ) ) {
 			$this->usps_status_category = $details['StatusCategory'];
 
 			if ( ! in_array( $details['StatusCategory'], $status_categories, true ) ) {
-				$logger->notice( 'New USPS StatusCategory : "' . $details['StatusCategory'] . '" - ' . $tracking_number, array( 'details=>$details' ) );
+				$logger->notice( 'New USPS StatusCategory : "' . $details['StatusCategory'] . '" - ' . $tracking_number, array( 'details' => $details ) );
 			}
 		}
 
@@ -83,19 +86,15 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 				$error_description = $error['Description'];
 
 				$acceptable_errors = array(
-					'A status update is not yet available on your',
+					'A status update is not yet available',
+					'An unexpected system error has occurred.',
 				);
 
-				$is_acceptable_error = array_reduce(
-					$acceptable_errors,
-					function ( bool $carry, string $acceptable_error ) use ( $error_description ) {
-						return $carry || false !== stristr( $error_description, $acceptable_error );
-					},
-					false
-				);
-
-				if ( $is_acceptable_error ) {
-					return;
+				foreach ( $acceptable_errors as $acceptable_error ) {
+					if ( 0 === strpos( $error_description, $acceptable_error ) ) {
+						$this->logger->info( 'A typical USPS error occurred: ' . $acceptable_error, array( 'details_array' => $details ) );
+						return;
+					}
 				}
 			}
 
@@ -190,17 +189,21 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 			return Order_Statuses::RETURNING_WC_STATUS;
 		}
 
-		switch ( $this->usps_status_category ) {
-			case null:
-				break;
-			case 'In Transit':
-			case 'Out for Delivery':
-				return Order_Statuses::IN_TRANSIT_WC_STATUS;
-				break;
-			case 'Delivered':
-			case 'Delivered to Agent':
-				return 'completed';
-				break;
+		if ( ! is_null( $this->usps_status_category ) ) {
+			switch ( $this->usps_status_category ) {
+				case 'Accepted':
+				case 'In Transit':
+				case 'Out for Delivery':
+				case 'Moving Through Network':
+				case 'International Transit':
+				case 'Customs Transit':
+					return Order_Statuses::IN_TRANSIT_WC_STATUS;
+					break;
+				case 'Delivered':
+				case 'Delivered to Agent':
+					return 'completed';
+					break;
+			}
 		}
 
 		$usps_status = $this->carrier_status;
