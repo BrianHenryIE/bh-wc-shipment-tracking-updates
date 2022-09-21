@@ -88,6 +88,7 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 				$acceptable_errors = array(
 					'A status update is not yet available',
 					'An unexpected system error has occurred.',
+					'An error has occurred with the service',
 				);
 
 				foreach ( $acceptable_errors as $acceptable_error ) {
