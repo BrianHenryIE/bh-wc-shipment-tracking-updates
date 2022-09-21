@@ -3,7 +3,7 @@
  * Define the email to send when an order is packed.
  *
  * Triggered when an order status changes to packed.
- * Does not send if the dispatched (in-transit) email has already been sent.
+ * Does not send if the order packed (wc-packed) email has already been sent.
  *
  * @see WC_Email_Customer_Completed_Order
  *
@@ -39,8 +39,8 @@ class Customer_Packed_Order_Email extends WC_Email {
 		);
 
 		// Triggers for this email.
-		add_action( 'woocommerce_order_status_in-transit', array( $this, 'trigger' ), 10, 2 );
-		add_action( 'bh_wc_shipment_tracking_updates_in-transit_email', array( $this, 'trigger' ), 10, 2 );
+		add_action( 'woocommerce_order_status_packed', array( $this, 'trigger' ), 10, 2 );
+		add_action( 'bh_wc_shipment_tracking_updates_packed_email', array( $this, 'trigger' ), 10, 2 );
 
 		// Call parent constructor.
 		parent::__construct();
