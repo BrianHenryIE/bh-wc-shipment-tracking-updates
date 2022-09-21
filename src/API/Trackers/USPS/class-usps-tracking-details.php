@@ -63,6 +63,7 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 			'International Transit',
 			'Customs Transit',
 			'In Transit from Origin Processing',
+			'Processing at Destination',
 		);
 
 		if ( isset( $details['StatusCategory'] ) && ! empty( $details['StatusCategory'] ) ) {
@@ -206,6 +207,7 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 			case 'Moving Through Network':
 			case 'International Transit':
 			case 'Customs Transit':
+			case 'Processing at Destination':
 				return Order_Statuses::IN_TRANSIT_WC_STATUS;
 			case 'Alert':
 			case 'Delivery Attempt':

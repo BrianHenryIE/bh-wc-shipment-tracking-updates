@@ -87,6 +87,7 @@ class UPS_Tracking_Details extends Tracking_Details_Abstract {
 			case 'Processing at UPS Facility':
 			case 'A late UPS trailer arrival has caused a delay. We\'re adjusting plans to deliver your package as quickly as possible.':
 			case 'Out For Delivery Today':
+			case 'Due to operating conditions, your package may be delayed.':
 				return Order_Statuses::IN_TRANSIT_WC_STATUS;
 			case 'Delivered':
 				return 'completed';
