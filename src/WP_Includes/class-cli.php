@@ -107,7 +107,7 @@ class CLI extends WP_CLI_Command {
 	/**
 	 * `wp shipment_tracking_updates check_packed_orders --debug=bh-wc-shipment-tracking-updates`
 	 *
-	 * @ssince 2.2.0
+	 * @since 2.2.0
 	 */
 	public function check_packed_orders(): void {
 
@@ -117,6 +117,23 @@ class CLI extends WP_CLI_Command {
 		$result_formatted = $result_formatted ? $result_formatted : '';
 
 		WP_CLI::log( $result_formatted );
+
+	}
+
+	/**
+	 * `wp shipment_tracking_updates mark_order_complete 123`
+	 *
+	 * @param string[] $args
+	 *
+	 * @since 2.10.0
+	 */
+	public function mark_order_complete( array $args ): void {
+
+		$order_id = intval( $args[0] );
+
+		$order = wc_get_order( $order_id );
+
+		$result = $this->api->mark_order_complete_no_email( $order );
 
 	}
 

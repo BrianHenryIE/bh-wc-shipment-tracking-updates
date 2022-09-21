@@ -145,6 +145,7 @@ class BH_WC_Shipment_Tracking_Updates {
 			WP_CLI::add_command( 'shipment_tracking_updates find_undispatched_orders', array( $cli, 'find_undispatched_orders' ) );
 			WP_CLI::add_command( 'shipment_tracking_updates check_packed_orders', array( $cli, 'check_packed_orders' ) );
 			WP_CLI::add_command( 'shipment_tracking_updates check_order_ids', array( $cli, 'check_tracking_for_order_numbers' ) );
+			WP_CLI::add_command( 'shipment_tracking_updates mark_order_complete', array( $cli, 'mark_order_complete' ) );
 		} catch ( Exception $e ) {
 			$this->logger->error( 'Failed to register WP CLI commands: ' . $e->getMessage(), array( 'exception' => $e ) );
 		}
