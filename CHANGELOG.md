@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.9.1
+
+* Fix: "packed" email was not being sent until "in-transit" status
+* Add: mute common USPS error
+* Add: USPS status, 'In Transit from Origin Processing'
+
 ## 2.9.0
 
 * Add: allow customer to set their order status to completed in my-account
