@@ -24,6 +24,7 @@ use BrianHenryIE\WC_Shipment_Tracking_Updates\Settings_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Logger\DHL_Logs;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Logger\Log_Level;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Admin_Order_List_Page;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Admin_Order_UI;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Emails;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\My_Account;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Order_Statuses;
@@ -106,6 +107,7 @@ class BH_WC_Shipment_Tracking_Updates {
 		$this->define_woocommerce_email_hooks();
 		$this->define_settings_page_hooks();
 		$this->define_admin_order_list_page_hooks();
+		$this->define_admin_order_ui_hooks();
 
 		$this->define_frontend_hooks();
 		$this->define_my_account_hooks();
@@ -290,6 +292,12 @@ class BH_WC_Shipment_Tracking_Updates {
 		add_action( 'admin_notices', array( $admin_order_list_page, 'print_bulk_mark_packed_status_notice' ) );
 	}
 
+	protected function define_admin_order_ui_hooks(): void {
+		$admin_order_ui = new Admin_Order_UI( $this->api );
+
+		add_filter( 'woocommerce_order_actions', array( $admin_order_ui, 'add_admin_ui_order_action' ) );
+		add_action( 'woocommerce_order_action_bh_wc_shipment_tracking_updates_mark_completed', array( $admin_order_ui, 'handle_mark_order_complete_action' ) );
+	}
 	/**
 	 * Hooks for frontend behaviour:
 	 * * Enqueuing CSS and JS
