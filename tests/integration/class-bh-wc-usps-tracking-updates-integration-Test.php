@@ -1,28 +1,57 @@
 <?php
 /**
- * Class Plugin_Test. Tests the root plugin setup.
+ * Tests for BrianHenryIE\WC_Shipment_Tracking_Updates main setup class. Tests the actions are correctly added.
  *
  * @package    brianhenryie/bh-wc-shipment-tracking-updates
- * @author     BrianHenryIE <BrianHenryIE@gmail.com>
  */
 
-namespace BrianHenryIE\WC_Shipment_Tracking_Updates;
+namespace BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Includes;
 
-use BrianHenryIE\WC_Shipment_Tracking_Updates\API_Interface;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\Admin\Admin;
 
 /**
- * Verifies the plugin has been instantiated and added to PHP's $GLOBALS variable.
+ * Class Develop_Test
  */
-class Plugin_Integration_Test extends \Codeception\TestCase\WPTestCase {
+class BH_WC_Shipment_Tracking_Updates_Integration_Test extends \Codeception\TestCase\WPTestCase {
 
-	/**
-	 * Test the main plugin object is added to PHP's GLOBALS and that it is the correct class.
-	 */
-	public function test_plugin_instantiated() {
-
-		$this->assertArrayHasKey( 'bh_wc_shipment_tracking_updates', $GLOBALS );
-
-		$this->assertInstanceOf( API_Interface::class, $GLOBALS['bh_wc_shipment_tracking_updates'] );
+	public function hooks() {
+		$hooks = array(
+			array( 'init', I18n::class, 'load_plugin_textdomain' ),
+			array( 'admin_enqueue_scripts', Admin::class, 'enqueue_scripts' ),
+			array( 'admin_enqueue_scripts', Admin::class, 'enqueue_styles' ),
+		);
+		return $hooks;
 	}
 
+	/**
+	 * @dataProvider hooks
+	 */
+	public function test_is_function_hooked_on_action( $action_name, $class_type, $method_name, $expected_priority = 10 ) {
+
+		global $wp_filter;
+
+		$this->assertArrayHasKey( $action_name, $wp_filter, "$method_name definitely not hooked to $action_name" );
+
+		$actions_hooked = $wp_filter[ $action_name ];
+
+		$this->assertArrayHasKey( $expected_priority, $actions_hooked, "$method_name definitely not hooked to $action_name priority $expected_priority" );
+
+		$hooked_method = null;
+		foreach ( $actions_hooked[ $expected_priority ] as $action ) {
+			$action_function = $action['function'];
+			if ( is_array( $action_function ) ) {
+				if ( $action_function[0] instanceof $class_type ) {
+					if ( $method_name === $action_function[1] ) {
+						$hooked_method = $action_function[1];
+						break;
+					}
+				}
+			}
+		}
+
+		$this->assertNotNull( $hooked_method, "No methods on an instance of $class_type hooked to $action_name" );
+
+		$this->assertEquals( $method_name, $hooked_method, "Unexpected method name for $class_type class hooked to $action_name" );
+
+	}
 }
