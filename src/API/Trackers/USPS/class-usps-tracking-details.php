@@ -52,6 +52,7 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 			'Pre-Shipment',
 			'Accepted',
 			'In Transit',
+			'In Transit from Origin Processing',
 			'Alert',
 			'Out for Delivery',
 			'Delivered',
@@ -61,6 +62,7 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 			'Moving Through Network',
 			'International Transit',
 			'Customs Transit',
+			'In Transit from Origin Processing',
 		);
 
 		if ( isset( $details['StatusCategory'] ) && ! empty( $details['StatusCategory'] ) ) {
@@ -192,20 +194,23 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 			return Order_Statuses::RETURNING_WC_STATUS;
 		}
 
+//	'Alert',
+//	'Delivery Attempt',
+//	'Available for Pickup',
+
 		if ( ! is_null( $this->usps_status_category ) ) {
 			switch ( $this->usps_status_category ) {
 				case 'Accepted':
 				case 'In Transit':
+				case 'In Transit from Origin Processing':
 				case 'Out for Delivery':
 				case 'Moving Through Network':
 				case 'International Transit':
 				case 'Customs Transit':
 					return Order_Statuses::IN_TRANSIT_WC_STATUS;
-					break;
 				case 'Delivered':
 				case 'Delivered to Agent':
 					return 'completed';
-					break;
 			}
 		}
 
