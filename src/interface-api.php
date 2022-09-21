@@ -14,6 +14,7 @@ use BrianHenryIE\WC_Shipment_Tracking_Updates\API\Trackers\Tracking_Details_Abst
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Includes\CLI;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Action_Scheduler\Scheduler;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Admin_Order_List_Page;
+use WC_Order;
 
 /**
  * Implemented by the API class.
@@ -78,4 +79,14 @@ interface API_Interface {
 	 * @return array<string, Tracking_Details_Abstract>
 	 */
 	public function get_saved_tracking_data_for_order( int $order_id ): array;
+
+	/**
+	 * Allow changing the order status to complete without sending the order complete email.
+	 * i.e. when orders are stuck in-transit due to USPS status not updating.
+	 *
+	 * @param WC_Order $order
+	 *
+	 * @return array
+	 */
+	public function mark_order_complete_no_email( WC_Order $order ): array;
 }

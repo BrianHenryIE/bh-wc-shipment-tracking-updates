@@ -779,4 +779,37 @@ class API implements API_Interface {
 		}
 		return $tracking_data;
 	}
+
+
+	/**
+	 * Allow changing the order status to complete without sending the order complete email.
+	 * i.e. when orders are stuck in-transit due to USPS status not updating.
+	 *
+	 * @param WC_Order $order
+	 *
+	 * @return array
+	 */
+	public function mark_order_complete_no_email( WC_Order $order ): array {
+
+		$result = array();
+
+		// We need to instantiate the WC_Emails class which then adds the action we want to remove,
+		// otherwise it is not instantiated until after set_status is called.
+		\WC_Emails::instance();
+
+		remove_all_actions( 'woocommerce_order_status_completed_notification' );
+
+		$previous_status = wc_get_order_statuses()[ 'wc-' . $order->get_status() ];
+
+		$user     = wp_get_current_user();
+		$username = $user->user_login;
+
+		$note = "Order status changed from {$previous_status} to Completed, manually by {$username}, suppressing email.";
+
+		$order->set_status( 'completed', $note, true );
+		$order->save();
+
+		return $result;
+	}
+
 }

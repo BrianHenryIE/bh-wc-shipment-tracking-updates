@@ -297,8 +297,41 @@ class API_WPUnit_Test extends \Codeception\TestCase\WPTestCase {
 
 		$result = $api->update_orders( array( $order_id ) );
 
+		/** @var WC_Order $order */
 		$order = wc_get_order( $order_id );
 		$this->assertEquals( Order_Statuses::RETURNING_WC_STATUS, $order->get_status() );
 
+	}
+
+	public function test_mark_order_completed_no_email(): void {
+
+		$email_sent = false;
+
+		add_filter(
+			'wp_mail',
+			function( array $args ) use ( &$email_sent ): array {
+
+				if ( 'Your bh-wc-shipment-tracking-updates order is now complete' === $args['subject'] ) {
+					$email_sent = true;
+				}
+
+				return $args;
+			}
+		);
+
+		$logger    = new ColorLogger();
+		$settings  = new Settings();
+		$container = $this->makeEmpty( ContainerInterface::class );
+
+		$api = new API( $container, $settings, $logger );
+
+		$order = new WC_Order();
+		$order->set_billing_email( 'email@example.org' );
+
+		$order->save();
+
+		$result = $api->mark_order_complete_no_email( $order );
+
+		$this->assertFalse( $email_sent );
 	}
 }
