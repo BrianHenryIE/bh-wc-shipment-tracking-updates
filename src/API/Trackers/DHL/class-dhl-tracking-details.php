@@ -39,7 +39,7 @@ class DHL_Tracking_Details extends Tracking_Details_Abstract {
 		$this->carrier_status     = $dhl_tracking_response->getLatestStatus()->getDescription();
 		$this->latest_status_code = $dhl_tracking_response->getLatestStatus()->getStatusCode();
 
-		$this->estimated_delivery_time = $dhl_tracking_response->getEstimatedDeliveryTime() ? $dhl_tracking_response->getEstimatedDeliveryTime()->getDateTime() : null;
+		$this->estimated_delivery_time = ! is_null( $dhl_tracking_response->getEstimatedDeliveryTime() ) ? $dhl_tracking_response->getEstimatedDeliveryTime()->getDateTime() : null;
 
 		$this->is_dispatched = array_reduce(
 			$dhl_tracking_response->getStatusEvents(),

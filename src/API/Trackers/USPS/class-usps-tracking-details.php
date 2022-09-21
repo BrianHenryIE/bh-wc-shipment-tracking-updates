@@ -27,7 +27,7 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 
 	use LoggerAwareTrait;
 
-	protected ?string $usps_status_category = null;
+	protected ?string $usps_status_category;
 
 	/**
 	 * Construct a Tracking_Details_Abstract with data from USPS API.
@@ -35,7 +35,7 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 	 * @see TrackConfirm::getArrayResponse()
 	 *
 	 * @param string                                $tracking_number The tracking number this Tracking_Details_Abstract represents.
-	 * @param array<string,array<int|string,mixed>> $details The array returned from the USPS API.
+	 * @param array<string,array<int|string,mixed>> $details The array returned from the USPS API. // TODO: This PhpDoc is incorrect.
 	 * @param LoggerInterface                       $logger A PSR logger.
 	 */
 	public function __construct( string $tracking_number, array $details, LoggerInterface $logger ) {
@@ -69,6 +69,8 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 			if ( ! in_array( $details['StatusCategory'], $status_categories, true ) ) {
 				$logger->notice( 'New USPS StatusCategory : "' . $details['StatusCategory'] . '" - ' . $tracking_number, array( 'details' => $details ) );
 			}
+		} else {
+			$this->usps_status_category = null;
 		}
 
 		if ( isset( $details['TrackSummary'] ) ) {

@@ -32,9 +32,8 @@ class UPS_Scratch_Test extends \Codeception\TestCase\WPTestCase {
 
 		$tracker = new UPS_Tracker( $settings, $logger );
 
-		// $tracking_number = 'xxx';
-		$tracking_number = 'xxx'; // Fresh, unpicked up at Friday April 22, 10:14am
-		$tracking_number = 'xxx'; // delivered
+		$tracking_number = 'xxx'; // Fresh, unpicked up at Friday April 22, 10:14am.
+		$tracking_number = 'xxx'; // Delivered.
 
 		$result = $tracker->query_single_tracking_number( $tracking_number );
 

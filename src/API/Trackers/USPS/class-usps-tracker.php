@@ -143,9 +143,6 @@ class USPS_Tracker implements Tracker_Interface {
 				}
 			}
 
-			/**
-			 * @var string $tracking_number
-			 */
 			foreach ( $details as $tracking_number => $detail ) {
 
 				/**

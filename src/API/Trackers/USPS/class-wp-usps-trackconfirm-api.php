@@ -2,6 +2,8 @@
 /**
  * Overrides the USPSBase::do_request() function in order to use WordPress HTTP functions.
  *
+ * TODO: Rewrite the parent library to use PSR-7/Guzzle.
+ *
  * @package     brianhenryie/bh-wc-shipment-tracking-updates
  */
 
@@ -61,13 +63,13 @@ class WP_USPS_TrackConfirm_API extends TrackConfirm {
 
 		if ( is_wp_error( $remote_response ) ) {
 
-			$this->setErrorCode( (int) $remote_response->get_error_code() );
+			$this->setErrorCode( intval( $remote_response->get_error_code() ) );
 			$this->setErrorMessage( $remote_response->get_error_message() );
 
 		} elseif ( is_wp_error( $remote_response['body'] ) ) {
 
 			$remote_response_body = $remote_response['body'];
-			$this->setErrorCode( (int) $remote_response_body->get_error_code() );
+			$this->setErrorCode( intval( $remote_response_body->get_error_code() ) );
 			$this->setErrorMessage( $remote_response_body->get_error_message() );
 
 		} else {
