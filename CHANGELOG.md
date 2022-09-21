@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.10.0
+
+* Add: function to mark orders complete without sending the order-complete email (CLI and admin order UI)
+
 ## 2.9.1
 
 * Fix: "packed" email was not being sent until "in-transit" status
