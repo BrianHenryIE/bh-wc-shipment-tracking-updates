@@ -15,7 +15,7 @@
  * Plugin Name:       Shipment Tracking Updates
  * Plugin URI:        http://github.com/BrianHenryIE/bh-wc-shipment-tracking-updates/
  * Description:       Displays the current status of the shipments' tracking inside WooCommerce. Discovers orders whose shipping label has been printed but whose package has not been mailed.
- * Version:           2.10.0
+ * Version:           2.10.1
  * Requires PHP:      7.4
  * Author:            BrianHenryIE
  * Author URI:        http://BrianHenry.ie
@@ -47,7 +47,7 @@ require_once plugin_dir_path( __FILE__ ) . 'autoload.php';
 /**
  * Current plugin version.
  */
-define( 'BH_WC_SHIPMENT_TRACKING_UPDATES_VERSION', '2.10.0' );
+define( 'BH_WC_SHIPMENT_TRACKING_UPDATES_VERSION', '2.10.1' );
 
 define( 'BH_WC_SHIPMENT_TRACKING_UPDATES_BASENAME', plugin_basename( __FILE__ ) );
 
