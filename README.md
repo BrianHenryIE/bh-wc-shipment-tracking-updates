@@ -11,12 +11,18 @@ Automatically changes order status when:
 * USPS delivers the order
 * USPS is returning the order
 
+Sends additional customer emails when:
+* Order is marked packed
+* Order is scanned by USPS
 
 ![Settings](./.wordpress-org/screenshot-1.png "Settings page")
 
 ![Admin Order List UI](./.wordpress-org/admin-order-list.png "Admin order list shows expected delivery data and delivered status")
 
 ![Admin Order UI Shipment Tracking](./.wordpress-org/admin-order-view.png "Shipment Tracking metabox augmented with additional data")
+
+![Additional Customer Emails](./.wordpress-org/new-customer-emails.png "Packed Order and Dispatched Order emails")
+
 
 
 ### TODO:
@@ -29,9 +35,10 @@ Automatically changes order status when:
 * On deactivation, unregister action scheduler actions
 * On activation, record the date and display an admin notice to the settings page until viewed
 * Admin notice when orders are returning
+* Admin email when order is returning
 * Admin notice when orders have not moved for x days (split domestic, international)
 * Search option for oldest unmoved? (select packed, sort by date )
-* Add bulk order action, single order action on orders list  "mark packed"
+* ~~Add bulk order action, single order action on orders list  "mark packed"~~
 * Try to catch when other plugins are setting the order status to completed, is that the correct status?
 * Use meta key to only send each email once for each tracking number.
 * Warn about custom order statuses accessed via REST API (e.g. fulfillment/dropshipping)
