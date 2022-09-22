@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.10.1
+
+* Add logging when customer manually changes order status
+* Refactor code to mute USPS errors
+
 ## 2.10.0
 
 * Add: function to mark orders complete without sending the order-complete email (CLI and admin order UI)
