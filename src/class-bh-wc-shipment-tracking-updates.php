@@ -20,6 +20,7 @@ use BrianHenryIE\WC_Shipment_Tracking_Updates\Admin\Plugin_Installer;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Admin\Plugins_Page;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Frontend\Frontend;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\Logger\USPS_Logs;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Settings_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Logger\DHL_Logs;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Logger\Log_Level;
@@ -341,5 +342,8 @@ class BH_WC_Shipment_Tracking_Updates {
 
 		$dhl_logs = new DHL_Logs();
 		add_filter( $hook, array( $dhl_logs, 'add_message_json_to_context' ), 10, 3 );
+
+		$usps_logs = new USPS_Logs();
+		add_filter( $hook, array( $usps_logs, 'mute_errors' ), 10, 3 );
 	}
 }

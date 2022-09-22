@@ -86,25 +86,9 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 
 			$error = $details['Error'];
 
-			if ( isset( $error['Description'] ) ) {
+			$description = isset( $error['Description'] ) ? $error['Description'] : '';
 
-				$error_description = $error['Description'];
-
-				$acceptable_errors = array(
-					'A status update is not yet available',
-					'An unexpected system error has occurred.',
-					'An error has occurred with the service',
-				);
-
-				foreach ( $acceptable_errors as $acceptable_error ) {
-					if ( 0 === strpos( $error_description, $acceptable_error ) ) {
-						$this->logger->info( 'A typical USPS error occurred: ' . $acceptable_error, array( 'details_array' => $details ) );
-						return;
-					}
-				}
-			}
-
-			$this->logger->error( "Unexpected error with tracking number {$tracking_number}.", array( 'details_array' => $details ) );
+			$this->logger->error( "Unexpected error with tracking number {$tracking_number}. {$description}", array( 'details_array' => $details ) );
 
 		}
 	}
@@ -194,8 +178,6 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 		if ( in_array( $this->carrier_status, $this->get_returning_statuses(), true ) ) {
 			return Order_Statuses::RETURNING_WC_STATUS;
 		}
-
-
 
 		switch ( $this->usps_status_category ) {
 			case null:
