@@ -809,6 +809,8 @@ class API implements API_Interface {
 		$order->set_status( 'completed', $note, true );
 		$order->save();
 
+		$this->logger->info( $note, array( 'user' => $user->ID ) );
+
 		return $result;
 	}
 
