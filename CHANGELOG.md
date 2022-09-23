@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.10.2
+
+* Improved USPS error logging
+
 ## 2.10.1
 
 * Add logging when customer manually changes order status
