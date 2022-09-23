@@ -110,17 +110,17 @@ class USPS_Tracker implements Tracker_Interface {
 					return array();
 				}
 
-				if ( isset( $array_response['Errror']['Description'] ) ) {
+				if ( isset( $array_response['Error']['Description'] ) ) {
 
 					// <xml...><Error><Description>An unexpected system error has occurred. Please try again later or contact the System Administrator.
-					if ( 0 !== strpos( $array_response['Errror']['Description'], 'An unexpected system error has occurred' ) ) {
-						$this->logger->info( 'Intermittent USPS request failure: "' . $array_response['Errror']['Description'] . '". This happens regularly and can be safely ignored.' );
+					if ( 0 !== strpos( $array_response['Error']['Description'], 'An unexpected system error has occurred' ) ) {
+						$this->logger->info( 'Intermittent USPS request failure: "' . $array_response['Error']['Description'] . '". This happens regularly and can be safely ignored.', array( 'array_response' => $array_response ) );
 						// TODO: count how often it happens.
 						// TODO: When querying 100+ tracking numbers, don't make subsequent requests if the first fails.
 						return array();
 					}
 
-					$error_message = $array_response['Errror']['Description'];
+					$error_message = $array_response['Error']['Description'];
 				} else {
 					$error_message = 'Unexpectedly TrackResponse is not part of response';
 				}

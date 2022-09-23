@@ -39,7 +39,6 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 	 * @param LoggerInterface                       $logger A PSR logger.
 	 */
 	public function __construct( string $tracking_number, array $details, LoggerInterface $logger ) {
-		// $logger->debug( 'Constructing USPS_Tracking_Details', array( $tracking_number, $details ) );
 
 		$this->setLogger( $logger );
 
@@ -64,6 +63,7 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 			'Customs Transit',
 			'In Transit from Origin Processing',
 			'Processing at Destination',
+			'Preparing for Delivery',
 		);
 
 		if ( isset( $details['StatusCategory'] ) && ! empty( $details['StatusCategory'] ) ) {
@@ -88,7 +88,7 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 
 			$description = isset( $error['Description'] ) ? $error['Description'] : '';
 
-			$this->logger->error( "Unexpected error with tracking number {$tracking_number}. {$description}", array( 'details_array' => $details ) );
+			$this->logger->error( "Error with tracking number {$tracking_number}. {$description}", array( 'details' => $details ) );
 
 		}
 	}
@@ -194,6 +194,7 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 			case 'Alert':
 			case 'Delivery Attempt':
 			case 'Available for Pickup':
+			case 'Preparing for Delivery':
 				// The same as above, but not precisely the same meaning.
 				return Order_Statuses::IN_TRANSIT_WC_STATUS;
 			case 'Delivered':

@@ -19,7 +19,7 @@ class USPS_Tracker_Unit_Test extends \Codeception\Test\Unit {
 	 * @throws \Exception
 	 * @covers ::query_multiple_tracking_numbers
 	 */
-	public function test_query_multiple_tracking_numbers() {
+	public function test_query_multiple_tracking_numbers():void {
 
 		$logger = new ColorLogger();
 
@@ -60,7 +60,7 @@ EOD;
 	}
 
 
-	public function test_many() {
+	public function test_many():void {
 
 		$logger = new ColorLogger();
 
@@ -99,7 +99,7 @@ EOD;
 		$this->assertInstanceOf( USPS_Tracking_Details::class, $result[ $id ] );
 	}
 
-	public function error() {
+	public function error():void {
 		$response = array(
 			'Error' =>
 				array(
@@ -112,7 +112,7 @@ EOD;
 		);
 	}
 
-	public function refund() {
+	public function refund():void {
 
 		$refund = <<<'EOD'
 <?xml version="1.0" encoding="UTF-8"?>
@@ -126,7 +126,7 @@ EOD;
 	 * @covers ::query_multiple_tracking_numbers
 	 * @covers ::query_single_tracking_number
 	 */
-	public function test_update_not_yet_available_single() {
+	public function test_update_not_yet_available_single():void {
 		$logger = new ColorLogger();
 
 		$xml_reponse = <<<'EOD'
@@ -156,9 +156,9 @@ EOD;
 		$b = $result;
 	}
 
-	public function test_update_not_yet_available_beside_successful_tracking() {
+	public function test_update_not_yet_available_beside_successful_tracking():void {
 
-			$logger = new ColorLogger();
+		$logger = new ColorLogger();
 
 		$xml_reponse = <<<'EOD'
 <?xml version="1.0" encoding="UTF-8"?>

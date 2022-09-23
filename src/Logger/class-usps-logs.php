@@ -37,15 +37,15 @@ class USPS_Logs {
 
 		$context = $log_data['context'];
 
-		if ( ! isset( $context['details_array'] ) ) {
+		if ( ! isset( $context['details'] ) ) {
 			return $log_data;
 		}
 
-		if ( ! isset( $context['details_array']['error'] ) || ! isset( $context['details_array']['description'] ) ) {
+		if ( ! isset( $context['details']['Error'] ) || ! isset( $context['details']['Error']['Description'] ) ) {
 			return $log_data;
 		}
 
-		$error_description = $context['details_array']['description'];
+		$error_description = $context['details']['Error']['Description'];
 
 		foreach ( $acceptable_errors as $acceptable_error ) {
 			if ( 0 === strpos( $error_description, $acceptable_error ) ) {

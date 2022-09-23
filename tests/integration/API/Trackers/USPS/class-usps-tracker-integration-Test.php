@@ -9,7 +9,7 @@ use Psr\Container\ContainerInterface;
 
 class USPS_Tracker_Integration_Test extends \Codeception\TestCase\WPTestCase {
 
-	public function testQueryMultiple() {
+	public function testQueryMultiple():void {
 
 		$logger = new ColorLogger();
 
@@ -40,11 +40,9 @@ class USPS_Tracker_Integration_Test extends \Codeception\TestCase\WPTestCase {
 			$result->get_last_updated_time();
 		}
 
-		$a = $result;
-
 	}
 
-	public function test_one() {
+	public function test_one():void {
 
 		$logger    = new ColorLogger();
 		$container = $this->makeEmpty(
@@ -60,25 +58,24 @@ class USPS_Tracker_Integration_Test extends \Codeception\TestCase\WPTestCase {
 		$tracker                            = new WP_USPS_TrackConfirm_API( $usps_username );
 		WP_USPS_TrackConfirm_API::$testMode = true;
 
-		$id = '9400136895232222511032';
-
-		$id2 = '9400136895232239530125';
+		// 95000000000000000000000
+		$id = '';
 
 		$tracker->addPackage( $id );
 
-		$tracker->addPackage( $id2 );
-
 		// Perform the request and return result
+		/** @var string|bool $xml_response */
 		$xml_response   = $tracker->getTracking();
 		$array_response = $tracker->convertResponseToArray();
+
+		if ( false === $xml_response ) {
+			// no internet connection.
+			$this->fail( 'Maybe not internet connection' );
+		}
 
 		$logger->info( $xml_response );
 
 		$details = array();
-
-		if ( false === $xml_response ) {
-			// no internet connection.
-		}
 
 		if ( isset( $array_response['TrackResponse']['TrackInfo']['TrackDetail'] ) ) {
 			$details[ $array_response['TrackResponse']['TrackInfo']['@attributes']['ID'] ] = $array_response['TrackResponse']['TrackInfo'];
