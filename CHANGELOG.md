@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.10.3
+
+* On deactivation, when changing order statuses to complete do not send order complete emails when status was "returning"
+
 ## 2.10.2
 
 * Improved USPS error logging
