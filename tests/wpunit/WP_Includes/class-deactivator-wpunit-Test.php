@@ -122,6 +122,9 @@ class Deactivator_WPUnit_Test extends \Codeception\TestCase\WPTestCase {
 		$order->set_billing_email( 'customer@example.org' );
 		$order->save();
 
+		remove_all_actions( 'woocommerce_order_status_completed_notification' );
+		new \WC_Email_Customer_Completed_Order();
+
 		$emails_sent = 0;
 
 		add_filter(

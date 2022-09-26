@@ -77,7 +77,7 @@ class Deactivator {
 		// due to the orders above, but maybe there were zero.
 		\WC_Emails::instance();
 
-		remove_all_actions( 'woocommerce_order_status_completed_notification' );
+		add_filter( 'woocommerce_email_enabled_customer_completed_order', '__return_false' );
 
 		$returning_orders = (array) wc_get_orders(
 			array(
@@ -96,6 +96,8 @@ class Deactivator {
 			$order->add_meta_data( self::DEACTIVATED_ORDER_STATUS_CHANGED_META_KEY, array( gmdate( DATE_ATOM ), $existing_status ), true );
 			$order->save();
 		}
+
+		remove_filter( 'woocommerce_email_enabled_customer_completed_order', '__return_false' );
 	}
 
 	/**

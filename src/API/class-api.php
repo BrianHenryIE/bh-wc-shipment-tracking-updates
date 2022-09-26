@@ -797,7 +797,7 @@ class API implements API_Interface {
 		// otherwise it is not instantiated until after set_status is called.
 		\WC_Emails::instance();
 
-		remove_all_actions( 'woocommerce_order_status_completed_notification' );
+		add_filter( 'woocommerce_email_enabled_customer_completed_order', '__return_false' );
 
 		$previous_status = wc_get_order_statuses()[ 'wc-' . $order->get_status() ];
 
@@ -810,6 +810,8 @@ class API implements API_Interface {
 		$order->save();
 
 		$this->logger->info( $note, array( 'user' => $user->ID ) );
+
+		remove_filter( 'woocommerce_email_enabled_customer_completed_order', '__return_false' );
 
 		return $result;
 	}
