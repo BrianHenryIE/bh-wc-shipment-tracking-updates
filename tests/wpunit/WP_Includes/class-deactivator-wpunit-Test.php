@@ -104,4 +104,44 @@ class Deactivator_WPUnit_Test extends \Codeception\TestCase\WPTestCase {
 		remove_filter( 'wc_order_statuses', array( $order_statuses, 'add_order_status_to_woocommerce' ) );
 	}
 
+	public function test_does_not_send_complete_emails_for_returned_orders(): void {
+
+		$logger = new ColorLogger();
+
+		$order_statuses = new Order_Statuses( $logger );
+		$order_statuses->register_status();
+		add_filter( 'wc_order_statuses', array( $order_statuses, 'add_order_status_to_woocommerce' ) );
+
+		$order = new WC_Order();
+		$order->set_status( Order_Statuses::IN_TRANSIT_WC_STATUS );
+		$order->set_billing_email( 'customer@example.org' );
+		$order->save();
+
+		$order = new WC_Order();
+		$order->set_status( Order_Statuses::RETURNING_WC_STATUS );
+		$order->set_billing_email( 'customer@example.org' );
+		$order->save();
+
+		$emails_sent = 0;
+
+		add_filter(
+			'wp_mail',
+			function( array $args ) use ( &$emails_sent ): array {
+
+				if ( 'Your bh-wc-shipment-tracking-updates order is now complete' === $args['subject'] ) {
+					$emails_sent++;
+				}
+
+				return $args;
+			}
+		);
+
+		// Act.
+		Deactivator::deactivate();
+
+		$this->assertEquals( 1, $emails_sent );
+
+		remove_filter( 'wc_order_statuses', array( $order_statuses, 'add_order_status_to_woocommerce' ) );
+	}
+
 }
