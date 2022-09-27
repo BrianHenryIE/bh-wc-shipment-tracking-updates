@@ -107,7 +107,7 @@ class Admin_Order_View {
 				// TODO: Don't print the year if it is this year.
 				$date_added = gmdate( 'l, j F Y', intval( $tracking_item['date_shipped'] ) );
 				?>
-				<p>Added: <?php echo esc_html( $date_added ); ?></p>
+				Added: <?php echo esc_html( $date_added ); ?><br/>
 				<?php
 
 				// TODO: Add the date when the order started to move.
@@ -116,11 +116,9 @@ class Admin_Order_View {
 					$last_updated_time = $tracking_detail->get_last_updated_time();
 					$date_updated      = $last_updated_time->format( 'l, j F Y' );
 					if ( $date_updated !== $date_added ) {
-						echo '<p>';
 						// TODO: Add a method `get_delivered_time()`.
 						echo 'completed' === $tracking_detail->get_equivalent_order_status() ? 'Delivered: ' : 'Updated: ';
 						echo esc_html( $date_updated );
-						echo '</p>';
 					}
 				}
 				?>
@@ -150,7 +148,7 @@ class Admin_Order_View {
     $(document).ready(function() {
 	    var data = $data;
 	    for (const tracking_id in data) {
-            var selector = '#tracking-item-' + tracking_id + ' ;
+            var selector = '#tracking-item-' + tracking_id;
             var html = data[tracking_id];
             $(selector).html(html);
         }
