@@ -9,9 +9,16 @@
 
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce;
 
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LoggerInterface;
 use WC_Order;
 
 class My_Account {
+	use LoggerAwareTrait;
+
+	public function __construct( LoggerInterface $logger ) {
+		$this->setLogger( $logger );
+	}
 
 	/**
 	 * Add a button on each order in the orders list which allows the customer to mark the order completed.
@@ -92,10 +99,16 @@ class My_Account {
 
 		$user     = wp_get_current_user();
 		$username = $user->user_login;
+		$user_id  = $user->ID;
 
 		$note = "Order status changed from {$order->get_status()} to Completed by {$username} in my-account area.";
 
 		$order->update_status( 'completed', $note, true );
+
+		$log_message = "wc_order:{$order_id} status changed from {$order->get_status()} to Completed by wp_user:{$user_id} in my-account area.";
+
+		$this->logger->info( $log_message, array( 'order_id' => $order_id ) );
+
 	}
 
 }

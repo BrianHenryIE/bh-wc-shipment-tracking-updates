@@ -340,7 +340,7 @@ class API implements API_Interface {
 			$order = wc_get_order( $order_id );
 
 			if ( ! ( $order instanceof WC_Order ) ) {
-				$this->logger->error( 'Unexpectedly failed to instantiate order ' . $order_id, array( 'order_id' => $order_id ) );
+				$this->logger->error( 'Unexpectedly failed to instantiate wc_order:' . $order_id, array( 'order_id' => $order_id ) );
 				continue;
 			}
 
@@ -525,7 +525,7 @@ class API implements API_Interface {
 			$order = wc_get_order( $order_id );
 
 			if ( ! ( $order instanceof WC_Order ) ) {
-				$this->logger->error( 'Unexpectedly failed to instantiate order ' . $order_id, array( 'order_id' => $order_id ) );
+				$this->logger->error( 'Unexpectedly failed to instantiate wc_order:' . $order_id, array( 'order_id' => $order_id ) );
 				continue;
 			}
 
@@ -809,7 +809,9 @@ class API implements API_Interface {
 		$order->set_status( 'completed', $note, true );
 		$order->save();
 
-		$this->logger->info( $note, array( 'user' => $user->ID ) );
+		$log_message = "wc_order:{$order->get_id()} status changed from {$previous_status} to Completed, manually by wp_user:{$user->ID}, suppressing email.";
+
+		$this->logger->info( $log_message, array( 'user' => $user->ID ) );
 
 		remove_filter( 'woocommerce_email_enabled_customer_completed_order', '__return_false' );
 
