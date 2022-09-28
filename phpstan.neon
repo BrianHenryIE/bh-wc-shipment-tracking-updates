@@ -24,6 +24,6 @@ parameters:
         # PHPStan show errors when filters have more than two parameters.
         - '#^Function apply_filters(_ref_array)? invoked with \d parameters, 2 required\.$#'
         # Parameter #1 $message of method a expects b, c given.
-        # - '/Parameter .* of .* expects .* given\./'
+        - '/Parameter .* of .* expects callable.* given\./'
         # Setting an empty array with type associative array in the PhpDoc prints this.
         - '/does not accept default value of type array\(\)/'
