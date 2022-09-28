@@ -319,7 +319,7 @@ class BH_WC_Shipment_Tracking_Updates {
 	 */
 	protected function define_my_account_hooks(): void {
 
-		$my_account = new My_Account();
+		$my_account = new My_Account( $this->logger );
 
 		add_filter( 'woocommerce_my_account_my_orders_actions', array( $my_account, 'add_button' ), 10, 2 );
 		add_action( 'init', array( $my_account, 'handle_mark_complete_action' ) );
