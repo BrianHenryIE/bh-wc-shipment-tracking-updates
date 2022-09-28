@@ -85,15 +85,21 @@ class Order_List_Table {
 			 */
 			$formatted = $wc_shipment_tracking_actions->get_formatted_tracking_item( $order_id, $tracking_item );
 
-			$new_html .= sprintf( '<li><a href="%s" target="_blank">', esc_url( $formatted['formatted_tracking_link'] ) );
-
 			// Remove spaces from the saved tracking number.
 			$tracking_number = str_replace( ' ', '', $tracking_item['tracking_number'] );
 
 			if ( isset( $order_meta_all_tracking_updates[ $tracking_number ] ) ) {
 				$tracking_detail = $order_meta_all_tracking_updates[ $tracking_number ];
 
-				if ( ! is_null( $tracking_detail->get_delivery_time() ) ) {
+				$last_updated_time = $tracking_detail->get_last_updated_time();
+				if ( ! is_null( $last_updated_time ) ) {
+					$updated_tooltip = $last_updated_time->format( 'l, j F Y' );
+					$new_html       .= sprintf( '<li><a title="' . $updated_tooltip . '" href="%s" target="_blank">', esc_url( $formatted['formatted_tracking_link'] ) );
+				} else {
+					$new_html .= sprintf( '<li><a href="%s" target="_blank">', esc_url( $formatted['formatted_tracking_link'] ) );
+				}
+
+				if ( ! is_null( $tracking_detail->get_delivery_time() ) && 'completed' !== $tracking_detail->get_equivalent_order_status() ) {
 					$new_html .= '<p style="color:#2271b1;">';
 					$new_html .= '<span class="description" style="color: #999; margin-right:3px; display:inline-block;">Expected delivery:</span>';
 					$new_html .= '<span class="expected-delivery" style="display:inline-block">';
@@ -103,6 +109,7 @@ class Order_List_Table {
 
 				} else {
 
+					$new_html .= sprintf( '<li><a href="%s" target="_blank">', esc_url( $formatted['formatted_tracking_link'] ) );
 					$new_html .= '<p style="color:#2271b1;">' . $tracking_detail->get_carrier_status() . '</p>';
 				}
 
@@ -126,6 +133,7 @@ class Order_List_Table {
 			'a'    => array(
 				'href'   => array(),
 				'target' => array(),
+				'title'  => array(),
 			),
 			'p'    => array(
 				'style' => array(),
