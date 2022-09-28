@@ -21,6 +21,7 @@ use BrianHenryIE\WC_Shipment_Tracking_Updates\Admin\Plugins_Page;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\API_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Frontend\Frontend;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Logger\USPS_Logs;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\Logger\WooCommerce_Logs;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Settings_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Logger\DHL_Logs;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Logger\Log_Level;
@@ -335,15 +336,21 @@ class BH_WC_Shipment_Tracking_Updates {
 	 */
 	protected function define_logger_hooks(): void {
 
-		$hook = $this->settings->get_plugin_slug() . '_bh_wp_logger_log';
+		$log_hook = $this->settings->get_plugin_slug() . '_bh_wp_logger_log';
 
 		$log_level = new Log_Level();
-		add_filter( $hook, array( $log_level, 'info_to_debug' ), 10, 3 );
+		add_filter( $log_hook, array( $log_level, 'info_to_debug' ), 10, 3 );
 
 		$dhl_logs = new DHL_Logs();
-		add_filter( $hook, array( $dhl_logs, 'add_message_json_to_context' ), 10, 3 );
+		add_filter( $log_hook, array( $dhl_logs, 'add_message_json_to_context' ), 10, 3 );
 
 		$usps_logs = new USPS_Logs();
-		add_filter( $hook, array( $usps_logs, 'mute_errors' ), 10, 3 );
+		add_filter( $log_hook, array( $usps_logs, 'mute_errors' ), 10, 3 );
+
+		$column_hook = $this->settings->get_plugin_slug() . '_bh_wp_logger_column';
+
+		$woocommerce_logs = new WooCommerce_Logs();
+		add_filter( $column_hook, array( $woocommerce_logs, 'replace_wc_order_id_with_link' ), 10, 5 );
+
 	}
 }

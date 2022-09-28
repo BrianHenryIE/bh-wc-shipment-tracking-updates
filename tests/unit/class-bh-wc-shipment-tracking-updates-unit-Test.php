@@ -8,12 +8,14 @@ use BrianHenryIE\WC_Shipment_Tracking_Updates\Admin\Plugin_Installer;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Admin\Plugins_Page;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Logger\DHL_Logs;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\Logger\Log_Level;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\Logger\WooCommerce_Logs;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Admin_Order_List_Page;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Emails;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Order_Statuses;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce\Shipping_Settings_Page;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WooCommerce_Shipment_Tracking\Order_List_Table;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Includes\I18n;
+use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\WooCommerce_Logger_Settings_Interface;
 use Codeception\Stub\Expected;
 use WP_Mock\Matcher\AnyInstance;
 
@@ -268,27 +270,36 @@ class BH_WC_Shipment_Tracking_Updates_Unit_Test extends \Codeception\Test\Unit {
 	 */
 	public function test_define_logger_hooks(): void {
 
-		$hook = 'bh-wc-shipment-tracking-updates_bh_wp_logger_log';
+		$log_hook = 'bh-wc-shipment-tracking-updates_bh_wp_logger_log';
 
 		\WP_Mock::expectFilterAdded(
-			$hook,
+			$log_hook,
 			array( new AnyInstance( Log_Level::class ), 'info_to_debug' ),
 			10,
 			3
 		);
 
 		\WP_Mock::expectFilterAdded(
-			$hook,
+			$log_hook,
 			array( new AnyInstance( DHL_Logs::class ), 'add_message_json_to_context' ),
 			10,
 			3
+		);
+
+		$column_hook = 'bh-wc-shipment-tracking-updates_bh_wp_logger_column';
+
+		\WP_Mock::expectFilterAdded(
+			$column_hook,
+			array( new AnyInstance( WooCommerce_Logs::class ), 'replace_wc_order_id_with_link' ),
+			10,
+			5
 		);
 
 		$logger   = new ColorLogger();
 		$settings = $this->makeEmpty(
 			Settings_Interface::class,
 			array(
-				'get_plugin_slug' => Expected::once( 'bh-wc-shipment-tracking-updates' ),
+				'get_plugin_slug' => Expected::exactly( 2, 'bh-wc-shipment-tracking-updates' ),
 			)
 		);
 		$api      = $this->makeEmpty( API_Interface::class );
