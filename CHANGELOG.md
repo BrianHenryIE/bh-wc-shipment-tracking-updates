@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.11.0
+
+* Add hyperlinks to logs table: to user profile, to order ui
+* Show last updated time as tooltip on each tracking number on admin order list ui
+* Fix: metabox on admin order ui
+
 ## 2.10.3
 
 * On deactivation, when changing order statuses to complete do not send order complete emails when status was "returning"
