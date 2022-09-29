@@ -410,7 +410,7 @@ class API implements API_Interface {
 			if ( $order->get_status() !== $fresh_status && Order_Statuses::RETURNING_WC_STATUS !== $order->get_status() ) {
 
 				$this->logger->info(
-					'Updating order ' . $order_id . ' status to ' . $fresh_status,
+					'Updating wc_order:' . $order_id . ' status to ' . $fresh_status,
 					array(
 						'order_id'   => $order_id,
 						'new_status' => $fresh_status,
