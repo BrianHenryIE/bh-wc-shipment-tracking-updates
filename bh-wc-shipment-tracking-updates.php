@@ -23,6 +23,9 @@
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       bh-wc-shipment-tracking-updates
  * Domain Path:       /languages
+ *
+ * GitHub Plugin URI: http://github.com/BrianHenryIE/bh-wc-shipment-tracking-updates/
+ * Release Asset: true
  */
 
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates;
