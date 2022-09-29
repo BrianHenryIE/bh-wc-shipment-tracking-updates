@@ -9,6 +9,7 @@ namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Logger;
 
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\API\BH_WP_PSR_Logger;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\Logger_Settings_Interface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Filters BH_WP_PSR_Logger.
@@ -24,11 +25,11 @@ class WooCommerce_Logs {
 	 * @param array{time:string, level:string, message:string, context:array} $item The log entry row.
 	 * @param string                                                          $column_name The current column name.
 	 * @param Logger_Settings_Interface                                       $logger_settings The logger settings.
-	 * @param BH_WP_PSR_Logger                                                $bh_wp_psr_logger The logger API instance.
+	 * @param BH_WP_PSR_Logger                                                $logger The logger API instance.
 	 *
 	 * @return string
 	 */
-	public function replace_wc_order_id_with_link( string $column_output, array $item, string $column_name, Logger_Settings_Interface $logger_settings, BH_WP_PSR_Logger $bh_wp_psr_logger ): string {
+	public function replace_wc_order_id_with_link( string $column_output, array $item, string $column_name, Logger_Settings_Interface $logger_settings, LoggerInterface $logger ): string {
 
 		if ( 'message' !== $column_name ) {
 			return $column_output;

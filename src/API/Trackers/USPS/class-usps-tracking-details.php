@@ -27,7 +27,7 @@ class USPS_Tracking_Details extends Tracking_Details_Abstract {
 
 	use LoggerAwareTrait;
 
-	protected ?string $usps_status_category;
+	protected ?string $usps_status_category = null;
 
 	/**
 	 * Construct a Tracking_Details_Abstract with data from USPS API.
