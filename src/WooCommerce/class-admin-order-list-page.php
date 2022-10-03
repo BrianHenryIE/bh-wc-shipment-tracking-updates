@@ -190,5 +190,4 @@ class Admin_Order_List_Page {
 
 	}
 
-
 }

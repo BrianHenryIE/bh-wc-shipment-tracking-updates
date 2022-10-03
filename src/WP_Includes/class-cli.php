@@ -52,10 +52,12 @@ class CLI extends WP_CLI_Command {
 	 *
 	 * `wp shipment_tracking_updates check_order_ids 1230 4506 7089`
 	 *
+	 * `wp shipment_tracking_updates check_order_ids 203907 --debug=bh-wc-shipment-tracking-updates`
+	 *
 	 * Use in conjunction with regular cli functions:
 	 * `wp shipment_tracking_updates check_order_ids $(wp post list --post_type=shop_order --post_status=wc-processing --posts_per_page=10 --paged=1 --format=ids) --debug=bh-wc-shipment-tracking-updates`
 	 *
-	 * @param array<int|string, string> $args
+	 * @param string[] $args
 	 */
 	public function check_tracking_for_order_numbers( array $args ): void {
 

@@ -2,7 +2,6 @@
 
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Logger;
 
-use BrianHenryIE\WC_Shipment_Tracking_Updates\Settings_Interface;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\API\BH_WP_PSR_Logger;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\Logger_Settings_Interface;
 

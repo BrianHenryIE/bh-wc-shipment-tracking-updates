@@ -25,7 +25,7 @@
  * Domain Path:       /languages
  *
  * GitHub Plugin URI: http://github.com/BrianHenryIE/bh-wc-shipment-tracking-updates/
- * Release Asset: true
+ * Release Asset:     true
  */
 
 namespace BrianHenryIE\WC_Shipment_Tracking_Updates;
