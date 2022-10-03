@@ -9,6 +9,7 @@ namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Logger;
 
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\API\BH_WP_PSR_Logger;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\Logger_Settings_Interface;
+use Psr\Log\LogLevel;
 
 /**
  * Hooks into `BH_WP_PSR_Logger::log()`'s filter to manipulate the logs.
@@ -37,24 +38,25 @@ class USPS_Logs {
 
 		$context = $log_data['context'];
 
-		if ( ! isset( $context['details'] ) ) {
+		if ( isset( $context['array_response'], $context['array_response']['Error'], $context['array_response']['Error']['Description'] ) ) {
+			$error_message = $context['array_response']['Error']['Description'];
+
+		} elseif ( isset( $context['details'], $context['details']['Error'], $context['details']['Error']['Description'] ) ) {
+			$error_message = $context['details']['Error']['Description'];
+
+		} else {
 			return $log_data;
 		}
-
-		if ( ! isset( $context['details']['Error'] ) || ! isset( $context['details']['Error']['Description'] ) ) {
-			return $log_data;
-		}
-
-		$error_description = $context['details']['Error']['Description'];
 
 		foreach ( $acceptable_errors as $acceptable_error ) {
-			if ( 0 === strpos( $error_description, $acceptable_error ) ) {
-				return null;
+			if ( 0 === strpos( $error_message, $acceptable_error ) ) {
+				$log_data['level']   = LogLevel::DEBUG;
+				$log_data['message'] = 'Muted error: ' . $log_data['message'];
+				return $log_data;
 			}
 		}
 
 		return $log_data;
-
 	}
 
 }
