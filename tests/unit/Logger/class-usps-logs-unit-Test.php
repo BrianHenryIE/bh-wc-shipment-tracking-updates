@@ -4,6 +4,7 @@ namespace BrianHenryIE\WC_Shipment_Tracking_Updates\Logger;
 
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\API\BH_WP_PSR_Logger;
 use BrianHenryIE\WC_Shipment_Tracking_Updates\WP_Logger\Logger_Settings_Interface;
+use Psr\Log\LogLevel;
 
 /**
  * @coversDefaultClass \BrianHenryIE\WC_Shipment_Tracking_Updates\Logger\USPS_Logs
@@ -41,7 +42,7 @@ class USPS_Logs_Unit_Test extends \Codeception\Test\Unit {
 
 		$result = $sut->mute_errors( $log_data, $logger_settings, $bh_wp_psr_logger );
 
-		$this->assertNull( $result );
+		$this->assertEquals( LogLevel::DEBUG, $result['level'] );
 
 	}
-}
+}   
