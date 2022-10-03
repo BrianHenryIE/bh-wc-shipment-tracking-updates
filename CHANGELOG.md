@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.12.0
+
+* Add Git Updater
+* Mute more regular errors
+
 ## 2.11.0
 
 * Add hyperlinks to logs table: to user profile, to order ui
